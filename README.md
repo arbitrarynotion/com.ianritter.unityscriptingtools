@@ -1,2 +1,2 @@
 # com.ianritter.unityscriptingtools
- A collection of my own tool that I use to help with Unity scripting.
+ A collection of my own Unity tools that I use to help with scripting.
