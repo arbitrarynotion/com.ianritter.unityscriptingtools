@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.2...v1.0.3) (2023-04-18)
+
+
+### Bug Fixes
+
+* Yet Another Permissions Attempt ([8deb152](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/8deb1524b052f88d213e4dd79c655944f260588a))
+
 ## [1.0.2](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.1...v1.0.2) (2023-04-18)
 
 
