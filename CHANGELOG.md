@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.0...v1.0.1) (2023-04-18)
+
+
+### Bug Fixes
+
+* Corrected Semantic Release Permissions ([2adacc5](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/2adacc52a11c7160f35bed4b376e628d8d75d3ac))
+* Updated Permissions ([1bfc252](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/1bfc25244b153fb0e06f2c45d11a4c66ce0a73a7))
+
 # 1.0.0 (2023-04-18)
 
 
