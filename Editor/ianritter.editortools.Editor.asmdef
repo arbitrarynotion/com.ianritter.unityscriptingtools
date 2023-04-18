@@ -1,0 +1,18 @@
+{
+    "name": "ianritter.editortools.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8c64a276186c0884daeeeee55360faa8"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
