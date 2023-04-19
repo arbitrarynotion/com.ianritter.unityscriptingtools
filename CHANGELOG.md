@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.4...v1.0.5) (2023-04-19)
+
+
+### Bug Fixes
+
+* Added Missing Custom Color Property Drawer ([7b48e0a](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/7b48e0ac7071fc18e5e14fc41d5c0c0d0ffa0008))
+
 ## [1.0.4](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.3...v1.0.4) (2023-04-19)
 
 
