@@ -1,4 +1,4 @@
-﻿using Packages.com.ianritter.unityscriptingtools.Runtime.CustomLogger;
+﻿using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger;
 using UnityEditor;
 using UnityEngine;
 

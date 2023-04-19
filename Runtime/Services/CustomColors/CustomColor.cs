@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Packages.com.ianritter.unityscriptingtools.Runtime.TextFormatting
+namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors
 {
     [Serializable]
     public class CustomColor

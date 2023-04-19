@@ -6,9 +6,9 @@ using System.Reflection;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.ToolingConstants;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.TextFormatting.TextFormat;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting.TextFormat;
 
-namespace Packages.com.ianritter.unityscriptingtools.Runtime.CustomLogger
+namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger
 {
     [Serializable]
     public class CustomLoggerSymbol

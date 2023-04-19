@@ -1,7 +1,7 @@
 using UnityEngine;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.TextFormatting.PresetColors;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors.PresetColors;
 
-namespace Packages.com.ianritter.unityscriptingtools.Runtime.TextFormatting
+namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting
 {
     public static class TextFormat
     {

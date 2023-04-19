@@ -1,5 +1,5 @@
 using System;
-using Packages.com.ianritter.unityscriptingtools.Runtime.TextFormatting;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting;
 using UnityEditor;
 
 namespace Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods

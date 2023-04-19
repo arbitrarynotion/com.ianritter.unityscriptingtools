@@ -2,7 +2,7 @@ using System;
 using Packages.com.ianritter.unityscriptingtools.Runtime.Enums;
 using UnityEngine;
 
-namespace Packages.com.ianritter.unityscriptingtools.Runtime.UIGraphics
+namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics
 {
     public static class UIRectGraphics
     {

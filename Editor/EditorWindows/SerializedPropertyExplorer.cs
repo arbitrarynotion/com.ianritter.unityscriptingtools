@@ -4,9 +4,9 @@ using Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.TextFormatting.TextFormat;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting.TextFormat;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.ToolingConstants;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.UIGraphics.UIRectGraphics;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics.UIRectGraphics;
 
 namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 {
@@ -407,35 +407,40 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                 case SerializedPropertyType.Rect:
                     return true;
                 
-                case SerializedPropertyType.Integer:
-                case SerializedPropertyType.Boolean:
-                case SerializedPropertyType.Float:
-                case SerializedPropertyType.String:
-                case SerializedPropertyType.Color:
-                case SerializedPropertyType.ObjectReference:
-                case SerializedPropertyType.LayerMask:
-                case SerializedPropertyType.Enum:
-                case SerializedPropertyType.Vector2:
-                case SerializedPropertyType.Vector3:
-                case SerializedPropertyType.Vector4:
-                case SerializedPropertyType.ArraySize:
-                case SerializedPropertyType.Character:
-                case SerializedPropertyType.AnimationCurve:
-                case SerializedPropertyType.Bounds:
-                case SerializedPropertyType.Gradient:
-                case SerializedPropertyType.Quaternion:
-                case SerializedPropertyType.ExposedReference:
-                case SerializedPropertyType.FixedBufferSize:
-                case SerializedPropertyType.Vector2Int:
-                case SerializedPropertyType.Vector3Int:
-                case SerializedPropertyType.RectInt:
-                case SerializedPropertyType.BoundsInt:
-                case SerializedPropertyType.ManagedReference:
-                case SerializedPropertyType.Hash128:
-                    return false;
+                // case SerializedPropertyType.Integer:
+                // case SerializedPropertyType.Boolean:
+                // case SerializedPropertyType.Float:
+                // case SerializedPropertyType.String:
+                // case SerializedPropertyType.Color:
+                // case SerializedPropertyType.ObjectReference:
+                // case SerializedPropertyType.LayerMask:
+                // case SerializedPropertyType.Enum:
+                // case SerializedPropertyType.Vector2:
+                // case SerializedPropertyType.Vector3:
+                // case SerializedPropertyType.Vector4:
+                // case SerializedPropertyType.ArraySize:
+                // case SerializedPropertyType.Character:
+                // case SerializedPropertyType.AnimationCurve:
+                // case SerializedPropertyType.Bounds:
+                // case SerializedPropertyType.Gradient:
+                // case SerializedPropertyType.Quaternion:
+                // case SerializedPropertyType.ExposedReference:
+                // case SerializedPropertyType.FixedBufferSize:
+                // case SerializedPropertyType.Vector2Int:
+                // case SerializedPropertyType.Vector3Int:
+                // case SerializedPropertyType.RectInt:
+                // case SerializedPropertyType.BoundsInt:
+                // case SerializedPropertyType.ManagedReference:
+                    
+                // Had to remove this to make this tool compatible with Unity 2020. 
+                // case SerializedPropertyType.Hash128:
+                
+                // return false;
+                
                 default:
-                    Debug.Log( $"{property.propertyType.ToString()} is not supported!" );
-                    throw new ArgumentOutOfRangeException(property.propertyType.ToString());
+                    return false;
+                    // Debug.Log( $"{property.propertyType.ToString()} is not supported!" );
+                    // throw new ArgumentOutOfRangeException(property.propertyType.ToString());
             }
         }
         
