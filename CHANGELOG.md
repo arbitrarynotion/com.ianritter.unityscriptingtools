@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.3...v1.0.4) (2023-04-19)
+
+
+### Bug Fixes
+
+* Compatability Fix ([df9bb9b](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/df9bb9bcec174e2670815c90bbd3f95161cd168b))
+
 ## [1.0.3](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.2...v1.0.3) (2023-04-18)
 
 
