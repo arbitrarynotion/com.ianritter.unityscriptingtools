@@ -1,6 +1,8 @@
 ﻿using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger;
 using UnityEditor;
 using UnityEngine;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics.UIRectGraphics;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors.PresetColors;
 
 namespace Packages.com.ianritter.unityscriptingtools.Editor.PropertyDrawers
 {
@@ -11,12 +13,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PropertyDrawers
         {
             EditorGUI.BeginProperty( position, label, property );
             {
+
                 const float divider = 2f;
                 const float verticalPadding = 2f;
                 float labelWidth = EditorGUIUtility.labelWidth;
-                float remainingWidth = position.width - labelWidth;
+                // float remainingWidth = position.width - labelWidth;
                 const float boolWidth = 20f;
-                const float colorFieldWidth = 70f;
+                // const float colorFieldWidth = 70f;
                 // float buttonWidth = remainingWidth - boolWidth - colorFieldWidth;
 
                 // Label
@@ -27,10 +30,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PropertyDrawers
                     height = EditorGUIUtility.singleLineHeight + verticalPadding,
                     width = EditorGUIUtility.labelWidth
                 };
-                // DrawRectOutline( labelRect, Orange );
+                // DrawRectOutline( labelRect, Orange.color );
                 
                 // EditorGUI.PropertyField( stringRect, property.FindPropertyRelative( "Name" ), label );
                 EditorGUI.LabelField( labelRect, label );
+                
+                int cachedIndentLevel = EditorGUI.indentLevel;
+                EditorGUI.indentLevel = 0;
                 
                 // float singleFieldWidth = ( position.width - EditorGUIUtility.labelWidth);
                 
@@ -42,25 +48,34 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PropertyDrawers
 
                 // Bool
                 var boolRect = new Rect( dataRect ) { width = boolWidth };
-                // DrawRectOutline( boolRect, Blue );
+                // DrawRectOutline( boolRect, Blue.color );
                 EditorGUI.PropertyField( boolRect, property.FindPropertyRelative( "toggle" ), GUIContent.none );
-                
+
                 // Symbol
                 var symbolRect = new Rect( dataRect );
                 symbolRect.xMin += boolWidth + divider;
-                // symbolRect.width = ( dataRect.width - boolWidth - divider ) / symbolColorDivisor;
-                symbolRect.width = ( dataRect.width - boolWidth - divider ) - colorFieldWidth;
-                // DrawRectOutline( symbolRect, Yellow );
-                
-                EditorGUI.PropertyField( symbolRect, property.FindPropertyRelative( "symbol" ), GUIContent.none );
+                symbolRect.width = ( dataRect.width - boolWidth - divider );
+                // DrawRectOutline( symbolRect, Yellow.color );
+                EditorGUI.PropertyField( symbolRect, property.FindPropertyRelative( "customColor" ), GUIContent.none );
 
-                // Color
-                var colorRect = new Rect( dataRect );
-                colorRect.xMin += boolWidth + divider + symbolRect.width + divider;
-                // DrawRectOutline( colorRect, Purple );
-                EditorGUI.PropertyField( colorRect, property.FindPropertyRelative( "color" ), GUIContent.none );
+                
+                // // Symbol
+                // var symbolRect = new Rect( dataRect );
+                // symbolRect.xMin += boolWidth + divider;
+                // symbolRect.width = ( dataRect.width - boolWidth - divider ) - colorFieldWidth;
+                // DrawRectOutline( symbolRect, Yellow.color );
+                
+                // EditorGUI.PropertyField( symbolRect, property.FindPropertyRelative( "symbol" ), GUIContent.none );
+                //
+                // // Color
+                // var colorRect = new Rect( dataRect );
+                // colorRect.xMin += boolWidth + divider + symbolRect.width + divider;
+                // // DrawRectOutline( colorRect, Purple.color );
+                // EditorGUI.PropertyField( colorRect, property.FindPropertyRelative( "customColor" ), GUIContent.none );
                 
                 EditorGUIUtility.labelWidth = labelWidth;
+                EditorGUI.indentLevel = cachedIndentLevel;
+
             }
             
             EditorGUI.EndProperty();

@@ -10,35 +10,6 @@ using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFor
 
 namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger
 {
-    [Serializable]
-    public class CustomLoggerSymbol
-    {
-        [SerializeField]
-        private bool toggle;
-        [SerializeField]
-        private string symbol;
-        [SerializeField]
-        private Color color;
-        
-        private string _hexColor;
-        
-
-        public CustomLoggerSymbol( bool toggle, string symbol, Color color )
-        {
-            this.toggle = toggle;
-            this.symbol = symbol;
-            this.color = color;
-            UpdateHexColor();
-        }
-        
-        public string GetHexColor() => _hexColor;
-        public void UpdateHexColor() => _hexColor = $"#{ColorUtility.ToHtmlStringRGB( color )}";
-
-        public string GetSymbol() => toggle ? symbol : string.Empty;
-        
-    }
-
-
     // public interface ICustomLogger
     // {
     //     void LogStart( MethodBase methodBase, bool blockStart = false );
@@ -77,11 +48,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             public int GetTabLevel() => _tabLevel;
         }
         
-        [SerializeField] private bool showLogs;
-        
+        [SerializeField] private bool showLogs = true;
         [SerializeField] private bool nicifiedNames = true;
 
-        [Header("Log Symbols")]
+        // [Header("Log Symbols")]
         [SerializeField] private CustomLoggerSymbol logPrefix;
         [SerializeField] private CustomLoggerSymbol blockDivider;
         [SerializeField] private CustomLoggerSymbol blockDividers;
@@ -102,6 +72,48 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         {
             Debug.Log( "Custom Logger constructor called..." );
             _sender = sender;
+        }
+
+        public void SetValuesToDefault()
+        {
+            showLogs = true;
+            nicifiedNames = true;
+
+            logPrefix = new CustomLoggerSymbol( 
+                true, 
+                "Name_Here", 
+                new Color( 0.21226415f, g: 0.8490566f, b: 0.75683147f, 1f ) 
+            );
+            blockDivider = new CustomLoggerSymbol( 
+                true, 
+                "----------", 
+                new Color( 0f, 0f, 0f, 1f ) 
+            );
+            blockDividers = new CustomLoggerSymbol( 
+                true, 
+                "|", 
+                new Color( 0.46226418f, 0.46226418f, 0.46226418f, 1f ) 
+            );
+            methodDividers = new CustomLoggerSymbol( 
+                true, 
+                ".", 
+                new Color( 0.46274513f, 0.46274513f, 0.46274513f, 1f ) 
+            );
+            logBlockStart = new CustomLoggerSymbol( 
+                true, 
+                "-->", 
+                new Color( 0.29803923f, 0.8f, 0.29803923f, 1f ) 
+            );
+            logBlockEnd = new CustomLoggerSymbol( 
+                true, 
+                "<--", 
+                new Color( 0.29803923f, 0.6f, 0.9019608f, 1f ) 
+            );
+            logEventPrefix = new CustomLoggerSymbol( 
+                true, 
+                "***", 
+                new Color( 0.9019608f, 0.5019608f, 0.2f, 1f ) 
+            );
         }
 
         private void OnEnable()
@@ -266,11 +278,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         
         public string ApplyNameFormatting( string variableName ) => nicifiedNames ? NicifyVariableName( variableName ) : variableName;
 
-        private string ApplyPrefix( string message ) => $"<color={logPrefix.GetHexColor()}>{logPrefix.GetSymbol()}</color> {message}";
+        private string ApplyPrefix( string message ) => $"<customColor={logPrefix.GetHexColor()}>{logPrefix.GetSymbol()}</customColor> {message}";
         
-        private string ApplyTextColor( string message, string hexColor ) => $"<color={hexColor}>{message}</color>";
+        private string ApplyTextColor( string message, string hexColor ) => $"<customColor={hexColor}>{message}</customColor>";
         
-        private string ApplyTextColor( CustomLoggerSymbol loggerSymbol ) => $"<color={loggerSymbol.GetHexColor()}>{loggerSymbol.GetSymbol()}</color>";
+        private string ApplyTextColor( CustomLoggerSymbol loggerSymbol ) => $"<customColor={loggerSymbol.GetHexColor()}>{loggerSymbol.GetSymbol()}</customColor>";
         
         private string ApplyBlockSeparator( string message ) => $"{ApplyTextColor( blockDivider )} {message} {ApplyTextColor( blockDivider )}";
             // $"{GetColoredStringBlack( $"----------" )} {message} {GetColoredStringBlack( "----------" )}";

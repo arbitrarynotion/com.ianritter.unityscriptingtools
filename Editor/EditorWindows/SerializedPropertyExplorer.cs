@@ -1,105 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods;
+﻿using System.Collections.Generic;
+using Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomColorPicker;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting.TextFormat;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.ToolingConstants;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics.UIRectGraphics;
+using static Packages.com.ianritter.unityscriptingtools.Editor.AssetLoader;
 
 namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 {
     public class SerializedPropertyExplorer : EditorWindow
     {
-        private class SerializedPropertyData
-        {
-            public SerializedProperty Property;
-            public int Depth { get; }
-            public int ObjectID { get; }
-            public readonly string Type;
-            public readonly string Path;
-            
-            private readonly string _name;
-            private readonly string _value;
-
-            public SerializedPropertyData( SerializedProperty property )
-            {
-                Property = property;
-                Depth = Mathf.Max( property.depth, 0 );
-                Path = property.propertyPath.Equals( "" ) ? "ROOT: " : property.propertyPath;
-                _name = property.name;
-                Type = property.type;
-                _value = ( property.isArray && ( property.propertyType != SerializedPropertyType.String ) ) 
-                    ? $"array of {property.arraySize.ToString()} {property.arrayElementType}(s)." 
-                    : property.GetValueAsString();
-                ObjectID = property.GetUnityObjectID();
-            }
-
-            public string GetColorizedInfoLine( 
-                string pathHighlightHexColor,
-                string titleHighlightHexColor,
-                string typeHighlightHexColor,
-                string nameHighlightHexColor,
-                string valueHighlightHexColor,
-                bool removeParentsFromPath = true)
-            {
-                string outputPath = Path;
-                // Strip parents from path.
-                if ( ( Depth > 0 ) && removeParentsFromPath )
-                {
-                    outputPath = "";
-                    string[] pathMembers = Path.Split( '.' );
-                    for (int i = Depth; i < pathMembers.Length; i++)
-                    {
-                        outputPath += pathMembers[i];
-                        if ( i < pathMembers.Length - 1 )
-                            outputPath += ".";
-                    }
-                }
-                
-                // Add path to output string.
-                string outputString = $"{GetColoredString( outputPath, pathHighlightHexColor )} = ";
-                
-                // Add objectID to output string.
-                if ( ObjectID > 0 )
-                    outputString += $"{GetColoredString( "objectID", titleHighlightHexColor )}: {GetColoredString( ObjectID.ToString(), nameHighlightHexColor )}, ";
-                
-                // Add type to output string.
-                outputString += $"{GetColoredString( "type", titleHighlightHexColor )}: {GetColoredString( Type, typeHighlightHexColor )}";
-                
-                // Add value to output string.
-                if ( !_value.Equals( "" ))
-                    outputString += $"{GetColoredString( ", value", titleHighlightHexColor )}: {GetColoredString( _value, valueHighlightHexColor )}";
-                
-                return outputString;
-            }
-            
-            public string GetInfoLine( bool removeParentsFromPath = true )
-            {
-                string outputPath = Path;
-                if ( ( Depth > 0 ) && removeParentsFromPath )
-                {
-                    outputPath = "";
-                    string[] pathMembers = Path.Split( '.' );
-                    for (int i = Depth; i < pathMembers.Length; i++)
-                    {
-                        outputPath += pathMembers[i];
-                        if ( i < pathMembers.Length - 1 )
-                            outputPath += ".";
-                    }
-                }
-                
-                string outputString = $"{outputPath} = ";
-                if ( ObjectID > 0 )
-                    outputString += $"objectID: {ObjectID.ToString()}, ";
-                outputString += $"type: {Type}";
-                if ( !_value.Equals( "" ))
-                    outputString += $", value: {_value}";
-                return outputString;
-            }
-        }
-
         [MenuItem( SerializedPropertyExplorerMenuItemName )]
         private static void Init()
         {
@@ -110,12 +23,21 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 
         public bool expandArrays = true;
         public bool simplifyPaths = true;
-        public Color titleHighlightColor = Color.grey;
-        public Color pathHighlightColor = Color.blue;
-        public Color typeHighlightColor = Color.yellow;
-        public Color objectHighlightColor = Color.yellow;
-        public Color valueHighlightColor = Color.yellow;
-        public Color searchHighlightColor = Color.green;
+        public CustomColor titleHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutTitleText, Color.grey );
+        public CustomColor pathHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutPathText, Color.blue );
+        public CustomColor typeHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutTypeText, Color.yellow );
+        public CustomColor objectHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutObjectIDText, Color.yellow );
+        public CustomColor valueHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutValueText, Color.yellow );
+        public CustomColor searchHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutSearchText, Color.green );
+        
+        public SerializedProperty expandArraysProp;
+        public SerializedProperty simplifyPathsProp;
+        public SerializedProperty titleHighlightColorProp;
+        public SerializedProperty pathHighlightColorProp;
+        public SerializedProperty typeHighlightColorProp;
+        public SerializedProperty objectHighlightColorProp;
+        public SerializedProperty valueHighlightColorProp;
+        public SerializedProperty searchHighlightColorProp;
         
         private string _titleHighlightHexColor;
         private string _pathHighlightHexColor;
@@ -134,17 +56,75 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
         private Rect _optionsRect;
         private bool _optionsFoldoutToggle = false;
         private float _width;
+        
+        private ColorPickerHandler _colorPickerHandler;
 
-        private void OnEnable() => UpdateHexColors();
+        // private SerializedPropertyExplorerData _serializedPropertyExplorerData;
+
+        // private SerializedObject _serializedObject;
+
+
+        private void OnEnable()
+        {
+            _object = null;
+            // _serializedObject = new SerializedObject( this );
+            // expandArraysProp = _serializedObject.FindProperty( "expandArrays" );
+            // simplifyPathsProp = _serializedObject.FindProperty( "simplifyPaths" );
+            // titleHighlightColorProp = _serializedObject.FindProperty( "titleHighlightColor" );
+            // pathHighlightColorProp = _serializedObject.FindProperty( "pathHighlightColor" );
+            // typeHighlightColorProp = _serializedObject.FindProperty( "typeHighlightColor" );
+            // objectHighlightColorProp = _serializedObject.FindProperty( "objectHighlightColor" );
+            // valueHighlightColorProp = _serializedObject.FindProperty( "valueHighlightColor" );
+            // searchHighlightColorProp = _serializedObject.FindProperty( "searchHighlightColor" );
+            
+            
+            // _serializedPropertyExplorerData = LoadScriptableObject<SerializedPropertyExplorerData>( SerializedPropertyExplorerDataAssetName );
+            // string conclusion = (_serializedPropertyExplorerData != null) ? "found" : "not found";
+            // Debug.Log( $"SerializedPropertyExplorerData was {conclusion}." );
+            
+            UpdateHexColors();
+            _colorPickerHandler = new ColorPickerHandler( 
+                new Vector2( 10f, 10f ), 
+                new Vector2(350, 400), 
+                5
+            );
+            
+            _colorPickerHandler.OnColorSelected += OnColorSelection;
+        }
+
+        // private void InitializeProperties()
+        // {
+        //     expandArraysProp = _serializedPropertyExplorerData.expandArrays
+        //     simplifyPathsProp = _serializedPropertyExplorerData.simplifyPaths
+        //     titleHighlightColorProp = _serializedPropertyExplorerData.titleHighlightColor
+        //     pathHighlightColorProp = _serializedPropertyExplorerData.pathHighlightColor
+        //     typeHighlightColorProp = _serializedPropertyExplorerData.typeHighlightColor
+        //     objectHighlightColorProp = _serializedPropertyExplorerData.objectHighlightColor
+        //     valueHighlightColorProp = _serializedPropertyExplorerData.valueHighlightColor
+        //     searchHighlightColorProp = _serializedPropertyExplorerData.searchHighlightColor
+        // }
+
+        private void OnDisable()
+        {
+            _colorPickerHandler.OnColorSelected -= OnColorSelection;
+        }
+        
+        private void OnColorSelection( CustomColor color )
+        {
+            Debug.Log( $"Color picker returned color: {GetColoredString( color.name, color.GetHex() )}" );
+            _colorPickerHandler.Close();
+            UpdateHexColors();
+            Repaint();
+        }
 
         private void UpdateHexColors()
         {
-            _titleHighlightHexColor = ColorUtility.ToHtmlStringRGBA( titleHighlightColor );
-            _pathHighlightHexColor = ColorUtility.ToHtmlStringRGBA( pathHighlightColor );
-            _typeHighlightHexColor = ColorUtility.ToHtmlStringRGBA( typeHighlightColor );
-            _objectHighlightHexColor = ColorUtility.ToHtmlStringRGBA( objectHighlightColor );
-            _valueHighlightHexColor = ColorUtility.ToHtmlStringRGBA( valueHighlightColor );
-            _searchHighlightHexColor = ColorUtility.ToHtmlStringRGBA( searchHighlightColor );
+            _titleHighlightHexColor = titleHighlightColor.GetHex();
+            _pathHighlightHexColor = pathHighlightColor.GetHex();
+            _typeHighlightHexColor = typeHighlightColor.GetHex();
+            _objectHighlightHexColor = objectHighlightColor.GetHex();
+            _valueHighlightHexColor = valueHighlightColor.GetHex();
+            _searchHighlightHexColor = searchHighlightColor.GetHex();
         }
         
         private void OnGUI()
@@ -159,9 +139,19 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                     AnalyzeObject();
                 
                 DrawOptions();
+                
 
                 EditorGUILayout.Space( 4f );
+                // EditorGUILayout.Space( 17f );
                 Rect lastOptionsRect = GUILayoutUtility.GetLastRect();
+                
+                // var buttonRect = new Rect(lastOptionsRect);
+                // buttonRect.yMin += EditorGUIUtility.singleLineHeight + 2f; 
+                // DrawRectOutline( buttonRect, Color.red );
+
+                // if (GUI.Button( lastOptionsRect, new GUIContent( "Show Preset Colors") ))
+                //     _colorPickerHandler.ColorPickerButtonPressed();
+                
                 // DrawRectOutline( lastOptionsRect, Color.green );
 
                 
@@ -182,11 +172,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 
             }
             EditorGUI.indentLevel--;
-        }
-
-        private void DrawDataSectionFrame()
-        {
-            
         }
 
         private void DrawOptions()
@@ -234,12 +219,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             {
                 EditorGUI.indentLevel++;
                 {
-                    titleHighlightColor = DrawColorField( SerializedPropertyExplorerReadoutTitleText, titleHighlightColor );
-                    pathHighlightColor = DrawColorField( SerializedPropertyExplorerReadoutPathText, pathHighlightColor );
-                    typeHighlightColor = DrawColorField( SerializedPropertyExplorerReadoutTypeText, typeHighlightColor );
-                    objectHighlightColor = DrawColorField( SerializedPropertyExplorerReadoutObjectIDText, objectHighlightColor );
-                    valueHighlightColor = DrawColorField( SerializedPropertyExplorerReadoutValueText, valueHighlightColor );
-                    searchHighlightColor = DrawColorField( SerializedPropertyExplorerReadoutSearchText, searchHighlightColor );
+                    _colorPickerHandler.DrawCustomColorField( titleHighlightColor );
+                    _colorPickerHandler.DrawCustomColorField( pathHighlightColor );
+                    _colorPickerHandler.DrawCustomColorField( typeHighlightColor );
+                    _colorPickerHandler.DrawCustomColorField( objectHighlightColor );
+                    _colorPickerHandler.DrawCustomColorField( valueHighlightColor );
+                    _colorPickerHandler.DrawCustomColorField( searchHighlightColor );
                 }
                 EditorGUI.indentLevel--;
             }
@@ -280,7 +265,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 
             bool enterChildren = true;
             SerializedProperty endProp = prop;
-            Debug.Log( $"{GetColoredStringBlue( "-->" )} End property set to {GetColoredStringGreen(endProp.name)} for array {GetColoredStringOrange(prop.name)}" );
+            // Debug.Log( $"{GetColoredStringBlue( "-->" )} End property set to {GetColoredStringGreen(endProp.name)} for array {GetColoredStringOrange(prop.name)}" );
             bool foundEndProperty = true;
 
             
@@ -292,7 +277,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                     
                     if ( SerializedProperty.EqualContents( prop, endProp ) && !foundEndProperty )
                     {
-                        Debug.Log( $"{GetColoredStringGreen( "<--" )} Found end property {GetColoredStringGreen(endProp.name)}, which is an array." );
+                        // Debug.Log( $"{GetColoredStringGreen( "<--" )} Found end property {GetColoredStringGreen(endProp.name)}, which is an array." );
                         foundEndProperty = true;
                     }
                     
@@ -301,7 +286,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                     if ( foundEndProperty )
                     {
                         endProp = prop.GetEndProperty();
-                        Debug.Log( $"{GetColoredStringBlue( "-->" )} End property set to {GetColoredStringGreen(endProp.name)} for array {GetColoredStringOrange(prop.name)}" );
+                        // Debug.Log( $"{GetColoredStringBlue( "-->" )} End property set to {GetColoredStringGreen(endProp.name)} for array {GetColoredStringOrange(prop.name)}" );
                         foundEndProperty = false;
                     }
                 }
@@ -311,7 +296,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                     
                     if ( SerializedProperty.EqualContents( prop, endProp ) && !foundEndProperty )
                     {
-                        Debug.Log( $"{GetColoredStringGreen( "<--" )} Found end property: {GetColoredStringGreen(endProp.name)}" );
+                        // Debug.Log( $"{GetColoredStringGreen( "<--" )} Found end property: {GetColoredStringGreen(endProp.name)}" );
                         foundEndProperty = true;
                     }
                 }
@@ -378,7 +363,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                         var buttonRect = new Rect( controlRect );
                         buttonRect.xMin += labelRect.width + 2f;
                         Color cachedColor = GUI.color;
-                        GUI.color = objectHighlightColor;
+                        GUI.color = objectHighlightColor.color;
                         if ( GUI.Button( buttonRect, SerializedPropertyExplorerReadoutButtonText ) )
                         {
                             EditorGUIUtility.PingObject( line.ObjectID );
@@ -397,7 +382,31 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             // EditorGUI.indentLevel = cachedIndentLevel;
         }
 
-        private Color DrawColorField( string dataTitle, Color targetColor ) => EditorGUILayout.ColorField( dataTitle, targetColor, GUILayout.MaxWidth( 350 ) );
+        private void DrawCustomColorField( CustomColor targetColor )
+        {
+            // return EditorGUILayout.ColorField( dataTitle, targetColor, GUILayout.MaxWidth( 350 ) );
+            Rect lineRect = EditorGUILayout.GetControlRect( true );
+            float availableWidth = lineRect.width;
+            const float buttonWidth = 40f;
+        
+            // float colorFieldWidth = availableWidth * 0.9f;
+            float colorFieldWidth = availableWidth - buttonWidth;
+            float startOfButton = colorFieldWidth;
+            
+            var colorFieldRect = new Rect( lineRect )
+            {
+                width = startOfButton
+            };
+            // DrawRectOutline( colorFieldRect, Color.cyan );
+            targetColor.color = EditorGUI.ColorField( colorFieldRect, targetColor.name, targetColor.color );
+            
+            var buttonRect = new Rect( lineRect ) { width = buttonWidth };
+            buttonRect.x += startOfButton;
+            buttonRect.xMin += 2f;
+            // DrawRectOutline( buttonRect, Color.green );
+            
+            _colorPickerHandler.DrawColorPickerButton( buttonRect, targetColor );
+        }
 
         private bool IsExplorableType( SerializedProperty property )
         {

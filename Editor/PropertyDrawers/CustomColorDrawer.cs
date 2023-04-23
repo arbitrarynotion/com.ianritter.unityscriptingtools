@@ -12,14 +12,20 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PropertyDrawers
             EditorGUI.BeginProperty( position, label, property );
             {
                 // Split the remaining space between the string and the color fields.
-                var stringRect = new Rect( position);
-                stringRect.height = EditorGUIUtility.singleLineHeight + 2f;
-                float singleFieldWidth = ( position.width / 2f ) - 4f;
-                stringRect.width = singleFieldWidth;
-                
-                var colorFieldRect = new Rect( position );
-                colorFieldRect.height = EditorGUIUtility.singleLineHeight + 2f;
-                colorFieldRect.xMin += singleFieldWidth + 4f;
+                var stringRect = new Rect( position )
+                {
+                    height = EditorGUIUtility.singleLineHeight + 2f, 
+                    width = position.width * 0.7f
+                };
+                // float singleFieldWidth = ( position.width / 2f ) - 4f;
+                // stringRect.width = singleFieldWidth;
+
+                var colorFieldRect = new Rect( position )
+                {
+                    height = EditorGUIUtility.singleLineHeight + 2f
+                };
+                // colorFieldRect.xMin += singleFieldWidth + 4f;
+                colorFieldRect.xMin += stringRect.width + 2f;
 
                 EditorGUI.PropertyField( stringRect, property.FindPropertyRelative( "name" ), GUIContent.none );
                 float labelWidth = EditorGUIUtility.labelWidth;

@@ -3,6 +3,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime
     public static class ToolingConstants
     {
         public const string LoggerAssetMenuName = "Custom Logger";
+        public const string SerializedPropertyExplorerDataMenuName = "Serialized Property Explorer Data";
+        public const string SerializedPropertyExplorerDataAssetName = "SerializedPropertyExplorerData";
         public const string LoggerTabText = "    ";
         public const string SerializedPropertyExplorerMenuItemName = "Window/Serialized Property Explorer";
         public const string SerializedPropertyExplorerMenuObjectText = "Object:";
