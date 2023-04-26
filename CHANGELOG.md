@@ -1,3 +1,10 @@
+## [1.0.8](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.7...v1.0.8) (2023-04-26)
+
+
+### Bug Fixes
+
+* Update package.json to include Sample folder. ([e6db15b](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/e6db15bc5c469781cd9d5fa24b97ce5c04818aad))
+
 ## [1.0.7](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.6...v1.0.7) (2023-04-26)
 
 
