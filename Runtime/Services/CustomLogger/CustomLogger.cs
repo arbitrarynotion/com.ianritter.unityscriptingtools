@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.ToolingConstants;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting.TextFormat;
+using static ToolingConstants;
+using static Services.TextFormatting.TextFormat;
 using Debug = UnityEngine.Debug;
 
-namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger
+namespace Services.CustomLogger
 {
     // public interface ICustomLogger
     // {

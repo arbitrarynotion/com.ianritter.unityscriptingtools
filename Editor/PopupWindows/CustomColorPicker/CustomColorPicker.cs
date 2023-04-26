@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
+using Services.CustomColors;
 using UnityEditor;
 using UnityEngine;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors.PresetColors;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics.UIRectGraphics;
+using static Services.CustomColors.PresetColors;
+using static Services.UIGraphics.UIRectGraphics;
 
-namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomColorPicker
+namespace Editor.PopupWindows.CustomColorPicker
 {
     public class CustomColorPicker : PopupWindowContent
     {

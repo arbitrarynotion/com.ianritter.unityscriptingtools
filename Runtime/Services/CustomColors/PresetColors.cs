@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors
+namespace Services.CustomColors
 {
     public static class PresetColors
     {

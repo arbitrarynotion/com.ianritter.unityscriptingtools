@@ -1,8 +1,8 @@
-using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
+using Services.CustomColors;
 using UnityEngine;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.ToolingConstants;
+using static ToolingConstants;
 
-namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
+namespace Editor.EditorWindows
 {
     [CreateAssetMenu(menuName = SerializedPropertyExplorerDataMenuName)]
     public class SerializedPropertyExplorerData : ScriptableObject

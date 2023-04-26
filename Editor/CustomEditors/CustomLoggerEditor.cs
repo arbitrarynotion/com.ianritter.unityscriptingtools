@@ -1,12 +1,11 @@
-using Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomColorPicker;
-using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
-using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger;
+using Editor.PopupWindows.CustomColorPicker;
+using Services.CustomColors;
+using Services.CustomLogger;
 using UnityEditor;
 using UnityEngine;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting.TextFormat;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics.UIRectGraphics;
+using static Services.TextFormatting.TextFormat;
 
-namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
+namespace Editor.CustomEditors
 {
     [CustomEditor( typeof( CustomLogger ))]
     public class CustomLoggerEditor : UnityEditor.Editor

@@ -1,8 +1,8 @@
-﻿using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
+﻿using Services.CustomColors;
 using UnityEditor;
 using UnityEngine;
 
-namespace Packages.com.ianritter.unityscriptingtools.Editor.PropertyDrawers
+namespace Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(CustomColor))]
     public class CustomColorDrawer : PropertyDrawer

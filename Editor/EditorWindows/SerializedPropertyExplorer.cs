@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
-using Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomColorPicker;
-using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
+using Editor.PopupWindows.CustomColorPicker;
+using Services.CustomColors;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting.TextFormat;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.ToolingConstants;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics.UIRectGraphics;
+using static Services.TextFormatting.TextFormat;
+using static ToolingConstants;
+using static Services.UIGraphics.UIRectGraphics;
 
-namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
+namespace Editor.EditorWindows
 {
     public class SerializedPropertyExplorer : EditorWindow
     {

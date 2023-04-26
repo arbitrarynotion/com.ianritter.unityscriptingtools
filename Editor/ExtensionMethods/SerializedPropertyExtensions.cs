@@ -1,8 +1,8 @@
 using System;
-using Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting;
+using Services.TextFormatting;
 using UnityEditor;
 
-namespace Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods
+namespace Editor.ExtensionMethods
 {
     public static class SerializedPropExtensions
     {

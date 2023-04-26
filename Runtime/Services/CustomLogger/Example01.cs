@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger
+namespace Services.CustomLogger
 {
     [ExecuteInEditMode]
     public class Example01 : MonoBehaviour

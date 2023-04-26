@@ -1,8 +1,8 @@
-﻿using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger;
+﻿using Services.CustomLogger;
 using UnityEditor;
 using UnityEngine;
 
-namespace Packages.com.ianritter.unityscriptingtools.Editor.PropertyDrawers
+namespace Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(CustomLoggerSymbol))]
     public class CustomLoggerSymbolDrawer : PropertyDrawer
