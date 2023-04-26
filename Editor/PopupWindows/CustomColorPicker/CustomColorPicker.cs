@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Reflection;
 using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
-using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger;
 using UnityEditor;
 using UnityEngine;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors.PresetColors;
@@ -59,7 +57,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
         {
             if ( _useProperty )
             {
-                _targetColorProperty.FindPropertyRelative( "color" ).colorValue = buttonCustomColor.color;
+                // _targetColorProperty.FindPropertyRelative( "color" ).colorValue = buttonCustomColor.color;
+                _targetColorProperty.colorValue = buttonCustomColor.color;
             }
             else
             {

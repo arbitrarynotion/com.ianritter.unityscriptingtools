@@ -1,8 +1,6 @@
 ﻿using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger;
 using UnityEditor;
 using UnityEngine;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics.UIRectGraphics;
-using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors.PresetColors;
 
 namespace Packages.com.ianritter.unityscriptingtools.Editor.PropertyDrawers
 {

@@ -15,6 +15,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColo
             this.color = color;
         }
         
-        public string GetHex() => ColorUtility.ToHtmlStringRGBA( color );
+        public string GetHex() => $"#{ColorUtility.ToHtmlStringRGBA( color )}";
     }
 }

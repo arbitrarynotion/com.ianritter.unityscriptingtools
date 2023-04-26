@@ -13,32 +13,47 @@ MonoBehaviour:
   m_Name: DefaultCustomLogger
   m_EditorClassIdentifier: 
   showLogs: 1
-  nicifiedNames: 0
+  useMethodNamePrefix: 0
+  maxPrefixCharacters: 9
+  nicifiedNames: 1
   logPrefix:
     toggle: 1
-    symbol: Name_Here
-    color: {r: 0.21176472, g: 0.85098046, b: 0.7568628, a: 1}
+    customColor:
+      name: Name_Here
+      color: {r: 0.21226415, g: 0.8490566, b: 0.75683147, a: 1}
   blockDivider:
     toggle: 1
-    symbol: ----------
-    color: {r: 0, g: 0, b: 0, a: 1}
-  blockDividers:
+    customColor:
+      name: "\u2015\u2015\u2015\u2015\u2015"
+      color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  indentMarker:
     toggle: 1
-    symbol: '|'
-    color: {r: 0.46274513, g: 0.46274513, b: 0.46274513, a: 1}
+    customColor:
+      name: '|'
+      color: {r: 0, g: 0, b: 0, a: 1}
   methodDividers:
     toggle: 1
-    symbol: .
-    color: {r: 0.46274513, g: 0.46274513, b: 0.46274513, a: 1}
+    customColor:
+      name: .
+      color: {r: 0, g: 0, b: 0, a: 1}
   logBlockStart:
     toggle: 1
-    symbol: -->
-    color: {r: 0.29803923, g: 0.8000001, b: 0.29803923, a: 1}
+    customColor:
+      name: "\u2192"
+      color: {r: 0.29803923, g: 0.8, b: 0.29803923, a: 1}
   logBlockEnd:
     toggle: 1
-    symbol: <--
-    color: {r: 0.29803923, g: 0.6, b: 0.90196085, a: 1}
+    customColor:
+      name: "\u2190"
+      color: {r: 0.29803923, g: 0.6, b: 0.9019608, a: 1}
   logEventPrefix:
     toggle: 1
-    symbol: '***'
-    color: {r: 0.90196085, g: 0.5019608, b: 0.20000002, a: 1}
+    customColor:
+      name: '***'
+      color: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
+  blockMethodColor:
+    name: 
+    color: {r: 0.9, g: 0.8, b: 0.4, a: 1}
+  methodColor:
+    name: 
+    color: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}

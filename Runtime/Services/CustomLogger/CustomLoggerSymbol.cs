@@ -9,8 +9,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
     {
         [SerializeField]
         private bool toggle;
-        // [SerializeField]
-        // private string symbol;
         [SerializeField]
         private CustomColor customColor;
         
@@ -20,7 +18,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         public CustomLoggerSymbol( bool toggle, string symbol, Color customColor )
         {
             this.toggle = toggle;
-            // this.symbol = symbol;
             this.customColor = new CustomColor( symbol, customColor );
             UpdateHexColor();
         }

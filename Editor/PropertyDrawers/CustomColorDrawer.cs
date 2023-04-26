@@ -29,9 +29,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PropertyDrawers
 
                 EditorGUI.PropertyField( stringRect, property.FindPropertyRelative( "name" ), GUIContent.none );
                 float labelWidth = EditorGUIUtility.labelWidth;
+                
+                int cachedIndentLevel = EditorGUI.indentLevel;
+                EditorGUI.indentLevel = 0;
+                
                 EditorGUIUtility.labelWidth = 0.01f;
                 EditorGUI.PropertyField( colorFieldRect, property.FindPropertyRelative( "color" ), GUIContent.none );
+                
                 EditorGUIUtility.labelWidth = labelWidth;
+                EditorGUI.indentLevel = cachedIndentLevel;
             }
             
             EditorGUI.EndProperty();
