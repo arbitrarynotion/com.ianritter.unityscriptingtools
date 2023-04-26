@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.6...v1.0.7) (2023-04-26)
+
+
+### Bug Fixes
+
+* Updated Namespaces ([a8c67e4](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/a8c67e46575fbf3fef39a46e9bba928cae0b998a))
+
 ## [1.0.6](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.5...v1.0.6) (2023-04-26)
 
 
