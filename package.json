@@ -11,5 +11,12 @@
     "name": "Ian Ritter",
     "email": "ian.ritter.cs@gmail.com",
     "url": "https://www.ianritter.dev"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Custom Logger Example",
+      "description": "Example of using custom logs.",
+      "path": "Samples~/CustomLoggerExample"
+    }
+  ]
 }
