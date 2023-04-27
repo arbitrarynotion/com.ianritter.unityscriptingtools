@@ -1,8 +1,8 @@
 using System;
-using Enums;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Enums;
 using UnityEngine;
 
-namespace Services.UIGraphics
+namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics
 {
     public static class UIRectGraphics
     {

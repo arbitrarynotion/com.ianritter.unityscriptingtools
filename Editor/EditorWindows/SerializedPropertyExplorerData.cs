@@ -1,10 +1,10 @@
-using Services.CustomColors;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
 using UnityEngine;
-using static ToolingConstants;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.ToolingConstants;
 
-namespace Editor.EditorWindows
+namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 {
-    [CreateAssetMenu(menuName = SerializedPropertyExplorerDataMenuName)]
+    [CreateAssetMenu(menuName = SerializedPropertyExplorerMenuTitle)]
     public class SerializedPropertyExplorerData : ScriptableObject
     {
         public bool expandArrays = true;

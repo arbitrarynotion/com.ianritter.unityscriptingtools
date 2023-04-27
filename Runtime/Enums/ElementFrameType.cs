@@ -1,4 +1,4 @@
-﻿namespace Enums
+﻿namespace Packages.com.ianritter.unityscriptingtools.Runtime.Enums
 {
     public enum ElementFrameType
     {

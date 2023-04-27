@@ -1,109 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.ToolingConstants;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting.TextFormat;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.MetaData.MetaDataGathering;
 using Object = UnityEngine.Object;
-using static ToolingConstants;
-using static Services.TextFormatting.TextFormat;
 using Debug = UnityEngine.Debug;
 
-namespace Services.CustomLogger
+namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger
 {
-    // public interface ICustomLogger
-    // {
-    //     void LogStart( MethodBase methodBase, bool blockStart = false );
-    //
-    //     void LogEnd( MethodBase methodBase, bool blockEnd = false );
-    //     
-    //     void Log( string message, bool increaseTabLevel = false, bool oneTimeIncrement = false );
-    //
-    //     void LogEvent( MethodBase methodBase, bool increaseTabLevel = false );
-    //
-    //     void LogWarning( string message, bool increaseTabLevel = false );
-    //
-    //     void LogError( string message, bool increaseTabLevel = false );
-    //     
-    //     void DecrementMethodTabLevel();
-    //     
-    //     void IncrementMethodTabLevel();
-    // }
-    
-    
-    
     [CreateAssetMenu(menuName = LoggerAssetMenuName)]
     public class CustomLogger : ScriptableObject
     {
-        private class MethodEntry
-        {
-            // The rawName is not currently necessary but may be used to include the current method rawName.
-            public readonly string MethodName;
-            public readonly string CallingClassName;
-            private readonly bool _blockStart;
-            private int _tabLevel;
-
-            // 0 = GetMethodName, 1 = MethodEntry.ctor, 2 = PushMethodEntry, 3 = LogStart, 4 = CallingClassMethod
-            private const int StackTraceIndex = 4;
-
-            // Had to do nicify names first so the constructor modification didn't get processed by that algorithm.
-            public MethodEntry( bool blockStart, bool nicifyName )
-            {
-                _blockStart = blockStart;
-                
-                MethodName = GetMethodName( nicifyName );
-                CallingClassName = GetCallingClassName();
-                // Debug.Log( $"MethodName Comparison:" );
-                // Debug.Log( $"    CallingClass: {GetColoredStringGreen( CallingClassName )}" );
-                // Debug.Log( $"    StackTrace MethodName: {GetColoredStringYellow( GetMethodName() )}" );
-                if ( !MethodName.Equals( "ctor" ) ) return;
-                
-                // PrintStackTrace();
-                MethodName = $"Constructor ({NicifyVariableName( CallingClassName )})";
-            }
-
-            public bool IsBlockStart() => _blockStart;
-
-            private string GetMethodName( bool nicifyName )
-            {
-                var stackTrace = new StackTrace( true );
-                string fullMethodName = stackTrace.GetFrames()[StackTraceIndex].GetMethod().ToString();
-                string methodNameWithoutReturn = fullMethodName.Split( ' ' ).Last();
-                string cleanMethodName = methodNameWithoutReturn.Split( '(' )[0];
-                return nicifyName ? NicifyVariableName( cleanMethodName ) : cleanMethodName;
-                // return stackTrace.GetFrames()[StackTraceIndex].GetMethod().ToString();
-            }
-
-            public void IncrementTabLevel() => ++_tabLevel;
-            public void DecrementTabLevel() => _tabLevel = Mathf.Max( 0, ( _tabLevel - 1 ) );
-
-            public int GetTabLevel() => _tabLevel;
-            
-            private string GetCallingClassName()
-            {
-                var stackTrace = new StackTrace( true );
-                // Note that the calling class is on step back in the stacktrace CallingClass -> LogStart(), so index is 1.
-                // However, the trace has the entire path rawName so it needs to be Split by '\', then the ".cs" has to be
-                // removed from the end of the class rawName using another Split.
-                // return stackTrace.GetFrames()[2].GetFileName().Split( '\\' ).Last().Split( '.' )[0];
-                return ExtractFilenameString( stackTrace.GetFrames()[StackTraceIndex].GetFileName() );
-            }
-
-            private string ExtractFilenameString( string fullPathOfFilename ) => 
-                fullPathOfFilename.Split( '\\' ).Last().Split( '.' )[0];
-
-            private void PrintStackTrace()
-            {
-                var stackTrace = new StackTrace( true );
-                foreach ( StackFrame frame in stackTrace.GetFrames() )
-                {
-                    Debug.Log( $"FileName: {GetColoredStringOrange( ExtractFilenameString( frame.GetFileName() ) )}");
-                    Debug.Log( $"    Method: {GetColoredStringYellow( frame.GetMethod().ToString() )}, ");
-                    Debug.Log( $"    Line: {frame.GetFileLineNumber().ToString()}, ");
-                    Debug.Log( $"    Column: {frame.GetFileColumnNumber().ToString()}" );
-                }
-            }
-        }
-        
         [SerializeField] private bool showLogs = true;
         [SerializeField] private bool useClassPrefix = true;
         [SerializeField] private bool boldMethods = true;
@@ -130,18 +39,16 @@ namespace Services.CustomLogger
 
         private readonly Object _sender;
         
-        // Method calls are stacked to keep track of when the block tab level needs to be updated.
         private Stack<MethodEntry> _methodStack = new Stack<MethodEntry>();
         
-        // Tracks the overall indent of the debug readout sequence.
         private int _blockTabLevel;
         
 
         public CustomLogger( Object sender )
         {
-            Debug.Log( "Custom Logger constructor called..." );
             _sender = sender;
         }
+        
         
         private void OnEnable()
         {
@@ -167,7 +74,6 @@ namespace Services.CustomLogger
 
             _blockMethodHexColor = $"#{ColorUtility.ToHtmlStringRGBA( blockMethodColor )}";
             _methodHexColor = $"#{ColorUtility.ToHtmlStringRGBA( methodColor )}";
-
         }
 
 
@@ -217,50 +123,14 @@ namespace Services.CustomLogger
             if ( _methodStack.Count == 0 ) _blockTabLevel = 0;
         }
 
-        private string GetBlockLogMessage( MethodEntry methodEntry, CustomLoggerSymbol loggerSymbol, string callingClass )
-        {
-            string formattedBlockStart = ApplyTextColor( $"{loggerSymbol.GetSymbol()} ", loggerSymbol.GetHexColor() );
-            string methodName = methodEntry.MethodName;
-            
-            string callingClassPrefix = "";
-            if ( useClassPrefix )
-            {
-                // string callingClassName = isEndLog ? _lastCallingClass : GetCurrentCallingClassName();
-                callingClassPrefix = $" {GetColoredString( NicifyVariableName( callingClass ), logPrefix.GetHexColor() )} :: ";
-            }
-            
-            if ( !methodEntry.IsBlockStart() && boldMethods )
-                methodName = $"<b>{methodName}</b>";
-
-            string message = $"{formattedBlockStart} {callingClassPrefix}{GetColoredString( methodName, _methodHexColor )}";
-
-            if ( !methodEntry.IsBlockStart() ) return message;
-            
-            string formattedBlockDivider = ApplyTextColor( $"{blockDivider.GetSymbol()} ", blockDivider.GetHexColor() );
-            methodName = GetColoredString( methodName, _blockMethodHexColor );
-            
-            if ( boldBlockMethods )
-                methodName = $"<b>{methodName}</b>";
-            
-            return $"{formattedBlockDivider} {formattedBlockStart} {methodName} {formattedBlockDivider}";
-        }
-
         public void LogEvent( string message = "" )
         {
             if ( !LogAllowed() ) return;
-            // if ( increaseTabLevel ) IncrementMethodTabLevel();
-            message = BuildPrefixedLogMessage( logEventPrefix, $"{GetMethodName()}: {message}");
+
+            string methodName = GetMethodName( 2 );
+            methodName = nicifiedNames ? NicifyVariableName( methodName ) : methodName;
+            message = BuildPrefixedLogMessage( logEventPrefix, $"{methodName}: {message}");
             PrintStandardLog( $"{GetIndentString()}{message}" );
-        }
-        
-        private string GetMethodName( bool nicifyName = true )
-        {
-            var stackTrace = new StackTrace( true );
-            string fullMethodName = stackTrace.GetFrames()[2].GetMethod().ToString();
-            string methodNameWithoutReturn = fullMethodName.Split( ' ' ).Last();
-            string cleanMethodName = methodNameWithoutReturn.Split( '(' )[0];
-            return nicifyName ? NicifyVariableName( cleanMethodName ) : cleanMethodName;
-            // return stackTrace.GetFrames()[StackTraceIndex].GetMethod().ToString();
         }
 
         public void Log( string message )
@@ -269,7 +139,7 @@ namespace Services.CustomLogger
             
             PrintStandardLog( $"{GetIndentString()}{message}" );
         }
-        
+
         /// <summary>
         /// Print log where all preceding logs will be indented by 1. If startHere is true, this log will
         /// also be indented.
@@ -304,12 +174,7 @@ namespace Services.CustomLogger
                 DecrementMethodTabLevel();
             }
         }
-        
-        // Indent this line only.
-        //     Increment indent before this log: 
-        //     Decrement indent after this log.
-        // incrementIndent = true, startHere = true, decrementIndentAfter = true, decrementAmount = 1
-        
+
         /// <summary>
         /// Print log that is indented by 1, but where the indent doesn't carry over to further logs.
         /// </summary>
@@ -338,6 +203,31 @@ namespace Services.CustomLogger
         {
             if ( !LogAllowed() ) return;
             PrintErrorLog( $"{GetIndentString()}{message}" );
+        }
+
+        private string GetBlockLogMessage( MethodEntry methodEntry, CustomLoggerSymbol loggerSymbol, string callingClass )
+        {
+            string formattedBlockStart = ApplyTextColor( $"{loggerSymbol.GetSymbol()} ", loggerSymbol.GetHexColor() );
+            string methodName = methodEntry.MethodName;
+            
+            string callingClassPrefix = "";
+            if ( useClassPrefix )
+                callingClassPrefix = $" {GetColoredString( NicifyVariableName( callingClass ), logPrefix.GetHexColor() )} :: ";
+
+            if ( !methodEntry.IsBlockStart() && boldMethods )
+                methodName = $"<b>{methodName}</b>";
+
+            string message = $"{formattedBlockStart} {callingClassPrefix}{GetColoredString( methodName, _methodHexColor )}";
+
+            if ( !methodEntry.IsBlockStart() ) return message;
+            
+            string formattedBlockDivider = ApplyTextColor( $"{blockDivider.GetSymbol()} ", blockDivider.GetHexColor() );
+            methodName = GetColoredString( methodName, _blockMethodHexColor );
+            
+            if ( boldBlockMethods )
+                methodName = $"<b>{methodName}</b>";
+            
+            return $"{formattedBlockDivider} {formattedBlockStart} {methodName} {formattedBlockDivider}";
         }
 
         private string BuildPrefixedLogMessage( CustomLoggerSymbol loggerSymbol, string methodName ) => 
@@ -401,9 +291,7 @@ namespace Services.CustomLogger
 
 #endregion
         
-
-
-
+        
 #region Tabbing
 
         public void DecrementMethodIndent( int amount = 1 )
@@ -420,29 +308,7 @@ namespace Services.CustomLogger
         private void IncrementTabLevel() => ++_blockTabLevel;
         
         private void DecrementTabLevel() => _blockTabLevel = Mathf.Max( ( _blockTabLevel - 1 ), 0 );
-
-        // private string GetBlockIndent() => GetIndent( indentMarker, _blockTabLevel );
-        // // private string GetBlockIndent() => GetIndent( indentMarker, _methodStack.Count );
-        //
-        // private string GetMethodIndent()
-        // {
-        //     if ( _methodStack == null ) Debug.LogWarning( "_methodStack is null!" );
-        //     return GetIndent( methodDividers, ( _methodStack.Count > 0 ? GetCurrentMethodEntry().GetTabLevel() : 0 ) );
-        // }
-
-        // private string GetIndent( CustomLoggerSymbol loggerSymbol, int tabLevel )
-        // {
-        //     string divider = ApplyTextColor( $"{loggerSymbol.GetSymbol()} ", loggerSymbol.GetHexColor() );
-        //     // string totalIndent = divider;
-        //     string totalIndent = "";
-        //     for (int i = 0; i < tabLevel; i++)
-        //     {
-        //         // string symbol = ( i < ( tabLevel - 1 ) ) ? divider : "";
-        //         totalIndent += $"{LoggerTabText}{divider}";
-        //     }
-        //     return totalIndent;
-        // }
-
+        
         private string GetIndentString()
         {
             string indentString = "";
@@ -464,9 +330,6 @@ namespace Services.CustomLogger
 
             return indentString;
         }
-        
-        // private string ApplyIndent( string message ) => $"{GetBlockIndent()}{GetMethodIndent()}{message}";
-        private string ApplyIndent( string message ) => $"{GetIndentString()}{message}";
 
 #endregion
 
@@ -475,17 +338,21 @@ namespace Services.CustomLogger
         
         public string ApplyNameFormatting( string variableName ) => nicifiedNames ? NicifyVariableName( variableName ) : variableName;
 
-        private string ApplyPrefix( string message )
-        {
-            string formattedLogPrefix = $"<color={logPrefix.GetHexColor()}>{logPrefix.GetSymbol()}</color> :";
-            // if ( useClassPrefix )
-            // {
-            //     string callingClassName = isEndLog ? _lastCallingClass : GetCurrentCallingClassName();
-            //     formattedLogPrefix += $" {GetColoredString( callingClassName, logPrefix.GetHexColor() )}:";
-            // }
-            return $"{formattedLogPrefix} {message}";
-        }
+        private string ApplyPrefix( string message ) => 
+            $"<color={logPrefix.GetHexColor()}>{logPrefix.GetSymbol()}</color> : {message}";
 
+        private string ApplyTextColor( string message, string hexColor ) => 
+            $"<color={hexColor}>{message}</color>";
+        
+        private string ApplyTextColor( CustomLoggerSymbol loggerSymbol ) => 
+            $"<color={loggerSymbol.GetHexColor()}>{loggerSymbol.GetSymbol()}</color>";
+        
+        private string ApplyBlockSeparator( string message ) => 
+            $"{ApplyTextColor( blockDivider )} {message} {ApplyTextColor( blockDivider )}";
+            
+        // The initial intent of this method was to make all calling class strings the same length. However, as the
+        // debug output is in a variable font size, this turned out to be ineffective. It may be useful for other
+        // situations with long names, however, so I'm keeping it here.
         private string ConformNameToStringSize( string rawName )
         {
             // Adding one extra character for the ellipsis.
@@ -499,16 +366,6 @@ namespace Services.CustomLogger
             string formattedOutputName = $"{new string( outputName ),-15}";
             return formattedOutputName;
         }
-
-        private string ApplyTextColor( string message, string hexColor ) => 
-            $"<color={hexColor}>{message}</color>";
-        
-        private string ApplyTextColor( CustomLoggerSymbol loggerSymbol ) => 
-            $"<color={loggerSymbol.GetHexColor()}>{loggerSymbol.GetSymbol()}</color>";
-        
-        private string ApplyBlockSeparator( string message ) => 
-            $"{ApplyTextColor( blockDivider )} {message} {ApplyTextColor( blockDivider )}";
-            // $"{GetColoredStringBlack( $"----------" )} {message} {GetColoredStringBlack( "----------" )}";
 
 #endregion
 

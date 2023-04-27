@@ -1,11 +1,11 @@
-using System.Collections.Generic;
-using Services.CustomColors;
 using UnityEditor;
 using UnityEngine;
-using static Services.CustomColors.PresetColors;
-using static Services.UIGraphics.UIRectGraphics;
+using System.Collections.Generic;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors.PresetColors;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics.UIRectGraphics;
 
-namespace Editor.PopupWindows.CustomColorPicker
+namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomColorPicker
 {
     public class CustomColorPicker : PopupWindowContent
     {
@@ -31,24 +31,23 @@ namespace Editor.PopupWindows.CustomColorPicker
 
         private CustomColor[] _colorList;
         private readonly Vector2 _windowSize;
+        
         private readonly int _buttonsPerLine;
         // private Vector2 _buttonSize;
         private float _buttonWidth;
         private float _buttonHeight;
+        private readonly List<CustomColorButton> _buttons = new List<CustomColorButton>();
         
         private const float Separator = 2f;
         private const float VerticalSeparator = 2f;
         private const float EdgePadding = 5f;
 
         private Vector2 _scrollPosition;
-
-        private readonly List<CustomColorButton> _buttons = new List<CustomColorButton>();
-
+        
         private CustomColor _targetColor;
-        private SerializedProperty _targetColorProperty;
-
         private bool _useProperty;
-
+        private SerializedProperty _targetColorProperty;
+        
         // private readonly CustomLogger _logger;
 
         public delegate void ButtonPressed( CustomColor buttonCustomColor );
@@ -198,7 +197,10 @@ namespace Editor.PopupWindows.CustomColorPicker
             // DrawRectOutline( outlineRect, Color.green );
             Color cacheColor = GUI.color;
             GUI.color = customColorButton.CustomColor.color;
-            if ( GUI.Button( positionRect, customColorButton.Texture2D ) )
+            
+            var content = new GUIContent( customColorButton.Texture2D, customColorButton.CustomColor.name );
+            
+            if ( GUI.Button( positionRect, content ) )
                 OnButtonPressedNotify( customColorButton.CustomColor );
             GUI.color = cacheColor;
         }
@@ -223,8 +225,9 @@ namespace Editor.PopupWindows.CustomColorPicker
             // If buttons per line > -1, auto size to fit
             // if ( _buttonsPerLine > 0 )
             // {
-            float widthForSeparators = ( _colorList.Length - 1 ) * Separator;
-            float remainingWidth = position.width - widthForSeparators;
+            float widthForSeparators = ( _buttonsPerLine - 1 ) * Separator;
+            float remainingWidth = position.width - widthForSeparators - 15f;
+            // float remainingWidth = position.width;
             _buttonWidth = remainingWidth / _buttonsPerLine;
 
             // _buttonHeight = _buttonWidth - ( 0.3f * _buttonWidth );

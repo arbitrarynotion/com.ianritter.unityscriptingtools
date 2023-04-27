@@ -1,7 +1,7 @@
 using UnityEngine;
-using static Services.CustomColors.PresetColors;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors.PresetColors;
 
-namespace Services.TextFormatting
+namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting
 {
     public static class TextFormat
     {
@@ -9,6 +9,8 @@ namespace Services.TextFormatting
         public static string GetColoredString( string data, string hexColor ) => $"<color={hexColor}>{data}</color>";
         public static string GetColoredStringBlack( string data ) => $"<color={Black.GetHex()}>{data}</color>";
         public static string GetColoredStringWhite( string data ) => $"<color={White.GetHex()}>{data}</color>";
+        public static string GetColoredStringGrey( string data ) => $"<color={Grey.GetHex()}>{data}</color>";
+        public static string GetColoredStringLightGrey( string data ) => $"<color={LightGrey.GetHex()}>{data}</color>";
         public static string GetColoredStringRed( string data ) => $"<color={Red.GetHex()}>{data}</color>";
         public static string GetColoredStringGreen( string data ) => $"<color={Green.GetHex()}>{data}</color>";
         public static string GetColoredStringBlue( string data ) => $"<color={Blue.GetHex()}>{data}</color>";

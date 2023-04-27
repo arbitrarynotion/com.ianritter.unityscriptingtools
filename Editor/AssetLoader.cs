@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Editor
+namespace Packages.com.ianritter.unityscriptingtools.Editor
 {
     public static class AssetLoader
     {

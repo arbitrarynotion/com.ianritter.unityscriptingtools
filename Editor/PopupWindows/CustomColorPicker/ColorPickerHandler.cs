@@ -1,13 +1,12 @@
-using Services.CustomColors;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
 using UnityEditor;
 using UnityEngine;
 
-namespace Editor.PopupWindows.CustomColorPicker
+namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomColorPicker
 {
     public class ColorPickerHandler
     {
         private readonly CustomColorPicker _customColorPicker;
-        // private readonly CustomLogger _logger;
         private readonly Rect _position;
         
         public delegate void ColorSelected( CustomColor color );
@@ -20,16 +19,16 @@ namespace Editor.PopupWindows.CustomColorPicker
             OnColorSelected?.Invoke( color );
         }
 
+        
         private ColorPickerHandler( Vector2 position )
         {
-            // _logger = logger;
             _position = new Rect( position, Vector2.zero );
         }
+        
 
         /// <summary>
         /// Handles the color picker window.
         /// </summary>
-        /// <param name="logger">For formatted debug logging.</param>
         /// <param name="position">This is the top left corner of the window.</param>
         /// <param name="windowSize">The size of the color picker window.</param>
         /// <param name="buttonsPerLine">How many colors will displayed per line within the window. The buttons are square and will auto-size to fit that many per line.</param>
@@ -52,21 +51,18 @@ namespace Editor.PopupWindows.CustomColorPicker
         /// </summary>
         private void ColorPickerButtonPressed( CustomColor targetColor )
         {
-            // _logger.Log( "Popup button pressed." );
             _customColorPicker.SetTargetCustomColor( targetColor );
             PopupWindow.Show( _position, _customColorPicker );
         }
 
         private void ColorPickerPropertyButtonPressed( SerializedProperty customColorProperty )
         {
-            // _logger.Log( "Popup button pressed." );
             _customColorPicker.SetTargetCustomColor( customColorProperty );
             PopupWindow.Show( _position, _customColorPicker );
         }
         
         public void DrawCustomColorField( CustomColor targetColor )
         {
-            // return EditorGUILayout.ColorField( dataTitle, targetColor, GUILayout.MaxWidth( 350 ) );
             Rect lineRect = EditorGUILayout.GetControlRect( true );
             float availableWidth = lineRect.width;
             const float buttonWidth = 40f;
@@ -103,9 +99,7 @@ namespace Editor.PopupWindows.CustomColorPicker
 
         private void OnColorSelection( CustomColor color )
         {
-            // _logger.Log( $"Color picker returned color: {GetColoredString( color.name, color.GetHex() )}" );
             _customColorPicker.editorWindow.Close();
-            // _customColorPicker.OnButtonPressed -= OnColorSelection;
             OnColorSelectedNotify( color );
         }
     }

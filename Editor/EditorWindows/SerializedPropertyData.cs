@@ -1,10 +1,10 @@
 ﻿using System;
-using Editor.ExtensionMethods;
-using Services.TextFormatting;
+using Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting;
 using UnityEditor;
 using UnityEngine;
 
-namespace Editor.EditorWindows
+namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 {
     [Serializable]
     public class SerializedPropertyData

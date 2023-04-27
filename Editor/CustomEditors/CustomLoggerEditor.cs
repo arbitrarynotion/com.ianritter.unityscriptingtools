@@ -1,11 +1,11 @@
-using Editor.PopupWindows.CustomColorPicker;
-using Services.CustomColors;
-using Services.CustomLogger;
 using UnityEditor;
 using UnityEngine;
-using static Services.TextFormatting.TextFormat;
+using Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomColorPicker;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting.TextFormat;
 
-namespace Editor.CustomEditors
+namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
 {
     [CustomEditor( typeof( CustomLogger ))]
     public class CustomLoggerEditor : UnityEditor.Editor
@@ -91,23 +91,10 @@ namespace Editor.CustomEditors
 
         public override void OnInspectorGUI()
         {
-            // base.OnInspectorGUI();
             DrawClassMembers();
             EditorGUILayout.Space();
             DrawResetButton();
         }
-        
-        // [SerializeField] private bool showLogs = true;
-        // [SerializeField] private bool nicifiedNames = true;
-        //
-        // [Header("Log Symbols")]
-        // [SerializeField] private CustomLoggerSymbol logPrefix;
-        // [SerializeField] private CustomLoggerSymbol blockDivider;
-        // [SerializeField] private CustomLoggerSymbol blockDividers;
-        // [SerializeField] private CustomLoggerSymbol methodDividers;
-        // [SerializeField] private CustomLoggerSymbol logBlockStart;
-        // [SerializeField] private CustomLoggerSymbol logBlockEnd;
-        // [SerializeField] private CustomLoggerSymbol logEventPrefix;
 
         private void DrawClassMembers()
         {
@@ -145,7 +132,6 @@ namespace Editor.CustomEditors
                 DrawCustomColorProperty( _logBlockStartProperty );
                 DrawCustomColorProperty( _logBlockEndProperty );
                 DrawCustomColorProperty( _logEventPrefixProperty );
-                // DrawCustomColorProperty();
             }
             EditorGUI.indentLevel--;
 
@@ -209,37 +195,9 @@ namespace Editor.CustomEditors
             // DrawRectOutline( buttonRect, Color.yellow );
             
             SerializedProperty color = property.FindPropertyRelative( "customColor" ).FindPropertyRelative( "color" );
-            // _targetColorProperty.FindPropertyRelative( "color" ).colorValue = buttonCustomColor.color;
             _colorPickerHandler.DrawColorPickerPropertyButton( buttonRect, color );
-            
         }
-        
-        // private void DrawCustomColorField( SerializedProperty property )
-        // {
-        //     // return EditorGUILayout.ColorField( dataTitle, targetColor, GUILayout.MaxWidth( 350 ) );
-        //     Rect lineRect = EditorGUILayout.GetControlRect( true );
-        //     float availableWidth = lineRect.width;
-        //     const float buttonWidth = 40f;
-        //
-        //     // float colorFieldWidth = availableWidth * 0.9f;
-        //     float propertyFieldWidth = availableWidth - buttonWidth;
-        //     float startOfButton = propertyFieldWidth;
-        //     
-        //     var colorFieldRect = new Rect( lineRect )
-        //     {
-        //         width = startOfButton
-        //     };
-        //     // DrawRectOutline( colorFieldRect, Color.cyan );
-        //     EditorGUI.PropertyField( colorFieldRect, property );
-        //     
-        //     var buttonRect = new Rect( lineRect ) { width = buttonWidth };
-        //     buttonRect.x += startOfButton;
-        //     buttonRect.xMin += 2f;
-        //     // DrawRectOutline( buttonRect, Color.green );
-        //     SerializedProperty customColor = property.FindPropertyRelative( "customColor" );
-        //     _colorPickerHandler.DrawColorPickerButton( buttonRect, targetColor );
-        // }
-        
+
         private void DrawResetButton()
         {
             Rect buttonRect = EditorGUILayout.GetControlRect();

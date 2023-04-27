@@ -1,8 +1,8 @@
 ﻿using System;
-using Services.CustomColors;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
 using UnityEngine;
 
-namespace Services.CustomLogger
+namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger
 {
     [Serializable]
     public class CustomLoggerSymbol

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Services.CustomColors
+namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors
 {
     [Serializable]
     public class CustomColor

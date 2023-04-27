@@ -1,8 +1,8 @@
-namespace Services.CustomLogger
+namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger
 {
     public class ExampleSubclass01
     {
-        private CustomLogger _logger;
+        private readonly CustomLogger _logger;
 
         public ExampleSubclass01( CustomLogger logger )
         {
