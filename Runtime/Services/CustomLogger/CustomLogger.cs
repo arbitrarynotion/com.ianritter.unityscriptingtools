@@ -473,7 +473,7 @@ namespace Services.CustomLogger
 
 #region Text Formatting
         
-        // public string ApplyNameFormatting( string variableName ) => nicifiedNames ? NicifyVariableName( variableName ) : variableName;
+        public string ApplyNameFormatting( string variableName ) => nicifiedNames ? NicifyVariableName( variableName ) : variableName;
 
         private string ApplyPrefix( string message )
         {
