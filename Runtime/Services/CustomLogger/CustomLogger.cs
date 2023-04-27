@@ -227,7 +227,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             if ( boldBlockMethods )
                 methodName = $"<b>{methodName}</b>";
             
-            return $"{formattedBlockDivider} {formattedBlockStart} {methodName} {formattedBlockDivider}";
+            return $"{formattedBlockDivider} {formattedBlockStart} {callingClassPrefix}{methodName} {formattedBlockDivider}";
         }
 
         private string BuildPrefixedLogMessage( CustomLoggerSymbol loggerSymbol, string methodName ) => 

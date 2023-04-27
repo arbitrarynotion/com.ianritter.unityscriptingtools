@@ -22,7 +22,7 @@ MonoBehaviour:
     toggle: 1
     customColor:
       name: CLExample
-      color: {r: 0.21226415, g: 0.8490566, b: 0.75683147, a: 1}
+      color: {r: 0.12156863, g: 0.80784315, b: 0.79607844, a: 1}
   blockDivider:
     toggle: 1
     customColor:
@@ -53,5 +53,5 @@ MonoBehaviour:
     customColor:
       name: '***'
       color: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
-  blockMethodColor: {r: 1, g: 1, b: 0, a: 1}
-  methodColor: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
+  blockMethodColor: {r: 0.50980395, g: 0.7490196, b: 0.14117648, a: 255}
+  methodColor: {r: 0.96, g: 0.92, b: 0.38, a: 1}
