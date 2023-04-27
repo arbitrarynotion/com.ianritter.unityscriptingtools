@@ -136,9 +136,9 @@ namespace Editor.CustomEditors
             EditorGUILayout.Space();
 
             EditorGUILayout.LabelField( "Log Symbols", EditorStyles.boldLabel );
-            DrawCustomColorProperty( _logPrefixProperty );
             EditorGUI.indentLevel++;
             {
+                DrawCustomColorProperty( _logPrefixProperty );
                 DrawCustomColorProperty( _blockDividerProperty );
                 DrawCustomColorProperty( _indentMarkerProperty );
                 DrawCustomColorProperty( _methodDividersProperty );
