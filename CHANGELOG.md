@@ -1,3 +1,10 @@
+## [1.0.13](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.12...v1.0.13) (2023-04-28)
+
+
+### Bug Fixes
+
+* Update to MethodEntry.cs ([5a09fc2](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/5a09fc2f96472e26143eabeaa03d51eb439c5b2d))
+
 ## [1.0.12](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.11...v1.0.12) (2023-04-27)
 
 
