@@ -20,7 +20,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         {
             _blockStart = blockStart;
                 
-            string methodName = MetaDataGathering.GetMethodName( 2 );
+            string methodName = MetaDataGathering.GetMethodName( StackTraceIndex );
             MethodName = nicifyName ? TextFormat.NicifyVariableName( methodName ) : methodName;
             CallingClassName = MetaDataGathering.GetCallingClassName( StackTraceIndex );
 
