@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
 using UnityEditor;
 using UnityEngine;
@@ -15,7 +17,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             window.Show();
         }
         
-        private readonly Vector2 _windowSize = new Vector2( 350f, 75f);
+        private readonly Vector2 _windowSize = new Vector2( 350f, 150f);
         
         private const float Separator = 2f;
         private const float VerticalSeparator = 2f;
@@ -24,22 +26,21 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
         private CustomColor _customColor = new CustomColor( "Name_Here", Color.black );
 
         private string _completeListOfColors = "";
+        private int _numberOfEntries = 0;
+
+        private string _rbgConversionText = "";
+        private char[] _currentSequence = new[] { '0', '0', '0' };
+        private int _charSequenceIndex = 0;
+        private List<char> _outputCharList = new List<char>();
 
         private void OnEnable()
         {
             minSize = _windowSize;
-            maxSize = _windowSize;
+            // maxSize = _windowSize;
         }
 
         public void OnGUI()
         {
-            // Define the position available for this line.
-            var drawableArea = new Rect( 0f, 0f, _windowSize.x, _windowSize.y );
-            drawableArea.yMin += EdgePadding;
-            drawableArea.yMax -= EdgePadding;
-            drawableArea.xMin += EdgePadding;
-            drawableArea.xMax -= EdgePadding;
-
             float singleLineHeight = EditorGUIUtility.singleLineHeight;
 
             Rect customColorArea = EditorGUILayout.GetControlRect();
@@ -59,8 +60,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             customColorFieldRect.width -= Separator;
             // DrawRectOutline( customColorFieldRect, Color.white );
             _customColor.color = EditorGUI.ColorField( customColorFieldRect, _customColor.color );
-
-            EditorGUILayout.Space();
+            EditorGUILayout.LabelField( $"Total Entries: {_numberOfEntries.ToString()}" );
             
             Rect recordColorButton = EditorGUILayout.GetControlRect();
             if ( GUI.Button( recordColorButton, "Record Color" ) )
@@ -72,8 +72,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                                          $" {_customColor.color.r.ToString( "0.00" )}f, " +
                                          $"{_customColor.color.g.ToString( "0.00" )}f, " +
                                          $"{_customColor.color.b.ToString( "0.00" )}f ) );\n";
-                
-                Debug.Log( _completeListOfColors );
+                _numberOfEntries++;
             }
             
             Rect resetButtonRect = EditorGUILayout.GetControlRect();
@@ -82,9 +81,91 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                 // Debug.Log( $"Color Recorded: {_customColor.name}, {_customColor.color.ToString()}" );
 
                 _completeListOfColors = "";
+                _numberOfEntries = 0;
                 
                 Debug.Log( "Colors List was reset." );
             }
+            
+            Rect printButtonRect = EditorGUILayout.GetControlRect();
+            if ( GUI.Button( printButtonRect, "Print List to Console" ) )
+            {
+                Debug.Log( _completeListOfColors );
+            }
+            
+            
+            EditorGUILayout.Space();
+            
+            EditorGUILayout.LabelField( "Convert RGB 0-255 to RGB 0-1.0" );
+            
+            Rect convertTextButtonRect = EditorGUILayout.GetControlRect();
+            if ( GUI.Button( convertTextButtonRect, "Convert Text" ) )
+            {
+                // Debug.Log( $"Color Recorded: {_customColor.name}, {_customColor.color.ToString()}" );
+                ConvertRgbText();
+                // Debug.Log( _rbgConversionText.Equals( "" ) ? "No text entered." : _rbgConversionText );
+                Debug.Log( new string ( _outputCharList.ToArray() ) );
+                ResetValues();
+            }
+            _rbgConversionText = EditorGUILayout.TextArea( _rbgConversionText );
         }
+
+        private void ResetValues()
+        {
+            _currentSequence = new[] { '0', '0', '0' };
+            _charSequenceIndex = 0;
+            _outputCharList = new List<char>();
+        }
+
+        
+        private void ConvertRgbText()
+        {
+            _outputCharList.Clear();
+            foreach ( char c in _rbgConversionText )
+            {
+                // Debug.Log( $"Char: {c.ToString()}" );
+                // Is char a number between 0 (ascii 48) and 9 (ascii 57)?
+                if ( c >= 48 && c <= 57 )
+                {
+                    _currentSequence[_charSequenceIndex++] = c;
+                    if ( _charSequenceIndex <= 2 ) continue;
+
+                    CommitSequence();
+                    continue;
+                }
+                
+                // Is there a sequence in progress that isn't full?
+                if ( _charSequenceIndex != 0 ) CommitSequence();
+
+                _outputCharList.Add( c );
+            }
+        }
+
+        private void CommitSequence()
+        {
+            string convertedSequence = ConvertTextIntToFloat( new string( _currentSequence ) ).ToString( "0.00" );
+            // Debug.Log( $"Found number: {new string( currentSequence )} -> {convertedSequence}" );
+
+            _outputCharList.AddRange( convertedSequence );
+            _outputCharList.Add( 'f' );
+
+            _currentSequence = new[] { '0', '0', '0' };
+            _charSequenceIndex = 0;
+        }
+
+        private float ConvertTextIntToFloat( string textInt )
+        {
+            if (int.TryParse(textInt, out int numValue))
+            {
+                Console.WriteLine(numValue);
+            }
+            else
+            {
+                Console.WriteLine($"Int32.TryParse could not parse '{textInt}' to an int.");
+            }
+
+            return GetPercentageOfColor( numValue );
+        }
+        
+        private float GetPercentageOfColor( int colorChannelValue ) => Mathf.InverseLerp( 0, 255, colorChannelValue );
     }
 }

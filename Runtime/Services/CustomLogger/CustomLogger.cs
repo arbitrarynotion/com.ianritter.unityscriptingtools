@@ -414,12 +414,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             logBlockStart = new CustomLoggerSymbol( 
                 true, 
                 // "→",
+                // "――►",
                 "►", // Note that the left and right arrows may not display the same size here but they match in Unity's debug output.
                 new Color( 0.29803923f, 0.8f, 0.29803923f, 1f ) 
             );
             logBlockEnd = new CustomLoggerSymbol( 
-                true, 
+                true,
                 // "←", 
+                // "◀――", 
                 "◀", 
                 new Color( 0.29803923f, 0.6f, 0.9019608f, 1f ) 
             );
