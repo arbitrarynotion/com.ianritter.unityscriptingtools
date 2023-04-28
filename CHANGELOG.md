@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.13...v1.1.0) (2023-04-28)
+
+
+### Features
+
+* Update to CustomColorEntryHelper.cs ([f97806d](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/f97806d5af90b8d34001d705015b9bfc73b32b17))
+
 ## [1.0.13](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.12...v1.0.13) (2023-04-28)
 
 
