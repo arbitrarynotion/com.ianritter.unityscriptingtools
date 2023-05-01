@@ -17,6 +17,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
         private const string BoldMethodsVarName = "boldMethods";
         private const string BoldBlockMethodsVarName = "boldBlockMethods";
         private const string NicifiedNamesVarName = "nicifiedNames";
+        private const string IncludeStackTraceVarName = "includeStackTrace";
+        private const string FullPathNameVarName = "fullPathName";
+        private const string TargetClassVarName = "targetClass";
+        private const string TargetMethodVarName = "targetMethod";
+        
         private const string LogPrefixVarName = "logPrefix";
         private const string BlockDividerVarName = "blockDivider";
         private const string IndentMarkerVarName = "indentMarker";
@@ -33,6 +38,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
         private SerializedProperty _boldMethodsProperty;
         private SerializedProperty _boldBlockMethodsProperty;
         private SerializedProperty _nicifiedNamesProperty;
+        private SerializedProperty _includeStackTraceProperty;
+        private SerializedProperty _fullPathNameProperty;
+        private SerializedProperty _targetClassProperty;
+        private SerializedProperty _targetMethodProperty;
+        
         private SerializedProperty _logPrefixProperty;
         private SerializedProperty _blockDividerProperty;
         private SerializedProperty _indentMarkerProperty;
@@ -46,6 +56,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
         
         private ColorPickerHandler _colorPickerHandler;
 
+        private bool _debugFoldoutToggle = false;
+
         
         private void OnEnable()
         {
@@ -56,6 +68,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
             _boldMethodsProperty = serializedObject.FindProperty( BoldMethodsVarName );
             _boldBlockMethodsProperty = serializedObject.FindProperty( BoldBlockMethodsVarName );
             _nicifiedNamesProperty = serializedObject.FindProperty( NicifiedNamesVarName );
+            _includeStackTraceProperty = serializedObject.FindProperty( IncludeStackTraceVarName );
+            _fullPathNameProperty = serializedObject.FindProperty( FullPathNameVarName );
+            _targetClassProperty = serializedObject.FindProperty( TargetClassVarName );
+            _targetMethodProperty = serializedObject.FindProperty( TargetMethodVarName );
+            
             _logPrefixProperty = serializedObject.FindProperty( LogPrefixVarName );
             _blockDividerProperty = serializedObject.FindProperty( BlockDividerVarName );
             _indentMarkerProperty = serializedObject.FindProperty( IndentMarkerVarName );
@@ -91,14 +108,20 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
 
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
+
             DrawClassMembers();
             EditorGUILayout.Space();
             DrawResetButton();
+            EditorGUILayout.Space();
+            DrawDebugSection();
+            
+            serializedObject.ApplyModifiedProperties();
+
         }
 
         private void DrawClassMembers()
         {
-            serializedObject.Update();
             EditorGUILayout.LabelField( "Toggles", EditorStyles.boldLabel );
             EditorGUI.indentLevel++;
             {
@@ -134,8 +157,31 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
                 DrawCustomColorProperty( _logEventPrefixProperty );
             }
             EditorGUI.indentLevel--;
+            
+        }
 
-            serializedObject.ApplyModifiedProperties();
+        private void DrawDebugSection()
+        {
+            _debugFoldoutToggle = EditorGUILayout.Foldout( _debugFoldoutToggle, new GUIContent( "Debug" ), true );
+
+            if ( _debugFoldoutToggle )
+            {
+                EditorGUI.indentLevel++;
+                {
+                    EditorGUILayout.PropertyField( _includeStackTraceProperty );
+                    if ( _includeStackTraceProperty.boolValue )
+                    {
+                        EditorGUI.indentLevel++;
+                        {
+                            EditorGUILayout.PropertyField( _fullPathNameProperty );
+                            EditorGUILayout.PropertyField( _targetClassProperty );
+                            EditorGUILayout.PropertyField( _targetMethodProperty );
+                        }
+                        EditorGUI.indentLevel--;
+                    }
+                }
+            }
+            EditorGUI.indentLevel--;
         }
 
         private void DrawBasicColorProperty( SerializedProperty property )

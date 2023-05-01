@@ -16,13 +16,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         private const int StackTraceIndex = 4;
 
         // Had to do nicify names first so the constructor modification didn't get processed by that algorithm.
-        public MethodEntry( bool blockStart, bool nicifyName )
+        public MethodEntry( bool blockStart, bool nicifyName, 
+            bool printStackTrace = false, bool fullPathName = false, string targetClassName = "", string targetMethodName = "" )
         {
             _blockStart = blockStart;
                 
-            string methodName = MetaDataGathering.GetMethodName( StackTraceIndex );
+            string methodName = MetaDataGathering.GetMethodName( StackTraceIndex, printStackTrace, fullPathName, targetMethodName );
             MethodName = nicifyName ? TextFormat.NicifyVariableName( methodName ) : methodName;
-            CallingClassName = MetaDataGathering.GetCallingClassName( StackTraceIndex );
+            CallingClassName = MetaDataGathering.GetCallingClassName( StackTraceIndex, printStackTrace, fullPathName, targetClassName );
 
             if ( !MethodName.Equals( "ctor" ) ) return;
                 

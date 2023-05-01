@@ -17,9 +17,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         [SerializeField] private bool useClassPrefix = true;
         [SerializeField] private bool boldMethods = true;
         [SerializeField] private bool boldBlockMethods = true;
-        [SerializeField] [Range( 5, 20 )] private int maxPrefixCharacters = 10;
-        
         [SerializeField] private bool nicifiedNames = true;
+        [SerializeField] private bool includeStackTrace = false;
+        [SerializeField] private bool fullPathName = false;
+        [SerializeField] private string targetClass = "";
+        [SerializeField] private string targetMethod  = "";
+        
+        // [SerializeField] [Range( 5, 20 )] private int maxPrefixCharacters = 10;
+        
 
         [SerializeField] private CustomLoggerSymbol logPrefix;
         [SerializeField] private CustomLoggerSymbol blockDivider;
@@ -250,7 +255,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
 
         private void PushMethodEntry( bool blockStart )
         {
-            _methodStack.Push( new MethodEntry( blockStart, nicifiedNames ) );
+            _methodStack.Push( new MethodEntry( blockStart, nicifiedNames, includeStackTrace, fullPathName, targetClass, targetMethod ) );
             // PrintCurrentMethodEntryList();
         }
 
@@ -353,19 +358,19 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         // The initial intent of this method was to make all calling class strings the same length. However, as the
         // debug output is in a variable font size, this turned out to be ineffective. It may be useful for other
         // situations with long names, however, so I'm keeping it here.
-        private string ConformNameToStringSize( string rawName )
-        {
-            // Adding one extra character for the ellipsis.
-            char[] outputName = new char[maxPrefixCharacters + 1];
-            for (int i = 0; i < outputName.Length - 1; i++)
-            {
-                outputName[i] = ( i <= rawName.Length - 1 ) ? rawName[i] : '_';
-            }
-
-            outputName[maxPrefixCharacters] = ( rawName.Length > maxPrefixCharacters ) ? '…' : '_';
-            string formattedOutputName = $"{new string( outputName ),-15}";
-            return formattedOutputName;
-        }
+        // private string ConformNameToStringSize( string rawName )
+        // {
+        //     // Adding one extra character for the ellipsis.
+        //     char[] outputName = new char[maxPrefixCharacters + 1];
+        //     for (int i = 0; i < outputName.Length - 1; i++)
+        //     {
+        //         outputName[i] = ( i <= rawName.Length - 1 ) ? rawName[i] : '_';
+        //     }
+        //
+        //     outputName[maxPrefixCharacters] = ( rawName.Length > maxPrefixCharacters ) ? '…' : '_';
+        //     string formattedOutputName = $"{new string( outputName ),-15}";
+        //     return formattedOutputName;
+        // }
 
 #endregion
 

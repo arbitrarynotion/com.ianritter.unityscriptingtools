@@ -4,9 +4,6 @@
   "displayName": "Unity Scripting Tools",
   "description": "This is my personal collection of tools that I use to help with scripting in Unity. This includes tools specific to helping with Editor coding.",
   "unity": "2021.1",
-  "documentationUrl": "https://example.com/",
-  "changelogUrl": "https://example.com/changelog.html",
-  "licensesUrl": "https://example.com/licensing.html",
   "author": {
     "name": "Ian Ritter",
     "email": "ian.ritter.cs@gmail.com",
