@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.1.0...v1.2.0) (2023-05-01)
+
+
+### Features
+
+* Update to CustomLogger ([e5f4f4a](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/e5f4f4ac56107716c53f5293223e9e4f8aad9f43))
+
 # [1.1.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.0.13...v1.1.0) (2023-04-28)
 
 
