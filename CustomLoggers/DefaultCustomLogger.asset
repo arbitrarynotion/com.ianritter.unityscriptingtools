@@ -16,8 +16,11 @@ MonoBehaviour:
   useClassPrefix: 1
   boldMethods: 1
   boldBlockMethods: 1
-  maxPrefixCharacters: 9
   nicifiedNames: 1
+  includeStackTrace: 0
+  fullPathName: 0
+  targetClass: ' '
+  targetMethod: 
   logPrefix:
     toggle: 1
     customColor:

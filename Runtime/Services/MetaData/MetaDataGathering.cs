@@ -37,7 +37,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.MetaData
                 throw new NullReferenceException( "Failed to get stack trace frames when seeking method name." );
 
             string fullMethodName = stackFrames[stackTraceIndex].GetMethod().ToString();
-            string methodNameWithoutReturn = fullMethodName.Split( ' ' ).Last();
+            // Source: "Void GenerateResourceType(WareType, Single, Single)", split at ' ', take second element.
+            string methodNameWithoutReturn = fullMethodName.Split( ' ' )[1];
+            // Source: "GenerateResourceType(WareType,", split at '(', take first element.
             string outputMethodName = methodNameWithoutReturn.Split( '(' )[0];
 
             if ( printStackTrace ) OutputStackTrace( outputMethodName, targetMethodName, fullPathName );
