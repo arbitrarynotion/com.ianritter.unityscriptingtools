@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.2.0...v1.2.1) (2023-05-01)
+
+
+### Bug Fixes
+
+* Update to MetaDataGathering.cs ([b7ee526](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/b7ee526af7e6777ca9d6483df1e65e58c37ea47f))
+
 # [1.2.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.1.0...v1.2.0) (2023-05-01)
 
 
