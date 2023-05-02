@@ -142,8 +142,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 
         private void CommitSequence()
         {
-            string convertedSequence = ConvertTextIntToFloat( new string( _currentSequence ) ).ToString( "0.00" );
-            // Debug.Log( $"Found number: {new string( currentSequence )} -> {convertedSequence}" );
+            string finalSequence = new string( _currentSequence ).Substring( 0, _charSequenceIndex );
+            
+            string convertedSequence = ConvertTextIntToFloat( finalSequence ).ToString( "0.00" );
+            // Debug.Log( $"Found number: {new string( _currentSequence )} -> {finalSequence} = {convertedSequence}" );
 
             _outputCharList.AddRange( convertedSequence );
             _outputCharList.Add( 'f' );
