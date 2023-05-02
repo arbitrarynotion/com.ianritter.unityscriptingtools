@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.2.1...v1.2.2) (2023-05-02)
+
+
+### Bug Fixes
+
+* Update to PresetColors.cs ([2f17dbb](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/2f17dbbddc2dc679befb7396c433d3fc9d9480bc))
+
 ## [1.2.1](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.2.0...v1.2.1) (2023-05-01)
 
 
