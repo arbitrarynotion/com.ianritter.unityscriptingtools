@@ -91,6 +91,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         private void OnEnable()
         {
             _exampleSubclass01 = new ExampleSubclass01( logger );
+            logger.Log( "This is an independent log, not called between LogStart and LogEnd." );
             logger.LogStart( true );
             logger.Log( "Running CustomLogger Test..." );
             TestMethodLevel_1();
@@ -128,7 +129,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             logger.LogEvent( "This is an event log." );
             logger.Log( "This is a warning log.", CustomLogType.Warning );
             logger.Log( "This is an error log.", CustomLogType.Error );
-            logger.LogEnd( "This is an end log message. Good for providing an explanation in a method with multiple exits.");
+            logger.LogEnd( "This is another end log message. Good for providing an explanation in a method with multiple exits.");
         }
     
     }

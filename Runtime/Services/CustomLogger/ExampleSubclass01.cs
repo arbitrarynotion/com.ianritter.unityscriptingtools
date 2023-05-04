@@ -25,12 +25,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         
         private void SubClassMethodLevel_2()
         {
-            _logger.LogStart( false, "This method section is marked as Warning." ,CustomLogType.Warning );
+            _logger.LogStart( false, "This is a LogStart log. This method section is set to type Warning." ,CustomLogType.Warning );
             _logger.LogIndentStart( "This is subclass level 2." );
             _logger.Log( "Subclass sub log 1" );
             _logger.Log( "Subclass sub log 2, overriding parent's type with Error.", CustomLogType.Error );
             _logger.Log( "Subclass sub log 3" );
-            _logger.LogEnd();
+            _logger.LogOneTimeIndent( "Subclass sub log 4, with one-time indent and overriding parent's type with Standard.", CustomLogType.Standard );
+            _logger.Log( "Subclass sub log 5" );
+            _logger.LogIndentEnd( "Subclass sub log 6, ending one level of indent starting with itself.", 1, true );
+            _logger.LogEnd( "This is a LogEnd log. Lacks other log options but good for quickly stating reason for method exit.");
         }
     }
 }

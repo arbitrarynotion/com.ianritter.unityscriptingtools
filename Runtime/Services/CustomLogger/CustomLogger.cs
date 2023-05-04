@@ -50,6 +50,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         private Stack<MethodEntry> _methodStack = new Stack<MethodEntry>();
         
         private int _blockTabLevel;
+
+        private int _lineNumber;
         
 
         public CustomLogger( Object sender )
@@ -66,6 +68,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
                 _methodStack = new Stack<MethodEntry>();
             _methodStack.Clear();
             _blockTabLevel = 0;
+            _lineNumber = 0;
         }
 
         private void OnValidate() => UpdatePrefixColor();
@@ -107,7 +110,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             PushMethodEntry( blockStart, logType );
             
             // Print log using indent that does not include an indent for this new method entry.
-            string message = GetBlockLogMessage( GetCurrentMethodEntry(), logBlockStart, GetCurrentCallingClassName() );
+            string message = GetLogEndCapMessage( GetCurrentMethodEntry(), logBlockStart, GetCurrentCallingClassName() );
             PrintLog( $"{indent}{message}", logType );
             
             IncrementTabLevel();
@@ -128,19 +131,23 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         {
             if ( !LogAllowed() ) return;
             
-            if ( !endMessage.Equals( "" ) )
-                Log( endMessage );
-            
             CustomLogType logType = GetCurrentMethodEntryLogType();
+            string indent = GetIndentString();
             
             // Pop method entry from the stack and cache it's calling class.
             MethodEntry methodEntry = PopMethodEntry();
             _lastCallingClass = methodEntry.CallingClassName;
+
+            if ( !endMessage.Equals( "" ) )
+            {
+                string introMarker = ApplyTextColor( "<b>↱</b> ", methodEntry.IsBlockStart() ? _blockMethodHexColor : _methodHexColor );
+                PrintLog( $"{indent}{introMarker} {endMessage}", logType );
+            }
             
             DecrementTabLevel();
             
-            string indent = GetIndentString();
-            string message = GetBlockLogMessage( methodEntry, logBlockEnd, _lastCallingClass );
+            indent = GetIndentString();
+            string message = GetLogEndCapMessage( methodEntry, logBlockEnd, _lastCallingClass );
             
             PrintLog( $"{indent}{message}", logType );
 
@@ -267,7 +274,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             DecrementMethodIndent( incrementAmount );
         }
 
-        private string GetBlockLogMessage( MethodEntry methodEntry, CustomLoggerSymbol loggerSymbol, string callingClass )
+        private string GetLogEndCapMessage( MethodEntry methodEntry, CustomLoggerSymbol loggerSymbol, string callingClass )
         {
             string formattedBlockStart = ApplyTextColor( $"{loggerSymbol.GetSymbol()} ", loggerSymbol.GetHexColor() );
             string methodName = methodEntry.MethodName;
@@ -281,6 +288,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
 
             string message = $"{formattedBlockStart} {callingClassPrefix}{GetColoredString( methodName, _methodHexColor )}";
 
+            // Below is for only when the message is part of a block start.
             if ( !methodEntry.IsBlockStart() ) return message;
             
             string formattedBlockDivider = ApplyTextColor( $"{blockDivider.GetSymbol()} ", blockDivider.GetHexColor() );
@@ -324,7 +332,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             return _methodStack.Peek();
         }
 
-        private CustomLogType GetCurrentMethodEntryLogType() => GetCurrentMethodEntry().GetLogType();
+        private CustomLogType GetCurrentMethodEntryLogType()
+        {
+            return _methodStack.Count == 0 ? CustomLogType.Standard : GetCurrentMethodEntry().GetLogType();
+        }
 
         private string GetCurrentMethodName()
         {
@@ -447,16 +458,19 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
 
         private void PrintLog( string message, CustomLogType type = CustomLogType.Standard )
         {
+            // string numberedMessage = $"{_lineNumber++.ToString()}){message}";
+            // string numberedMessage = $": {_lineNumber++.ToString("00")} : {ApplyPrefix( message )}";
+            message = ApplyPrefix( message );
             switch (type)
             {
                 case CustomLogType.Standard:
-                    Debug.Log( ApplyPrefix( $"{message}" ), _sender );
+                    Debug.Log( message, _sender );
                     break;
                 case CustomLogType.Warning:
-                    Debug.LogWarning( ApplyPrefix( $"{message}" ), _sender );
+                    Debug.LogWarning( message, _sender );
                     break;
                 case CustomLogType.Error:
-                    Debug.LogError( ApplyPrefix( $"{message}" ), _sender );
+                    Debug.LogError( message, _sender );
                     break;
                 default:
                     throw new ArgumentOutOfRangeException( nameof( type ), type, null );
