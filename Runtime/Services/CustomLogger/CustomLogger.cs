@@ -97,6 +97,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         public void LogStart( bool blockStart = false, string introMessage = "", CustomLogType logType = CustomLogType.Standard )
         {
             if ( !LogAllowed() ) return;
+            
+            // [System.Runtime.CompilerServices.CallerMemberName] string memberName = "";
 
             // Must get the indent string before pushing the method entry so its indent is not included.
             string indent = GetIndentString();
@@ -256,7 +258,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         /// <summary>
         /// Print log that is indented by 1, but where the indent doesn't carry over to further logs.
         /// </summary>
-        public void LogOneTimeIndent( string message, CustomLogType logType = CustomLogType.Standard, int incrementAmount = 1 )
+        public void LogOneTimeIndent( string message, CustomLogType logType, int incrementAmount = 1 )
         {
             if ( !LogAllowed() ) return;
             

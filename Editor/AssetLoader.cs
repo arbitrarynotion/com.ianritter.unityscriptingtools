@@ -7,12 +7,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor
 {
     public static class AssetLoader
     {
-        public static T LoadScriptableObject<T>( string assetName )
+        public static T GetAssetByName<T>( string assetName )
         {
-            return LoadScriptableObject<T>( assetName, null );
+            return GetAssetByName<T>( assetName, null );
         }
 
-        public static T LoadScriptableObject<T>( string assetName, params string[] searchInFolders )
+        public static T GetAssetByName<T>( string assetName, params string[] searchInFolders )
         {
             string[] guids = AssetDatabase.FindAssets( assetName, searchInFolders );
             

@@ -77,7 +77,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             // searchHighlightColorProp = _serializedObject.FindProperty( "searchHighlightColor" );
             
             
-            // _serializedPropertyExplorerData = LoadScriptableObject<SerializedPropertyExplorerData>( SerializedPropertyExplorerDataAssetName );
+            // _serializedPropertyExplorerData = GetAssetByName<SerializedPropertyExplorerData>( SerializedPropertyExplorerDataAssetName );
             // string conclusion = (_serializedPropertyExplorerData != null) ? "found" : "not found";
             // Debug.Log( $"SerializedPropertyExplorerData was {conclusion}." );
             

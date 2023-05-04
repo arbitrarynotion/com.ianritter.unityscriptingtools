@@ -28,7 +28,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
         
         private ColorPickerHandler( Vector2 position )
         {
-            _buttonTextureAsset = AssetLoader.LoadScriptableObject<Texture>( "color-circle" );
+            _buttonTextureAsset = AssetLoader.GetAssetByName<Texture>( "color-circle" );
             string result = _buttonTextureAsset == null ? "failed" : "succeeded";
             Debug.Log( $"ColorPickerHandler: loading of button texture {TextFormat.GetColoredStringYellow( result )}" );
             _position = new Rect( position, Vector2.zero );
