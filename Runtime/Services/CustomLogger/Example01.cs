@@ -1,3 +1,4 @@
+using Packages.com.ianritter.unityscriptingtools.Runtime.Enums;
 using UnityEngine;
 
 namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger
@@ -109,12 +110,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         private void TestMethodLevel_2()
         {
             logger.LogStart();
-            logger.LogIndentStart( "This is level 2." );
-            logger.LogIndentStart( "Sub log 1." );
-            logger.Log( "Sub log 2." );
+            logger.LogIndentStart( "This is level 2, starting a new indent." );
+            logger.LogIndentStart( "Sub log 1, starting another new indent." );
+            logger.LogIndentEnd( "Sub log 2, ending 1 indent." );
             TestMethodLevel_3();
-            logger.Log( "Sub log 3." );
-            logger.DecrementMethodIndent();
+            logger.LogIndentEnd( "Sub log 3" );
+            // logger.DecrementMethodIndent();
             logger.Log( "Sub log 4." );
             logger.LogEnd();
         }
@@ -125,9 +126,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             logger.Log( "This is level 3." );
             _exampleSubclass01.SubClassMethodLevel_1();
             logger.LogEvent( "This is an event log." );
-            logger.LogWarning( "This is a warning log." );
-            logger.LogError( "This is an error log." );
-            logger.LogEnd();
+            logger.Log( "This is a warning log.", CustomLogType.Warning );
+            logger.Log( "This is an error log.", CustomLogType.Error );
+            logger.LogEnd( "This is an end log message. Good for providing an explanation in a method with multiple exits.");
         }
     
     }

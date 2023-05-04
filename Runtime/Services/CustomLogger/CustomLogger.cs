@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Enums;
 using UnityEngine;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.ToolingConstants;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting.TextFormat;
@@ -36,6 +37,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         
         [SerializeField] private Color blockMethodColor;
         [SerializeField] private Color methodColor;
+        
+        // [SerializeField] private Texture buttonTexture;
 
         private string _blockMethodHexColor;
         private string _methodHexColor;
@@ -84,12 +87,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
 
 #region Log Methods
         
+        
+        
         /// <summary>
         /// Print the starting line of a log sequence preceded by a Log Block Start symbol where subsequent logs will be
         /// indented based on their depth in the call stack. If blockStart is true, log will be encapsulated in
         /// Log Block Divider symbols - note that the matching LogEnd will automatically include such encapsulation as well.
         /// </summary>
-        public void LogStart( bool blockStart = false )
+        public void LogStart( bool blockStart = false, string introMessage = "", CustomLogType logType = CustomLogType.Standard )
         {
             if ( !LogAllowed() ) return;
 
@@ -97,22 +102,34 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             string indent = GetIndentString();
             
             // Add new method entry to the stack.
-            PushMethodEntry( blockStart );
+            PushMethodEntry( blockStart, logType );
             
             // Print log using indent that does not include an indent for this new method entry.
             string message = GetBlockLogMessage( GetCurrentMethodEntry(), logBlockStart, GetCurrentCallingClassName() );
-            PrintStandardLog( $"{indent}{message}" );
+            PrintLog( $"{indent}{message}", logType );
             
             IncrementTabLevel();
+
+            if ( introMessage.Equals( "" ) ) return;
+            
+            // Used GetIndentString here because we want the indent from this log start to be included.
+            string introMarker = ApplyTextColor( "<b>↳</b> ", blockStart ? _blockMethodHexColor : _methodHexColor );
+            PrintLog( $"{GetIndentString()}{introMarker} {introMessage}", logType );
         }
 
         /// <summary>
-        /// Print the ending line of a log sequence preceded by a Log Block End symbol. If this ends a block, it will
+        /// Print the ending line of a log sequence preceded by a Log Block End symbol. If and end message is provided,
+        /// it will be printed as a standard log before the end log line is printed. If this ends a block, it will
         /// automatically be encapsulated in Log Block Divider symbols.
         /// </summary>
-        public void LogEnd()
+        public void LogEnd( string endMessage = "" )
         {
             if ( !LogAllowed() ) return;
+            
+            if ( !endMessage.Equals( "" ) )
+                Log( endMessage );
+            
+            CustomLogType logType = GetCurrentMethodEntryLogType();
             
             // Pop method entry from the stack and cache it's calling class.
             MethodEntry methodEntry = PopMethodEntry();
@@ -123,7 +140,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             string indent = GetIndentString();
             string message = GetBlockLogMessage( methodEntry, logBlockEnd, _lastCallingClass );
             
-            PrintStandardLog( $"{indent}{message}" );
+            PrintLog( $"{indent}{message}", logType );
 
             if ( _methodStack.Count == 0 ) _blockTabLevel = 0;
         }
@@ -135,79 +152,117 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             string methodName = GetMethodName( 2 );
             methodName = nicifiedNames ? NicifyVariableName( methodName ) : methodName;
             message = BuildPrefixedLogMessage( logEventPrefix, $"{methodName}: {message}");
-            PrintStandardLog( $"{GetIndentString()}{message}" );
+            PrintLog( $"{GetIndentString()}{message}" );
         }
 
         public void Log( string message )
         {
             if ( !LogAllowed() ) return;
-            
-            PrintStandardLog( $"{GetIndentString()}{message}" );
+
+            PrintLog( $"{GetIndentString()}{message}", GetCurrentMethodEntryLogType() );
+        }
+        
+        public void Log( string message, CustomLogType logType )
+        {
+            if ( !LogAllowed() ) return;
+
+            PrintLog( $"{GetIndentString()}{message}", logType );
         }
 
+        public void LogIndentStart( string message, bool startHere = false, int incrementAmount = 1 )
+        {
+            if ( !LogAllowed() ) return;
+            
+            CustomLogType methodLogType = GetCurrentMethodEntryLogType();
+
+            if ( startHere )
+            {
+                IncrementMethodIndent( incrementAmount );
+                PrintLog( $"{GetIndentString()}{message}", methodLogType );
+                return;
+            }
+            
+            PrintLog( $"{GetIndentString()}{message}", methodLogType );
+            IncrementMethodIndent( incrementAmount );
+        }
+        
         /// <summary>
         /// Print log where all preceding logs will be indented by 1. If startHere is true, this log will
         /// also be indented.
         /// </summary>
-        public void LogIndentStart( string message, bool startHere = false )
+        public void LogIndentStart( string message, CustomLogType logType, bool startHere = false, int incrementAmount = 1 )
         {
             if ( !LogAllowed() ) return;
 
-            message = $"{GetIndentString()}{message}";
             if ( startHere )
             {
-                IncrementMethodTabLevel();
-                PrintStandardLog( message );
+                IncrementMethodIndent( incrementAmount );
+                PrintLog( $"{GetIndentString()}{message}", logType );
                 return;
             }
             
-            PrintStandardLog( message );
-            IncrementMethodTabLevel();
+            PrintLog( $"{GetIndentString()}{message}", logType );
+            IncrementMethodIndent( incrementAmount );
+        }
+        
+        
+        public void LogIndentEnd( string message, int decrementAmount = 1, bool startHere = false )
+        {
+            if ( !LogAllowed() ) return;
+
+            CustomLogType methodLogType = GetCurrentMethodEntryLogType();
+
+            if ( startHere )
+            {
+                DecrementMethodIndent( decrementAmount );
+                PrintLog( $"{GetIndentString()}{message}", methodLogType );
+                return;
+            }
+            
+            PrintLog( $"{GetIndentString()}{message}", methodLogType );
+            DecrementMethodIndent( decrementAmount );
         }
 
         /// <summary>
         /// Print log where all preceding logs will has their indent decreased by a default of 1 unless the amount is
         /// specified via decrementAmount.
         /// </summary>
-        public void LogIndentEnd( string message, int decrementAmount = 1 )
+        public void LogIndentEnd( string message, CustomLogType logType, bool startHere = false, int decrementAmount = 1 )
         {
             if ( !LogAllowed() ) return;
 
-            PrintStandardLog( $"{GetIndentString()}{message}" );
-            for (int i = 0; i < decrementAmount; i++)
+            if ( startHere )
             {
-                DecrementMethodTabLevel();
+                DecrementMethodIndent( decrementAmount );
+                PrintLog( $"{GetIndentString()}{message}", logType );
+                return;
             }
+            
+            PrintLog( $"{GetIndentString()}{message}", logType );
+            DecrementMethodIndent( decrementAmount );
+        }
+        
+        public void LogOneTimeIndent( string message, int incrementAmount = 1 )
+        {
+            if ( !LogAllowed() ) return;
+            
+            CustomLogType methodLogType = GetCurrentMethodEntryLogType();
+
+            IncrementMethodIndent( incrementAmount );
+            PrintLog( $"{GetIndentString()}{message}", methodLogType );
+            DecrementMethodIndent( incrementAmount );
         }
 
         /// <summary>
         /// Print log that is indented by 1, but where the indent doesn't carry over to further logs.
         /// </summary>
-        public void LogOneTimeIndent( string message )
+        public void LogOneTimeIndent( string message, CustomLogType logType = CustomLogType.Standard, int incrementAmount = 1 )
         {
             if ( !LogAllowed() ) return;
-
-            IncrementMethodTabLevel();
-            PrintStandardLog( $"{GetIndentString()}{message}" );
-            DecrementMethodTabLevel();
-        }
-
-        /// <summary>
-        /// Print log that will use the yellow Warning symbol.
-        /// </summary>
-        public void LogWarning( string message )
-        {
-            if ( !LogAllowed() ) return;
-            PrintWarningLog( $"{GetIndentString()}{message}" );
-        }
-
-        /// <summary>
-        /// Print log that will use the red Error symbol.
-        /// </summary>
-        public void LogError( string message )
-        {
-            if ( !LogAllowed() ) return;
-            PrintErrorLog( $"{GetIndentString()}{message}" );
+            
+            IncrementMethodIndent( incrementAmount );
+            PrintLog( $"{GetIndentString()}{message}", logType );
+            DecrementMethodIndent( incrementAmount );
         }
 
         private string GetBlockLogMessage( MethodEntry methodEntry, CustomLoggerSymbol loggerSymbol, string callingClass )
@@ -232,7 +287,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             if ( boldBlockMethods )
                 methodName = $"<b>{methodName}</b>";
             
-            return $"{formattedBlockDivider} {formattedBlockStart} {callingClassPrefix}{methodName} {formattedBlockDivider}";
+            return $"{formattedBlockStart} <b>{formattedBlockDivider}</b> {callingClassPrefix}{methodName} <b>{formattedBlockDivider}</b>";
         }
 
         private string BuildPrefixedLogMessage( CustomLoggerSymbol loggerSymbol, string methodName ) => 
@@ -253,9 +308,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
 
 #region Method Entry Handling
 
-        private void PushMethodEntry( bool blockStart )
+        private void PushMethodEntry( bool blockStart, CustomLogType logType )
         {
-            _methodStack.Push( new MethodEntry( blockStart, nicifiedNames, includeStackTrace, fullPathName, targetClass, targetMethod ) );
+            _methodStack.Push( new MethodEntry( blockStart, nicifiedNames, logType,
+                includeStackTrace, fullPathName, targetClass, targetMethod ) );
             // PrintCurrentMethodEntryList();
         }
 
@@ -265,6 +321,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
                 throw new ArgumentOutOfRangeException($"Trying to peek an empty stack!");
             return _methodStack.Peek();
         }
+
+        private CustomLogType GetCurrentMethodEntryLogType() => GetCurrentMethodEntry().GetLogType();
 
         private string GetCurrentMethodName()
         {
@@ -299,6 +357,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         
 #region Tabbing
 
+        public void IncrementMethodIndent( int amount = 1 )
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                IncrementMethodTabLevel();
+            }
+        }
+        
         public void DecrementMethodIndent( int amount = 1 )
         {
             for (int i = 0; i < amount; i++)
@@ -308,7 +374,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         }
         
         private void DecrementMethodTabLevel() => GetCurrentMethodEntry().DecrementTabLevel();
-        private void IncrementMethodTabLevel() => GetCurrentMethodEntry().IncrementTabLevel();
+        public void IncrementMethodTabLevel() => GetCurrentMethodEntry().IncrementTabLevel();
         
         private void IncrementTabLevel() => ++_blockTabLevel;
         
@@ -377,14 +443,23 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
 
 #region Log Output
 
-        private void PrintStandardLog( string message ) =>
-            Debug.Log( ApplyPrefix( $"{message}" ), _sender );
-
-        private void PrintWarningLog( string message ) =>
-            Debug.LogWarning( ApplyPrefix( $"{message}" ), _sender );
-
-        private void PrintErrorLog( string message ) =>
-            Debug.LogError( ApplyPrefix( $"{message}" ), _sender );
+        private void PrintLog( string message, CustomLogType type = CustomLogType.Standard )
+        {
+            switch (type)
+            {
+                case CustomLogType.Standard:
+                    Debug.Log( ApplyPrefix( $"{message}" ), _sender );
+                    break;
+                case CustomLogType.Warning:
+                    Debug.LogWarning( ApplyPrefix( $"{message}" ), _sender );
+                    break;
+                case CustomLogType.Error:
+                    Debug.LogError( ApplyPrefix( $"{message}" ), _sender );
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException( nameof( type ), type, null );
+            }
+        }
 
 #endregion
         

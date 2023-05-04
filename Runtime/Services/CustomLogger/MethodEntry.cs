@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Packages.com.ianritter.unityscriptingtools.Runtime.Enums;
+using UnityEngine;
 using Packages.com.ianritter.unityscriptingtools.Runtime.Services.MetaData;
 using Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting;
 
@@ -10,16 +11,18 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         public readonly string MethodName;
         public readonly string CallingClassName;
         private readonly bool _blockStart;
+        private readonly CustomLogType _logType;
         private int _tabLevel;
 
         // 0 = GetMethodName, 1 = MethodEntry.ctor, 2 = PushMethodEntry, 3 = LogStart, 4 = CallingClassMethod
         private const int StackTraceIndex = 4;
 
         // Had to do nicify names first so the constructor modification didn't get processed by that algorithm.
-        public MethodEntry( bool blockStart, bool nicifyName, 
+        public MethodEntry( bool blockStart, bool nicifyName, CustomLogType logType = CustomLogType.Standard, 
             bool printStackTrace = false, bool fullPathName = false, string targetClassName = "", string targetMethodName = "" )
         {
             _blockStart = blockStart;
+            _logType = logType;
                 
             string methodName = MetaDataGathering.GetMethodName( StackTraceIndex, printStackTrace, fullPathName, targetMethodName );
             MethodName = nicifyName ? TextFormat.NicifyVariableName( methodName ) : methodName;
@@ -33,9 +36,16 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
 
         public bool IsBlockStart() => _blockStart;
 
-        public void IncrementTabLevel() => ++_tabLevel;
+        public void IncrementTabLevel()
+        {
+            // Debug.Log( $"{MethodName}: Incrementing tab level." );
+            ++_tabLevel;
+        }
+
         public void DecrementTabLevel() => _tabLevel = Mathf.Max( 0, ( _tabLevel - 1 ) );
 
         public int GetTabLevel() => _tabLevel;
+
+        public CustomLogType GetLogType() => _logType;
     }
 }

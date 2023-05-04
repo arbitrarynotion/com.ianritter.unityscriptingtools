@@ -84,7 +84,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             UpdateHexColors();
             _colorPickerHandler = new ColorPickerHandler( 
                 new Vector2( 10f, 10f ), 
-                new Vector2(350, 400), 
+                new Vector2(350, 400),
                 5
             );
             
@@ -381,31 +381,31 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             // EditorGUI.indentLevel = cachedIndentLevel;
         }
 
-        private void DrawCustomColorField( CustomColor targetColor )
-        {
-            // return EditorGUILayout.ColorField( dataTitle, targetColor, GUILayout.MaxWidth( 350 ) );
-            Rect lineRect = EditorGUILayout.GetControlRect( true );
-            float availableWidth = lineRect.width;
-            const float buttonWidth = 40f;
-        
-            // float colorFieldWidth = availableWidth * 0.9f;
-            float colorFieldWidth = availableWidth - buttonWidth;
-            float startOfButton = colorFieldWidth;
-            
-            var colorFieldRect = new Rect( lineRect )
-            {
-                width = startOfButton
-            };
-            // DrawRectOutline( colorFieldRect, Color.cyan );
-            targetColor.color = EditorGUI.ColorField( colorFieldRect, targetColor.name, targetColor.color );
-            
-            var buttonRect = new Rect( lineRect ) { width = buttonWidth };
-            buttonRect.x += startOfButton;
-            buttonRect.xMin += 2f;
-            // DrawRectOutline( buttonRect, Color.green );
-            
-            _colorPickerHandler.DrawColorPickerButton( buttonRect, targetColor );
-        }
+        // private void DrawCustomColorField( CustomColor targetColor )
+        // {
+        //     // return EditorGUILayout.ColorField( dataTitle, targetColor, GUILayout.MaxWidth( 350 ) );
+        //     Rect lineRect = EditorGUILayout.GetControlRect( true );
+        //     float availableWidth = lineRect.width;
+        //     const float buttonWidth = 40f;
+        //
+        //     // float colorFieldWidth = availableWidth * 0.9f;
+        //     float colorFieldWidth = availableWidth - buttonWidth;
+        //     float startOfButton = colorFieldWidth;
+        //     
+        //     var colorFieldRect = new Rect( lineRect )
+        //     {
+        //         width = startOfButton
+        //     };
+        //     // DrawRectOutline( colorFieldRect, Color.cyan );
+        //     targetColor.color = EditorGUI.ColorField( colorFieldRect, targetColor.name, targetColor.color );
+        //     
+        //     var buttonRect = new Rect( lineRect ) { width = buttonWidth };
+        //     buttonRect.x += startOfButton;
+        //     buttonRect.xMin += 2f;
+        //     // DrawRectOutline( buttonRect, Color.green );
+        //     
+        //     _colorPickerHandler.DrawColorPickerButton( buttonRect, targetColor );
+        // }
 
         private bool IsExplorableType( SerializedProperty property )
         {

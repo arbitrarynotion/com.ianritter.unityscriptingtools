@@ -8,18 +8,16 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.MetaData
 {
     public static class MetaDataGathering
     {
-        public static  string GetCallingClassName( int stackTraceIndex, bool printStackTrace = false, bool fullPathName = false, string targetClassName = "" )
+        /// <summary>
+        /// Given the stack trace level via stackTraceIndex, returns the calling class for that trace.
+        /// </summary>
+        public static string GetCallingClassName( int stackTraceIndex, bool printStackTrace = false, bool fullPathName = false, string targetClassName = "" )
         {
             var stackTrace = new StackTrace( true );
             StackFrame[] stackFrames = stackTrace.GetFrames();
 
             if ( stackFrames == null )
                 throw new NullReferenceException( "Failed to get stack trace frames when seeking class name." );
-            
-            // Note that the calling class is on step back in the stacktrace CallingClass -> LogStart(), so index is 1.
-            // However, the trace has the entire path rawName so it needs to be Split by '\', then the ".cs" has to be
-            // removed from the end of the class rawName using another Split.
-            // return stackTrace.GetFrames()[2].GetFileName().Split( '\\' ).Last().Split( '.' )[0];
 
             string callingClassName = ExtractFilenameStringFromPath( stackFrames[stackTraceIndex].GetFileName() );
             
@@ -74,11 +72,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.MetaData
             }
         }
         
+        /// <summary>
+        /// Given a path name of the form "C:\....\fileName.cs", returns the "fileName" string.
+        /// </summary>
         public static string ExtractFilenameStringFromPath( string fullPathOfFilename )
         {
             if ( fullPathOfFilename.Equals( "..." ) ) return fullPathOfFilename;
             
-            // Debug.Log( $">>>> Cleaning up filename: {fullPathOfFilename}..." );
             return fullPathOfFilename.Split( '\\' ).Last().Split( '.' )[0];
         }
     }

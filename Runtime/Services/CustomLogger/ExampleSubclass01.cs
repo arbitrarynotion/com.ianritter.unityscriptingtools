@@ -1,3 +1,5 @@
+using Packages.com.ianritter.unityscriptingtools.Runtime.Enums;
+
 namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogger
 {
     public class ExampleSubclass01
@@ -23,10 +25,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         
         private void SubClassMethodLevel_2()
         {
-            _logger.LogStart();
+            _logger.LogStart( false, "This method section is marked as Warning." ,CustomLogType.Warning );
             _logger.LogIndentStart( "This is subclass level 2." );
             _logger.Log( "Subclass sub log 1" );
-            _logger.Log( "Subclass sub log 2" );
+            _logger.Log( "Subclass sub log 2, overriding parent's type with Error.", CustomLogType.Error );
             _logger.Log( "Subclass sub log 3" );
             _logger.LogEnd();
         }
