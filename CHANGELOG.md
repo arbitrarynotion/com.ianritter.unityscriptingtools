@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.2.2...v1.3.0) (2023-05-04)
+
+
+### Features
+
+* Update to CustomLogger and ColorPicker ([f4e6fb6](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/f4e6fb60980cb3966e3333d7dc52ae5bceca53ef))
+
 ## [1.2.2](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.2.1...v1.2.2) (2023-05-02)
 
 
