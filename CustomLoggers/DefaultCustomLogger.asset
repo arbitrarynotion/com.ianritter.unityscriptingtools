@@ -19,8 +19,8 @@ MonoBehaviour:
   nicifiedNames: 1
   includeStackTrace: 0
   fullPathName: 0
-  targetClass: ' '
-  targetMethod: 
+  targetClass: Example01
+  targetMethod: SubClassMethod02
   logPrefix:
     toggle: 1
     customColor:

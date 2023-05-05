@@ -13,7 +13,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         private readonly bool _blockStart;
         private readonly CustomLogType _logType;
         private int _tabLevel;
-        private int _logCount;
+        // private int _logCount;
 
         // 0 = GetMethodName, 1 = MethodEntry.ctor, 2 = PushMethodEntry, 3 = LogStart, 4 = CallingClassMethod
         private const int StackTraceIndex = 4;
@@ -43,9 +43,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             ++_tabLevel;
         }
 
-        public void IncrementLogCount() => _logCount++;
-
-        public int GetLogCount() => _logCount;
+        // public void IncrementLogCount() => _logCount++;
+        //
+        // public int GetLogCount() => _logCount;
 
         public void DecrementTabLevel() => _tabLevel = Mathf.Max( 0, ( _tabLevel - 1 ) );
 

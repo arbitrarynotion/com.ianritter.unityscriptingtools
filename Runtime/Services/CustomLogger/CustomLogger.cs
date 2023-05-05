@@ -51,7 +51,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         
         private int _blockTabLevel;
 
-        private int _lineNumber;
+        // private int _lineNumber;
         
 
         public CustomLogger( Object sender )
@@ -68,7 +68,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
                 _methodStack = new Stack<MethodEntry>();
             _methodStack.Clear();
             _blockTabLevel = 0;
-            _lineNumber = 0;
+            // _lineNumber = 0;
         }
 
         private void OnValidate() => UpdatePrefixColor();
@@ -372,6 +372,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
 
         public void IncrementMethodIndent( int amount = 1 )
         {
+            if ( !showLogs ) return;
             for (int i = 0; i < amount; i++)
             {
                 IncrementMethodTabLevel();
@@ -380,6 +381,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         
         public void DecrementMethodIndent( int amount = 1 )
         {
+            if ( !showLogs ) return;
             for (int i = 0; i < amount; i++)
             {
                 DecrementMethodTabLevel();
@@ -387,7 +389,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         }
         
         private void DecrementMethodTabLevel() => GetCurrentMethodEntry().DecrementTabLevel();
-        public void IncrementMethodTabLevel() => GetCurrentMethodEntry().IncrementTabLevel();
+        private void IncrementMethodTabLevel() => GetCurrentMethodEntry().IncrementTabLevel();
         
         private void IncrementTabLevel() => ++_blockTabLevel;
         
@@ -420,7 +422,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
 
 #region Text Formatting
         
-        public string ApplyNameFormatting( string variableName ) => nicifiedNames ? NicifyVariableName( variableName ) : variableName;
+        // public string ApplyNameFormatting( string variableName ) => nicifiedNames ? NicifyVariableName( variableName ) : variableName;
 
         private string ApplyPrefix( string message ) => 
             $"<color={logPrefix.GetHexColor()}>{logPrefix.GetSymbol()}</color> : {message}";

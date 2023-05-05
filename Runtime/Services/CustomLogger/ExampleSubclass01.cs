@@ -33,6 +33,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             _logger.LogOneTimeIndent( "Subclass sub log 4, with one-time indent and overriding parent's type with Standard.", CustomLogType.Standard );
             _logger.Log( "Subclass sub log 5" );
             _logger.LogIndentEnd( "Subclass sub log 6, ending one level of indent starting with itself.", 1, true );
+            _logger.Log( "Subclass sub log 7" );
+            _logger.IncrementMethodIndent( 3 );
+            _logger.Log( "Subclass sub log 8, after manual increment of 3." );
+            _logger.Log( "Subclass sub log 9." );
+            _logger.DecrementMethodIndent( 3 );
+            _logger.Log( "Subclass sub log 10, after manual decrement 0f 3." );
+
             _logger.LogEnd( "This is a LogEnd log. Lacks other log options but good for quickly stating reason for method exit.");
         }
     }
