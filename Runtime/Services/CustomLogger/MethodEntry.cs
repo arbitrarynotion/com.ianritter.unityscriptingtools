@@ -8,8 +8,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
     internal class MethodEntry
     {
         // The rawName is not currently necessary but may be used to include the current method rawName.
+        public readonly string MethodNameRaw;
         public readonly string MethodName;
         public readonly string CallingClassName;
+        public readonly string CallingClassNameRaw;
         private readonly bool _blockStart;
         private readonly CustomLogType _logType;
         private int _tabLevel;
@@ -26,6 +28,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             _logType = logType;
                 
             string methodName = MetaDataGathering.GetMethodName( StackTraceIndex, printStackTrace, fullPathName, targetMethodName );
+            MethodNameRaw = methodName;
             MethodName = nicifyName ? TextFormat.NicifyVariableName( methodName ) : methodName;
             CallingClassName = MetaDataGathering.GetCallingClassName( StackTraceIndex, printStackTrace, fullPathName, targetClassName );
 

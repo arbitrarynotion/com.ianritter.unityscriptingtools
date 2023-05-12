@@ -306,8 +306,24 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         private bool LogAllowed()
         {
             if ( !showLogs ) return false;
+            // if ( !IsTargetClass() || !IsTargetMethod() ) return false;
+            // Debug.Log( $"Checking {GetColoredStringYellow( GetCurrentMethodNameRaw() )}." );
+            // if ( GetCurrentMethodNameRaw().Equals( targetMethod ) ) return false;
             if ( _methodStack == null ) _methodStack = new Stack<MethodEntry>();
             return true;
+        }
+        
+        private bool IsTargetClass()
+        {
+            if ( _methodStack.Count == 0 ) return true;
+            return targetClass.Equals( "" ) || GetCurrentMethodEntry().CallingClassName.Equals( targetClass );
+        }
+
+        private bool IsTargetMethod()
+        {
+            if ( _methodStack.Count == 0 ) return true;
+            // Debug.Log( $"Comparing {GetColoredStringYellow(GetCurrentMethodEntry().MethodNameRaw)} to {GetColoredStringOrange(targetMethod)}" );
+            return targetMethod.Equals( "" ) || GetCurrentMethodNameRaw().Equals( targetMethod ) || GetCurrentMethodName().Equals( targetMethod );
         }
 
 #endregion
@@ -342,6 +358,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             return _methodStack.Count == 0 ? "N/A" : GetCurrentMethodEntry().MethodName;
         }
         
+        private string GetCurrentMethodNameRaw()
+        {
+            return _methodStack.Count == 0 ? "N/A" : GetCurrentMethodEntry().MethodNameRaw;
+        }
+        
         private string GetCurrentCallingClassName()
         {
             return _methodStack.Count == 0 ? _lastCallingClass : GetCurrentMethodEntry().CallingClassName;
@@ -364,6 +385,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
                 count++;
             }
         }
+
+
 
 #endregion
         
@@ -460,6 +483,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
 
         private void PrintLog( string message, CustomLogType type = CustomLogType.Standard )
         {
+            // if ( !IsTargetMethod() ) return;
+            
             // string numberedMessage = $"{_lineNumber++.ToString()}){message}";
             // string numberedMessage = $": {_lineNumber++.ToString("00")} : {ApplyPrefix( message )}";
             message = ApplyPrefix( message );
@@ -487,6 +512,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         public void SetValuesToDefault()
         {
             showLogs = true;
+            useClassPrefix = true;
+            boldMethods = true;
+            boldBlockMethods = true;
             nicifiedNames = true;
 
             logPrefix = new CustomLoggerSymbol( 

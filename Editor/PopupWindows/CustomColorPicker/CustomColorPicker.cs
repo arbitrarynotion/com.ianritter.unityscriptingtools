@@ -210,12 +210,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
         {
             // Determine height required to fit all buttons.
             var returnRect = new Rect( basePosition );
+            // Remove space on right side to fit scroll bar. (13f + 2f of padding)
             returnRect.xMax -= 15f;
             float totalHeightRequired = 0;
-            for (int i = 0; i < ( _buttons.Count / _buttonsPerLine ); i++)
+            // Using buttonWidth for height because the buttons are square.
+            float totalLinesRequired = Mathf.CeilToInt( _buttons.Count / (float) _buttonsPerLine );
+            for (int i = 0; i < totalLinesRequired; i++)
                 totalHeightRequired += _buttonWidth + VerticalSeparator;
 
-            returnRect.height = totalHeightRequired + ( 2 * EdgePadding );
+            returnRect.height = totalHeightRequired +  ( 2 * EdgePadding );
             return new Rect( returnRect );
         }
 

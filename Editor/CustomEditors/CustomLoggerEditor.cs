@@ -99,6 +99,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
                 5
             );
             
+            // Subscribe to the color picker handler to be notified when the color button returns a color.
             _colorPickerHandler.OnColorSelected += OnColorSelection;
         }
         
@@ -107,6 +108,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
             _colorPickerHandler.OnColorSelected -= OnColorSelection;
         }
         
+        /// <summary>
+        /// This method will be called when the color picker handler has received a color from the popup window, which it passes as a parameter in case it's needed elsewhere.
+        /// The picker will assign the color to the property on its end. On this end, you just need to applyModifiedProperties to save the change.
+        /// </summary>
+        /// <param name="color"></param>
         private void OnColorSelection( CustomColor color )
         {
             Debug.Log( $"Color picker returned color: {GetColoredString( color.name, color.GetHex() )}" );
@@ -200,6 +206,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
         {
             Rect controlRect = EditorGUILayout.GetControlRect();
 
+            // Exclude color picker button width from available width.
             float availableWidth = controlRect.width - _colorPickerHandler.GetColorPickerButtonWidth();
 
             var lineRect = new Rect( controlRect )
@@ -208,6 +215,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
             };
             // DrawRectOutline( lineRect, Color.grey );
 
+            // Draw Property label and field.
             var propertyFieldRect = new Rect( lineRect );
             // DrawRectOutline( propertyField, Color.magenta );
             if ( guiContent != null )
@@ -219,11 +227,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
                 EditorGUI.PropertyField( propertyFieldRect, fieldProperty );
             }
 
+            // Set the color picker button rect to start at the end of the available space plus a spacer.
+            // Then get the width from the color picker handler.
             var buttonRect = new Rect( controlRect );
             buttonRect.xMin += availableWidth + 2f;
             buttonRect.width = _colorPickerHandler.GetColorPickerButtonWidth();
             // DrawRectOutline( buttonRect, Color.yellow );
             
+            // Finally, pass the button rect and the color property to the color picker handler.
+            // This can either be a direct color property via serializedObject.FindProperty or an indirect one via property.FindPropertyRelative.
             _colorPickerHandler.DrawColorPickerPropertyButton( buttonRect, targetProperty );
         }
 

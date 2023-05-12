@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: DefaultCustomLogger
   m_EditorClassIdentifier: 
   showLogs: 1
-  useClassPrefix: 0
+  useClassPrefix: 1
   boldMethods: 1
   boldBlockMethods: 1
   nicifiedNames: 1
   includeStackTrace: 0
   fullPathName: 0
-  targetClass: Example01
-  targetMethod: SubClassMethod02
+  targetClass: 
+  targetMethod: Test Method Level 1
   logPrefix:
     toggle: 1
     customColor:

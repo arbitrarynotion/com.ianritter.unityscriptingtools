@@ -12,8 +12,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
 
         // private SerializedProperty _buttonTexture;
 
-        private const float buttonWidth = 22f;
-        private Texture _buttonTextureAsset;
+        private const float ButtonWidth = 22f;
+        private readonly Texture _buttonTextureAsset;
         
         public delegate void ColorSelected( CustomColor color );
         /// <summary>
@@ -35,7 +35,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
         }
 
 
-        public float GetColorPickerButtonWidth() => buttonWidth;
+        public float GetColorPickerButtonWidth() => ButtonWidth;
         
         /// <summary>
         /// Handles the color picker window.
@@ -75,7 +75,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
         public void DrawCustomColorField( CustomColor targetColor )
         {
             Rect lineRect = EditorGUILayout.GetControlRect( true );
-            float availableWidth = lineRect.width - buttonWidth;
+            float availableWidth = lineRect.width - ButtonWidth;
 
             // float colorFieldWidth = availableWidth * 0.9f;
             // float colorFieldWidth = availableWidth;
@@ -88,7 +88,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
             // DrawRectOutline( colorFieldRect, Color.cyan );
             targetColor.color = EditorGUI.ColorField( colorFieldRect, targetColor.name, targetColor.color );
             
-            var buttonRect = new Rect( lineRect ) { width = buttonWidth };
+            var buttonRect = new Rect( lineRect ) { width = ButtonWidth };
             buttonRect.x += availableWidth;
             buttonRect.xMin += 2f;
             // DrawRectOutline( buttonRect, Color.green );
