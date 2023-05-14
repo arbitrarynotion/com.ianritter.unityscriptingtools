@@ -54,6 +54,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
 
         public int GetTabLevel() => _tabLevel;
 
+        public void ResetTabLevel() => _tabLevel = 0;
+
         public CustomLogType GetLogType() => _logType;
     }
 }

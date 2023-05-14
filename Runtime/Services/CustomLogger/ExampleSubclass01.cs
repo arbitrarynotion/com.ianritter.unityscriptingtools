@@ -37,8 +37,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             _logger.IncrementMethodIndent( 3 );
             _logger.Log( "Subclass sub log 8, after manual increment of 3." );
             _logger.Log( "Subclass sub log 9." );
-            _logger.DecrementMethodIndent( 3 );
-            _logger.Log( "Subclass sub log 10, after manual decrement 0f 3." );
+            _logger.DecrementMethodIndent( 1 );
+            _logger.Log( "Subclass sub log 10, after manual decrement 0f 1." );
 
             _logger.LogEnd( "This is a LogEnd log. Lacks other log options but good for quickly stating reason for method exit.");
         }

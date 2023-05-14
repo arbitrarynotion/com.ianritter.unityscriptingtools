@@ -113,7 +113,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             string message = GetLogEndCapMessage( GetCurrentMethodEntry(), logBlockStart, GetCurrentCallingClassName() );
             PrintLog( $"{indent}{message}", logType );
             
-            IncrementTabLevel();
+            IncrementBlockTabLevel();
 
             if ( introMessage.Equals( "" ) ) return;
             
@@ -132,8 +132,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             if ( !LogAllowed() ) return;
             
             CustomLogType logType = GetCurrentMethodEntryLogType();
-            string indent = GetIndentString();
-            
+            string indent = "";
+            if ( !endMessage.Equals( "" ) )
+            {
+                ResetMethodTabLevelForLogEnd();
+                indent = GetIndentString();
+            }
+
             // Pop method entry from the stack and cache it's calling class.
             MethodEntry methodEntry = PopMethodEntry();
             _lastCallingClass = methodEntry.CallingClassName;
@@ -144,7 +149,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
                 PrintLog( $"{indent}{introMarker} {endMessage}", logType );
             }
             
-            DecrementTabLevel();
+            DecrementBlockTabLevel();
             
             indent = GetIndentString();
             string message = GetLogEndCapMessage( methodEntry, logBlockEnd, _lastCallingClass );
@@ -413,10 +418,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         
         private void DecrementMethodTabLevel() => GetCurrentMethodEntry().DecrementTabLevel();
         private void IncrementMethodTabLevel() => GetCurrentMethodEntry().IncrementTabLevel();
+
+        private void ResetMethodTabLevelForLogEnd() => GetCurrentMethodEntry().ResetTabLevel();
         
-        private void IncrementTabLevel() => ++_blockTabLevel;
+        private void IncrementBlockTabLevel() => ++_blockTabLevel;
         
-        private void DecrementTabLevel() => _blockTabLevel = Mathf.Max( ( _blockTabLevel - 1 ), 0 );
+        private void DecrementBlockTabLevel() => _blockTabLevel = Mathf.Max( ( _blockTabLevel - 1 ), 0 );
         
         private string GetIndentString()
         {
