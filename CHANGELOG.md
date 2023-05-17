@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.3.4...v1.4.0) (2023-05-17)
+
+
+### Features
+
+* Update to UIRectGraphics ([5e44f65](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/5e44f65654fd3a0b22869911bba797561d4274ca))
+
 ## [1.3.4](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.3.3...v1.3.4) (2023-05-14)
 
 
