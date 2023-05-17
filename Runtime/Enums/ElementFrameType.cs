@@ -19,6 +19,10 @@
         Corners,
         CornersSkipTopLines,
         CornersBottomOnly,
-        CornersLeftBottomOnly
+        CornersLeftBottomOnly,
+        
+        // Combinations
+        FullLeftPartialBottom,
+        PartialLeftFullBottom
     }
 }

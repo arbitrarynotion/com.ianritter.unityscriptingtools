@@ -7,57 +7,18 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics
     public static class UIRectGraphics
     {
         /// <summary>
-        ///     Draws the provided rect's outline with the specified color and line thickness.
+        ///     Draws the provided rect's outline with the specified color and line thickness. If you want this outline to have
+        ///     a background, draw a solid rect first, then draw this outline.
         /// </summary>
         public static void DrawRectOutline( Rect rect, Color outlineColor, float lineThickness = 1f )
         {
             // Variable width lines.
-            DrawRectLeftEdge( rect, outlineColor, lineThickness );
-            DrawRectRightEdge( rect, outlineColor, lineThickness );
+            DrawFullLeftEdge( rect, outlineColor, lineThickness );
+            DrawFullRightEdge( rect, outlineColor, lineThickness );
             
             // Constant width lines.
-            DrawRectTopEdge( rect, outlineColor, lineThickness );
-            DrawRectBottomEdge( rect, outlineColor, lineThickness );
-        }
-
-        /// <summary>
-        ///     Draws the provided rect's left edge with the specified color and line thickness.
-        /// </summary>
-        public static void DrawRectLeftEdge( Rect rect, Color outlineColor, float lineThickness = 1f )
-        {
-            Rect leftRect = rect;
-            leftRect.width = lineThickness;
-            DrawRect( leftRect, outlineColor );
-        }
-
-        /// <summary>
-        ///     Draws the provided rect's right edge with the specified color and line thickness.
-        /// </summary>
-        public static void DrawRectRightEdge( Rect rect, Color outlineColor, float lineThickness = 1f )
-        {
-            Rect rightRect = rect;
-            rightRect.xMin += rightRect.width - lineThickness;
-            DrawRect( rightRect, outlineColor );
-        }
-        
-        /// <summary>
-        ///     Draws the provided rect's top edge with the specified color and line thickness.
-        /// </summary>
-        public static void DrawRectTopEdge( Rect rect, Color outlineColor, float lineThickness = 1f )
-        {
-            Rect topRect = rect;
-            topRect.height = lineThickness;
-            DrawRect( topRect, outlineColor );
-        }
-        
-        /// <summary>
-        ///     Draws the provided rect's bottom edge with the specified color and line thickness.
-        /// </summary>
-        public static void DrawRectBottomEdge( Rect rect, Color outlineColor, float lineThickness = 1f )
-        {
-            Rect bottomRect = rect;
-            bottomRect.yMin += bottomRect.height - lineThickness;
-            DrawRect( bottomRect, outlineColor );
+            DrawFullTopEdge( rect, outlineColor, lineThickness );
+            DrawFullBottomEdge( rect, outlineColor, lineThickness );
         }
 
         /// <summary>
@@ -94,6 +55,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics
             if ( includeBackground )
                 DrawSolidRect( frameRect, backgroundColor );
             
+            // Partial edges.
             switch (frameType)
             {
                 case ElementFrameType.None:
@@ -114,7 +76,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics
                     DrawLeftBottomCornerPartialFrame( frameRect, frameOutlineColor, outlineThickness );
                     return;
                 case ElementFrameType.SkipBottom:
-                    DrawRectTopEdge( frameRect, frameOutlineColor, outlineThickness );
+                    DrawFullTopEdge( frameRect, frameOutlineColor, outlineThickness );
                     break;
                 case ElementFrameType.SkipTop:
                     break;
@@ -124,84 +86,198 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics
                     break;
                 case ElementFrameType.LeftOnly:
                     break;
+                case ElementFrameType.FullLeftPartialBottom:
+                    DrawFullLeftPartialBottom( frameRect, frameOutlineColor, outlineThickness );
+                    break;
+                case ElementFrameType.PartialLeftFullBottom:
+                    DrawPartialLeftFullBottom( frameRect, frameOutlineColor, outlineThickness );
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException( nameof( frameType ), frameType,
                         "Type not handled. Was the enum updated with new values?" );
             }
 
+            // Complete edges.
             // Left
             if (frameType == ElementFrameType.LeftAndBottomOnly
                 || frameType == ElementFrameType.LeftOnly
                 || frameType == ElementFrameType.SkipBottom
-                || frameType == ElementFrameType.SkipTop)
+                || frameType == ElementFrameType.SkipTop
+                || frameType == ElementFrameType.FullLeftPartialBottom)
             {
-                DrawRectLeftEdge( frameRect, frameOutlineColor, outlineThickness );
+                DrawFullLeftEdge( frameRect, frameOutlineColor, outlineThickness );
             }
             
             // Right
             if (frameType == ElementFrameType.SkipBottom
                 || frameType == ElementFrameType.SkipTop)
             {
-                DrawRectRightEdge( frameRect, frameOutlineColor, outlineThickness );
+                DrawFullRightEdge( frameRect, frameOutlineColor, outlineThickness );
             }
             
             // Bottom
             if (frameType == ElementFrameType.SkipTop 
                 || frameType == ElementFrameType.LeftAndBottomOnly 
-                || frameType == ElementFrameType.BottomOnly)
+                || frameType == ElementFrameType.BottomOnly
+                || frameType == ElementFrameType.PartialLeftFullBottom)
             {
-                DrawRectBottomEdge( frameRect, frameOutlineColor, outlineThickness );
+                DrawFullBottomEdge( frameRect, frameOutlineColor, outlineThickness );
             }
         }
+
+        
+#region FullEdges
+        
+        /// <summary>
+        ///     Draws the provided rect's left edge with the specified color and line thickness.
+        /// </summary>
+        public static void DrawFullLeftEdge( Rect rect, Color outlineColor, float lineThickness = 1f )
+        {
+            Rect leftRect = rect;
+            leftRect.width = lineThickness;
+            DrawRect( leftRect, outlineColor );
+        }
+
+        /// <summary>
+        ///     Draws the provided rect's right edge with the specified color and line thickness.
+        /// </summary>
+        public static void DrawFullRightEdge( Rect rect, Color outlineColor, float lineThickness = 1f )
+        {
+            Rect rightRect = rect;
+            rightRect.xMin += rightRect.width - lineThickness;
+            DrawRect( rightRect, outlineColor );
+        }
+        
+        /// <summary>
+        ///     Draws the provided rect's top edge with the specified color and line thickness.
+        /// </summary>
+        public static void DrawFullTopEdge( Rect rect, Color outlineColor, float lineThickness = 1f )
+        {
+            Rect topRect = rect;
+            topRect.height = lineThickness;
+            DrawRect( topRect, outlineColor );
+        }
+        
+        /// <summary>
+        ///     Draws the provided rect's bottom edge with the specified color and line thickness.
+        /// </summary>
+        public static void DrawFullBottomEdge( Rect rect, Color outlineColor, float lineThickness = 1f )
+        {
+            Rect bottomRect = rect;
+            bottomRect.yMin += bottomRect.height - lineThickness;
+            DrawRect( bottomRect, outlineColor );
+        }
+        
+#endregion
         
         
+#region PartialEdges
+
+        // Split rect edge parts into their own methods.
+        // DrawPartialLeftUpperEdge
+        public static void DrawPartialLeftUpperEdge( Rect frameRect, Color backgroundColor, float outlineThickness = 1f, float partialCornerLineLength = 10f )
+        {
+            var verticalLineRect = new Rect( frameRect ) {height = partialCornerLineLength};
+            DrawFullLeftEdge( verticalLineRect, backgroundColor, outlineThickness );
+        }
+        
+        // DrawPartialLeftLowerEdge
+        public static void DrawPartialLeftLowerEdge( Rect frameRect, Color backgroundColor, float outlineThickness = 1f, float partialCornerLineLength = 10f )
+        {
+            var verticalLineRect = new Rect( frameRect );
+            verticalLineRect.yMin += ( frameRect.height - partialCornerLineLength );
+            DrawFullLeftEdge( verticalLineRect, backgroundColor, outlineThickness );
+        }
+        
+        // DrawPartialRightUpperEdge
+        public static void DrawPartialRightUpperEdge( Rect frameRect, Color backgroundColor, float outlineThickness = 1f, float partialCornerLineLength = 10f )
+        {
+            var verticalLineRect = new Rect( frameRect ) {height = partialCornerLineLength};
+            verticalLineRect.xMin += ( frameRect.width - outlineThickness );
+            DrawFullLeftEdge( verticalLineRect, backgroundColor, outlineThickness );
+        }
+        // DrawPartialRightLowerEdge
+        public static void DrawPartialRightLowerEdge( Rect frameRect, Color backgroundColor, float outlineThickness = 1f, float partialCornerLineLength = 10f )
+        {
+            var verticalLineRect = new Rect( frameRect );
+            verticalLineRect.yMin += ( frameRect.height - partialCornerLineLength );
+            verticalLineRect.xMin += ( frameRect.width - outlineThickness );
+            DrawFullLeftEdge( verticalLineRect, backgroundColor, outlineThickness );
+        }
+        
+        // DrawPartialBottomLeftEdge
+        public static void DrawPartialBottomLeftEdge( Rect frameRect, Color backgroundColor, float outlineThickness = 1f, float partialCornerLineLength = 10f )
+        {
+            var horizontalLineRect = new Rect( frameRect ) {width = partialCornerLineLength};
+            DrawFullBottomEdge( horizontalLineRect, backgroundColor, outlineThickness );
+        }
+        
+        // DrawPartialBottomRightEdge
+        public static void DrawPartialBottomRightEdge( Rect frameRect, Color backgroundColor, float outlineThickness = 1f, float partialCornerLineLength = 10f )
+        {
+            var horizontalLineRect = new Rect( frameRect );
+            horizontalLineRect.xMin += ( frameRect.width - partialCornerLineLength );
+            DrawFullBottomEdge( horizontalLineRect, backgroundColor, outlineThickness );
+        }
+        
+        // DrawPartialTopLeftEdge
+        public static void DrawPartialTopLeftEdge( Rect frameRect, Color backgroundColor, float outlineThickness = 1f, float partialCornerLineLength = 10f )
+        {
+            var horizontalLineRect = new Rect( frameRect ) {width = partialCornerLineLength};
+            DrawFullTopEdge( horizontalLineRect, backgroundColor, outlineThickness );
+        }
+        // DrawPartialTopRightEdge
+        public static void DrawPartialTopRightEdge( Rect frameRect, Color backgroundColor, float outlineThickness = 1f, float partialCornerLineLength = 10f )
+        {
+            var horizontalLineRect = new Rect( frameRect );
+            horizontalLineRect.xMin += ( frameRect.width - partialCornerLineLength );
+            DrawFullTopEdge( horizontalLineRect, backgroundColor, outlineThickness );
+        }
+        
+#endregion
+
+#region Combinations
         
         public static void DrawLeftTopCornerPartialFrame( Rect frameRect, Color backgroundColor, bool skipTopLines = false, float outlineThickness = 1f, float partialCornerLineLength = 10f )
         {
-            var verticalLineRect = new Rect( frameRect ) {height = partialCornerLineLength};
-            DrawRectLeftEdge( verticalLineRect, backgroundColor, outlineThickness );
+            // Draw left partial upper.
+            DrawPartialLeftUpperEdge( frameRect, backgroundColor, outlineThickness, partialCornerLineLength );
             
             if (skipTopLines)
                 return;
             
-            var horizontalLineRect = new Rect( frameRect ) {width = partialCornerLineLength};
-            DrawRectTopEdge( horizontalLineRect, backgroundColor, outlineThickness );
+            // Draw top partial left.
+            DrawPartialTopLeftEdge( frameRect, backgroundColor, outlineThickness, partialCornerLineLength );
         }
         
         public static void DrawRightTopCornerPartialFrame( Rect frameRect, Color backgroundColor, bool skipTopLines = false, float outlineThickness = 1f, float partialCornerLineLength = 10f )
         {
-            var verticalLineRect = new Rect( frameRect ) {height = partialCornerLineLength};
-            verticalLineRect.xMin += ( frameRect.width - outlineThickness );
-            DrawRectLeftEdge( verticalLineRect, backgroundColor, outlineThickness );
+            // Right partial upper
+            DrawPartialRightUpperEdge( frameRect, backgroundColor, outlineThickness, partialCornerLineLength );
 
             if (skipTopLines)
                 return;
             
-            var horizontalLineRect = new Rect( frameRect );
-            horizontalLineRect.xMin += ( frameRect.width - partialCornerLineLength );
-            DrawRectTopEdge( horizontalLineRect, backgroundColor, outlineThickness );
+            // Top partial right
+            DrawPartialTopRightEdge( frameRect, backgroundColor, outlineThickness, partialCornerLineLength );
         }
         
         public static void DrawLeftBottomCornerPartialFrame( Rect frameRect, Color backgroundColor, float outlineThickness = 1f, float partialCornerLineLength = 10f )
         {
-            var verticalLineRect = new Rect( frameRect );
-            verticalLineRect.yMin += ( frameRect.height - partialCornerLineLength );
-            DrawRectLeftEdge( verticalLineRect, backgroundColor, outlineThickness );
+            // Left partial lower
+            DrawPartialLeftLowerEdge( frameRect, backgroundColor, outlineThickness, partialCornerLineLength );
             
-            var horizontalLineRect = new Rect( frameRect ) {width = partialCornerLineLength};
-            DrawRectBottomEdge( horizontalLineRect, backgroundColor, outlineThickness );
+            // Bottom partial left
+            DrawPartialBottomLeftEdge( frameRect, backgroundColor, outlineThickness, partialCornerLineLength );
         }
 
         public static void DrawRightBottomCornerPartialFrame( Rect frameRect, Color backgroundColor, float outlineThickness = 1f, float partialCornerLineLength = 10f )
         {
-            var verticalLineRect = new Rect( frameRect );
-            verticalLineRect.yMin += ( frameRect.height - partialCornerLineLength );
-            verticalLineRect.xMin += ( frameRect.width - outlineThickness );
-            DrawRectLeftEdge( verticalLineRect, backgroundColor, outlineThickness );
+            // Right partial lower
+            DrawPartialRightLowerEdge( frameRect, backgroundColor, outlineThickness, partialCornerLineLength );
             
-            var horizontalLineRect = new Rect( frameRect );
-            horizontalLineRect.xMin += ( frameRect.width - partialCornerLineLength );
-            DrawRectBottomEdge( horizontalLineRect, backgroundColor, outlineThickness );
+            // Bottom partial right
+            DrawPartialBottomRightEdge( frameRect, backgroundColor, outlineThickness, partialCornerLineLength );
         }
         
         
@@ -218,6 +294,30 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics
             DrawLeftBottomCornerPartialFrame( frameRect, frameOutlineColor, outlineThickness );
             DrawRightBottomCornerPartialFrame( frameRect, frameOutlineColor, outlineThickness );
         }
+
+        public static void DrawFullLeftPartialBottom( Rect frameRect, Color frameOutlineColor, float outlineThickness )
+        {
+            // Left full
+            DrawFullLeftEdge( frameRect, frameOutlineColor, outlineThickness );
+            
+            // Bottom partial left
+            DrawPartialBottomLeftEdge( frameRect, frameOutlineColor, outlineThickness );
+        }
+        
+        public static void DrawPartialLeftFullBottom( Rect frameRect, Color frameOutlineColor, float outlineThickness )
+        {
+            // Left partial lower
+            DrawPartialLeftLowerEdge( frameRect, frameOutlineColor, outlineThickness );
+
+            // Bottom full
+            DrawFullBottomEdge( frameRect, frameOutlineColor, outlineThickness );
+        }
+        
+#endregion
+
+
+#region EdgeChecks
+        // Used for determining if padding should be applied to a given edge.
         
         public static bool FrameHasTop( ElementFrameType frameType )
         {
@@ -249,7 +349,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics
                       || frameType == ElementFrameType.LeftOnly );
         }
         
-        
+#endregion
+
+        /// <summary>
+        /// Returns a 2D texture with the given width, height, and color. Useful for button backgrounds to avoid
+        /// automatic button tinting.
+        /// </summary>
         public static Texture2D GenerateTexture( int width, int height, Color color )
         {
             Color[] pixels = new Color[width * height];
