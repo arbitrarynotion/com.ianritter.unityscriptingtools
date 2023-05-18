@@ -95,7 +95,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
             
             _colorPickerHandler = new ColorPickerHandler( 
                 new Vector2( 10f, 10f ), 
-                new Vector2(350, 400), 
+                350f, 400f, 
                 5
             );
             
@@ -115,7 +115,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
         /// <param name="color"></param>
         private void OnColorSelection( CustomColor color )
         {
-            Debug.Log( $"Color picker returned color: {GetColoredString( color.name, color.GetHex() )}" );
+            // Debug.Log( $"Color picker returned color: {GetColoredString( color.name, color.GetHex() )}" );
             _colorPickerHandler.Close();
             serializedObject.ApplyModifiedProperties();
             Repaint();
@@ -205,6 +205,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
         private void DrawPropertyWithColorPicker( SerializedProperty fieldProperty, SerializedProperty targetProperty, GUIContent guiContent )
         {
             Rect controlRect = EditorGUILayout.GetControlRect();
+            
+            _colorPickerHandler.SetWindowPosition( controlRect.position );
 
             // Exclude color picker button width from available width.
             float availableWidth = controlRect.width - _colorPickerHandler.GetColorPickerButtonWidth();

@@ -84,7 +84,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             UpdateHexColors();
             _colorPickerHandler = new ColorPickerHandler( 
                 new Vector2( 10f, 10f ), 
-                new Vector2(350, 400),
+                350f, 400f,
                 5
             );
             

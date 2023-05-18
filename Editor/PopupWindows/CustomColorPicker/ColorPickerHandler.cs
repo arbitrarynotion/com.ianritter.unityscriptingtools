@@ -8,11 +8,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
     public class ColorPickerHandler
     {
         private readonly CustomColorPicker _customColorPicker;
-        private readonly Rect _position;
+        private Rect _position;
 
         // private SerializedProperty _buttonTexture;
 
-        private const float ButtonWidth = 22f;
+        private float _buttonWidth = 22f;
         private readonly Texture _buttonTextureAsset;
         
         public delegate void ColorSelected( CustomColor color );
@@ -33,27 +33,39 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
             // Debug.Log( $"ColorPickerHandler: loading of button texture {TextFormat.GetColoredStringYellow( result )}" );
             _position = new Rect( position, Vector2.zero );
         }
-
-
-        public float GetColorPickerButtonWidth() => ButtonWidth;
         
         /// <summary>
-        /// Handles the color picker window.
+        /// Handles the color picker window including settings its size and position, opening and closing it, and initiating
+        /// callbacks when a color has been selected.
         /// </summary>
-        /// <param name="position">This is the top left corner of the window.</param>
-        /// <param name="windowSize">The size of the color picker window.</param>
+        /// <param name="windowWidth">The width of the popup window.</param>
+        /// <param name="windowHeight">The height of the popup window.</param>
         /// <param name="buttonsPerLine">How many colors will displayed per line within the window. The buttons are square and will auto-size to fit that many per line.</param>
-        public ColorPickerHandler( Vector2 position, Vector2 windowSize, int buttonsPerLine = 8 ) : this( position )
+        public ColorPickerHandler( float windowWidth = 300f, float windowHeight = 400f, int buttonsPerLine = 8 ) : this( new Vector2( 10f, 10f ) )
         {
-            _customColorPicker = new CustomColorPicker( windowSize, buttonsPerLine );
+            _customColorPicker = new CustomColorPicker( new Vector2( windowWidth, windowHeight ), buttonsPerLine );
             _customColorPicker.OnButtonPressed += OnColorSelection;
         }
 
-        // public ColorPickerHandler( CustomLogger logger, Rect position, Vector2 windowSize, Vector2 buttonSize ) : this( logger, position )
-        // {
-        //     _customColorPicker = new CustomColorPicker( logger, windowSize, buttonSize );
-        //     _customColorPicker.OnButtonPressed += OnColorSelection;
-        // }
+        /// <summary>
+        /// Handles the color picker window including settings its size and position, opening and closing it, and initiating
+        /// callbacks when a color has been selected.
+        /// </summary>
+        /// <param name="position">This is the top left corner of the window.</param>
+        /// <param name="windowWidth">The width of the popup window.</param>
+        /// <param name="windowHeight">The height of the popup window.</param>
+        /// <param name="buttonsPerLine">How many colors will displayed per line within the window. The buttons are square and will auto-size to fit that many per line.</param>
+        public ColorPickerHandler( Vector2 position, float windowWidth = 300f, float windowHeight = 400f, int buttonsPerLine = 8 ) : this( position )
+        {
+            _customColorPicker = new CustomColorPicker( new Vector2( windowWidth, windowHeight ), buttonsPerLine );
+            _customColorPicker.OnButtonPressed += OnColorSelection;
+        }
+
+        
+        public float GetColorPickerButtonWidth() => _buttonWidth;
+        public float SetColorPickerButtonWidth() => _buttonWidth;
+
+        public void SetWindowPosition( Vector2 position ) => _position = new Rect( position, Vector2.zero );
 
         public void Close() => _customColorPicker.editorWindow.Close();
 
@@ -75,7 +87,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
         public void DrawCustomColorField( CustomColor targetColor )
         {
             Rect lineRect = EditorGUILayout.GetControlRect( true );
-            float availableWidth = lineRect.width - ButtonWidth;
+            float availableWidth = lineRect.width - _buttonWidth;
 
             // float colorFieldWidth = availableWidth * 0.9f;
             // float colorFieldWidth = availableWidth;
@@ -88,7 +100,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
             // DrawRectOutline( colorFieldRect, Color.cyan );
             targetColor.color = EditorGUI.ColorField( colorFieldRect, targetColor.name, targetColor.color );
             
-            var buttonRect = new Rect( lineRect ) { width = ButtonWidth };
+            var buttonRect = new Rect( lineRect ) { width = _buttonWidth };
             buttonRect.x += availableWidth;
             buttonRect.xMin += 2f;
             // DrawRectOutline( buttonRect, Color.green );
