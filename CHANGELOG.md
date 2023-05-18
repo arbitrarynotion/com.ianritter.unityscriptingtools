@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.4.1...v1.4.2) (2023-05-18)
+
+
+### Bug Fixes
+
+* Update to ColorPickerHandler ([fbc2484](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/fbc24842ca2dd867eea83d4a88c00cd83fcdf836))
+
 ## [1.4.1](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.4.0...v1.4.1) (2023-05-18)
 
 
