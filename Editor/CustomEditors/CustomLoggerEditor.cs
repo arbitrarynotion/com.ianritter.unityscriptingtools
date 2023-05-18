@@ -61,7 +61,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
         
         // private SerializedProperty _buttonTextureProperty;
         
-        private ColorPickerHandler _colorPickerHandler;
+        // private ColorPickerHandler _colorPickerHandler;
 
         private bool _debugFoldoutToggle = false;
 
@@ -93,19 +93,19 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
             
             // _buttonTextureProperty = serializedObject.FindProperty( ButtonTextureVarName );
             
-            _colorPickerHandler = new ColorPickerHandler( 
-                new Vector2( 10f, 10f ), 
-                350f, 400f, 
-                5
-            );
+            // _colorPickerHandler = new ColorPickerHandler( 
+            //     new Vector2( 10f, 10f ), 
+            //     350f, 400f, 
+            //     5
+            // );
             
             // Subscribe to the color picker handler to be notified when the color button returns a color.
-            _colorPickerHandler.OnColorSelected += OnColorSelection;
+            ColorPickerHandler.OnColorSelected += OnColorSelection;
         }
         
         private void OnDisable()
         {
-            _colorPickerHandler.OnColorSelected -= OnColorSelection;
+            ColorPickerHandler.OnColorSelected -= OnColorSelection;
         }
         
         /// <summary>
@@ -116,7 +116,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
         private void OnColorSelection( CustomColor color )
         {
             // Debug.Log( $"Color picker returned color: {GetColoredString( color.name, color.GetHex() )}" );
-            _colorPickerHandler.Close();
+            ColorPickerHandler.Close();
             serializedObject.ApplyModifiedProperties();
             Repaint();
         }
@@ -206,10 +206,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
         {
             Rect controlRect = EditorGUILayout.GetControlRect();
             
-            _colorPickerHandler.SetWindowPosition( controlRect.position );
+            ColorPickerHandler.SetWindowPosition( controlRect.position );
 
             // Exclude color picker button width from available width.
-            float availableWidth = controlRect.width - _colorPickerHandler.GetColorPickerButtonWidth();
+            float availableWidth = controlRect.width - ColorPickerHandler.GetColorPickerButtonWidth();
 
             var lineRect = new Rect( controlRect )
             {
@@ -233,12 +233,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
             // Then get the width from the color picker handler.
             var buttonRect = new Rect( controlRect );
             buttonRect.xMin += availableWidth + 2f;
-            buttonRect.width = _colorPickerHandler.GetColorPickerButtonWidth();
+            buttonRect.width = ColorPickerHandler.GetColorPickerButtonWidth();
             // DrawRectOutline( buttonRect, Color.yellow );
             
             // Finally, pass the button rect and the color property to the color picker handler.
             // This can either be a direct color property via serializedObject.FindProperty or an indirect one via property.FindPropertyRelative.
-            _colorPickerHandler.DrawColorPickerPropertyButton( buttonRect, targetProperty );
+            ColorPickerHandler.DrawColorPickerPropertyButton( buttonRect, targetProperty );
         }
 
         private void DrawBasicColorProperty( SerializedProperty property, GUIContent guiContent = null ) => 

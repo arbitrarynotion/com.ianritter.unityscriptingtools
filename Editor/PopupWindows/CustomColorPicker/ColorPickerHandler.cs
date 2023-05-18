@@ -5,132 +5,110 @@ using UnityEngine;
 
 namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomColorPicker
 {
-    public class ColorPickerHandler
+    public static class ColorPickerHandler
     {
-        private readonly CustomColorPicker _customColorPicker;
-        private Rect _position;
+        private static readonly CustomColorPicker _customColorPicker;
+        private static Rect _position;
 
         // private SerializedProperty _buttonTexture;
 
-        private float _buttonWidth = 22f;
-        private readonly Texture _buttonTextureAsset;
+        private static float _buttonWidth = 22f;
+        private static readonly Texture ButtonTextureAsset;
         
         public delegate void ColorSelected( CustomColor color );
         /// <summary>
         ///     Subscribe to this event with the method that will receive the chosen custom color.
         /// </summary>
-        public event ColorSelected OnColorSelected;
-        private void OnColorSelectedNotify( CustomColor color )
+        public static event ColorSelected OnColorSelected;
+        private static void OnColorSelectedNotify( CustomColor color )
         {
             OnColorSelected?.Invoke( color );
         }
 
-        
-        private ColorPickerHandler( Vector2 position )
+        static ColorPickerHandler()
         {
-            _buttonTextureAsset = AssetLoader.GetAssetByName<Texture>( "color-circle" );
+            ButtonTextureAsset = AssetLoader.GetAssetByName<Texture>( "color-circle" );
             // string result = _buttonTextureAsset == null ? "failed" : "succeeded";
             // Debug.Log( $"ColorPickerHandler: loading of button texture {TextFormat.GetColoredStringYellow( result )}" );
-            _position = new Rect( position, Vector2.zero );
-        }
-        
-        /// <summary>
-        /// Handles the color picker window including settings its size and position, opening and closing it, and initiating
-        /// callbacks when a color has been selected.
-        /// </summary>
-        /// <param name="windowWidth">The width of the popup window.</param>
-        /// <param name="windowHeight">The height of the popup window.</param>
-        /// <param name="buttonsPerLine">How many colors will displayed per line within the window. The buttons are square and will auto-size to fit that many per line.</param>
-        public ColorPickerHandler( float windowWidth = 300f, float windowHeight = 400f, int buttonsPerLine = 8 ) : this( new Vector2( 10f, 10f ) )
-        {
-            _customColorPicker = new CustomColorPicker( new Vector2( windowWidth, windowHeight ), buttonsPerLine );
+            _position = new Rect( Vector2.zero, Vector2.zero );
+            
+            _customColorPicker = new CustomColorPicker( new Vector2( 350f, 400f ), 5 );
             _customColorPicker.OnButtonPressed += OnColorSelection;
         }
-
-        /// <summary>
-        /// Handles the color picker window including settings its size and position, opening and closing it, and initiating
-        /// callbacks when a color has been selected.
-        /// </summary>
-        /// <param name="position">This is the top left corner of the window.</param>
-        /// <param name="windowWidth">The width of the popup window.</param>
-        /// <param name="windowHeight">The height of the popup window.</param>
-        /// <param name="buttonsPerLine">How many colors will displayed per line within the window. The buttons are square and will auto-size to fit that many per line.</param>
-        public ColorPickerHandler( Vector2 position, float windowWidth = 300f, float windowHeight = 400f, int buttonsPerLine = 8 ) : this( position )
-        {
-            _customColorPicker = new CustomColorPicker( new Vector2( windowWidth, windowHeight ), buttonsPerLine );
-            _customColorPicker.OnButtonPressed += OnColorSelection;
-        }
-
         
-        public float GetColorPickerButtonWidth() => _buttonWidth;
-        public float SetColorPickerButtonWidth() => _buttonWidth;
+        public static float GetColorPickerButtonWidth() => _buttonWidth;
+        public static void SetColorPickerButtonWidth( float buttonWidth ) => _buttonWidth = buttonWidth;
 
-        public void SetWindowPosition( Vector2 position ) => _position = new Rect( position, Vector2.zero );
+        public static void SetWindowPosition( Vector2 position ) => _position = new Rect( position, Vector2.zero );
+        public static void SetWindowSize( float windowWidth, float windowHeight ) => _customColorPicker.SetWindowSize( new Vector2( windowWidth, windowHeight ));
+        
+        public static int GetButtonsPerLine() => _customColorPicker.GetButtonsPerLine();
+        public static void SetButtonsPerLine( int buttonsPerLine ) => _customColorPicker.SetButtonsPerLine( buttonsPerLine );
 
-        public void Close() => _customColorPicker.editorWindow.Close();
+
+        public static void Close() => _customColorPicker.editorWindow.Close();
 
         /// <summary>
         ///     Use this as the button callback to trigger the color picker popup window.
         /// </summary>
-        private void ColorPickerButtonPressed( CustomColor targetColor )
+        private static void ColorPickerButtonPressed( CustomColor targetColor )
         {
             _customColorPicker.SetTargetCustomColor( targetColor );
             PopupWindow.Show( _position, _customColorPicker );
         }
 
-        private void ColorPickerPropertyButtonPressed( SerializedProperty customColorProperty )
+        private static void ColorPickerPropertyButtonPressed( SerializedProperty customColorProperty )
         {
             _customColorPicker.SetTargetCustomColor( customColorProperty );
             PopupWindow.Show( _position, _customColorPicker );
         }
         
-        public void DrawCustomColorField( CustomColor targetColor )
+        public static bool DrawCustomColorField( CustomColor targetColor )
         {
             Rect lineRect = EditorGUILayout.GetControlRect( true );
             float availableWidth = lineRect.width - _buttonWidth;
 
-            // float colorFieldWidth = availableWidth * 0.9f;
-            // float colorFieldWidth = availableWidth;
-            // float startOfButton = colorFieldWidth;
-            
             var colorFieldRect = new Rect( lineRect )
             {
                 width = availableWidth
             };
             // DrawRectOutline( colorFieldRect, Color.cyan );
-            targetColor.color = EditorGUI.ColorField( colorFieldRect, targetColor.name, targetColor.color );
-            
-            var buttonRect = new Rect( lineRect ) { width = _buttonWidth };
-            buttonRect.x += availableWidth;
-            buttonRect.xMin += 2f;
-            // DrawRectOutline( buttonRect, Color.green );
-            DrawColorPickerButton( buttonRect, targetColor );
+            EditorGUI.BeginChangeCheck();
+            {
+                targetColor.color = EditorGUI.ColorField( colorFieldRect, targetColor.name, targetColor.color );
+                var buttonRect = new Rect( lineRect ) { width = _buttonWidth };
+                buttonRect.x += availableWidth;
+                buttonRect.xMin += 2f;
+                // DrawRectOutline( buttonRect, Color.green );
+                DrawColorPickerButton( buttonRect, targetColor );
+            }
+            return EditorGUI.EndChangeCheck();
         }
         
-        public void DrawColorPickerButton( Rect position, CustomColor targetColor )
+        public static void DrawColorPickerButton( Rect position, CustomColor targetColor )
         {
             Vector2 cachedIconSize = EditorGUIUtility.GetIconSize();
             EditorGUIUtility.SetIconSize( new Vector2( 13, 13 ) );
-            if ( GUI.Button( position, new GUIContent( _buttonTextureAsset ) ))
+            if ( GUI.Button( position, new GUIContent( ButtonTextureAsset ) ))
                 ColorPickerButtonPressed( targetColor );
             
             EditorGUIUtility.SetIconSize( cachedIconSize );
         }
         
-        public void DrawColorPickerPropertyButton( Rect position, SerializedProperty customColorProperty )
+        public static void DrawColorPickerPropertyButton( Rect position, SerializedProperty customColorProperty )
         {
             // if ( GUI.Button( position, "..." ))
 
             // var texture = _buttonTexture.objectReferenceValue as Texture;
             Vector2 cachedIconSize = EditorGUIUtility.GetIconSize();
             EditorGUIUtility.SetIconSize( new Vector2( 13, 13 ) );
-            if ( GUI.Button( position, new GUIContent( _buttonTextureAsset ) ))
+            if ( GUI.Button( position, new GUIContent( ButtonTextureAsset ) ))
                 ColorPickerPropertyButtonPressed( customColorProperty );
             
             EditorGUIUtility.SetIconSize( cachedIconSize );
         }
 
-        private void OnColorSelection( CustomColor color )
+        private static void OnColorSelection( CustomColor color )
         {
             _customColorPicker.editorWindow.Close();
             OnColorSelectedNotify( color );

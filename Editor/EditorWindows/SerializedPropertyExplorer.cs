@@ -23,11 +23,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
         public bool expandArrays = true;
         public bool simplifyPaths = true;
         public CustomColor titleHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutTitleText, Color.grey );
-        public CustomColor pathHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutPathText, Color.blue );
-        public CustomColor typeHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutTypeText, Color.yellow );
-        public CustomColor objectHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutObjectIDText, Color.yellow );
-        public CustomColor valueHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutValueText, Color.yellow );
-        public CustomColor searchHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutSearchText, Color.green );
+        public CustomColor pathHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutPathText, new Color( 0.13f, 0.7f, 0.67f ) );
+        public CustomColor typeHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutTypeText, new Color( 1f, 0.65f, 0f ) );
+        public CustomColor objectHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutObjectIDText, new Color( 0.2f, 0.8f, 0.2f ) );
+        public CustomColor valueHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutValueText, new Color( 1f, 1f, 0f ) );
+        public CustomColor searchHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutSearchText, new Color( 0f, 1f, 0f ) );
         
         public SerializedProperty expandArraysProp;
         public SerializedProperty simplifyPathsProp;
@@ -56,7 +56,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
         private bool _optionsFoldoutToggle = false;
         private float _width;
         
-        private ColorPickerHandler _colorPickerHandler;
+        // private ColorPickerHandler _colorPickerHandler;
 
         // private SerializedPropertyExplorerData _serializedPropertyExplorerData;
 
@@ -82,13 +82,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             // Debug.Log( $"SerializedPropertyExplorerData was {conclusion}." );
             
             UpdateHexColors();
-            _colorPickerHandler = new ColorPickerHandler( 
-                new Vector2( 10f, 10f ), 
-                350f, 400f,
-                5
-            );
+            // _colorPickerHandler = new ColorPickerHandler( 
+            //     new Vector2( 10f, 10f ), 
+            //     350f, 400f,
+            //     5
+            // );
             
-            _colorPickerHandler.OnColorSelected += OnColorSelection;
+            ColorPickerHandler.OnColorSelected += OnColorSelection;
         }
 
         // private void InitializeProperties()
@@ -105,13 +105,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 
         private void OnDisable()
         {
-            _colorPickerHandler.OnColorSelected -= OnColorSelection;
+            ColorPickerHandler.OnColorSelected -= OnColorSelection;
         }
         
         private void OnColorSelection( CustomColor color )
         {
-            Debug.Log( $"Color picker returned color: {GetColoredString( color.name, color.GetHex() )}" );
-            _colorPickerHandler.Close();
+            // Debug.Log( $"Color picker returned color: {GetColoredString( color.name, color.GetHex() )}" );
+            ColorPickerHandler.Close();
             UpdateHexColors();
             Repaint();
         }
@@ -214,20 +214,20 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             _optionsFoldoutToggle = EditorGUILayout.Foldout( _optionsFoldoutToggle, new GUIContent( SerializedPropertyExplorerMenuHighlightColorsText ), true );
             if ( !_optionsFoldoutToggle ) return;
             
-            EditorGUI.BeginChangeCheck();
+            bool colorChanged = false;
+            EditorGUI.indentLevel++;
             {
-                EditorGUI.indentLevel++;
-                {
-                    _colorPickerHandler.DrawCustomColorField( titleHighlightColor );
-                    _colorPickerHandler.DrawCustomColorField( pathHighlightColor );
-                    _colorPickerHandler.DrawCustomColorField( typeHighlightColor );
-                    _colorPickerHandler.DrawCustomColorField( objectHighlightColor );
-                    _colorPickerHandler.DrawCustomColorField( valueHighlightColor );
-                    _colorPickerHandler.DrawCustomColorField( searchHighlightColor );
-                }
-                EditorGUI.indentLevel--;
+                colorChanged |= ColorPickerHandler.DrawCustomColorField( titleHighlightColor );
+                colorChanged |= ColorPickerHandler.DrawCustomColorField( pathHighlightColor );
+                colorChanged |= ColorPickerHandler.DrawCustomColorField( typeHighlightColor );
+                colorChanged |= ColorPickerHandler.DrawCustomColorField( objectHighlightColor );
+                colorChanged |= ColorPickerHandler.DrawCustomColorField( valueHighlightColor );
+                colorChanged |= ColorPickerHandler.DrawCustomColorField( searchHighlightColor );
             }
-            if ( !EditorGUI.EndChangeCheck() ) return;
+            EditorGUI.indentLevel--;
+            
+            if ( !colorChanged ) return;
+            // Debug.Log( "SerializedPropertyExplorer: Color change was registered." );
             
             UpdateHexColors();
             Repaint();
