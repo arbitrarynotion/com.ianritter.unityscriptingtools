@@ -25,7 +25,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         [SerializeField] private string targetMethod  = "";
         
         // [SerializeField] [Range( 5, 20 )] private int maxPrefixCharacters = 10;
-        
 
         [SerializeField] private CustomLoggerSymbol logPrefix;
         [SerializeField] private CustomLoggerSymbol blockDivider;
@@ -37,8 +36,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         
         [SerializeField] private Color blockMethodColor;
         [SerializeField] private Color methodColor;
-        
-        // [SerializeField] private Texture buttonTexture;
 
         private string _blockMethodHexColor;
         private string _methodHexColor;

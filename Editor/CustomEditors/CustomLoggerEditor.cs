@@ -35,9 +35,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
         
         private const string BlockMethodColorVarName = "blockMethodColor";
         private const string MethodColorVarName = "methodColor";
-        
-        // private const string ButtonTextureVarName = "buttonTexture";
-        
+
         private SerializedProperty _showLogsProperty;
         private SerializedProperty _useClassPrefixProperty;
         private SerializedProperty _boldMethodsProperty;
@@ -59,10 +57,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
         private SerializedProperty _blockMethodColorProperty;
         private SerializedProperty _methodColorProperty;
         
-        // private SerializedProperty _buttonTextureProperty;
-        
-        // private ColorPickerHandler _colorPickerHandler;
-
         private bool _debugFoldoutToggle = false;
 
         
@@ -132,7 +126,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
             DrawDebugSection();
             
             serializedObject.ApplyModifiedProperties();
-
         }
 
         private void DrawClassMembers()
@@ -155,8 +148,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
             EditorGUILayout.LabelField( "Method Name Colors", EditorStyles.boldLabel );
             EditorGUI.indentLevel++;
             {
-                DrawBasicColorProperty( _blockMethodColorProperty, new GUIContent( "Block Methods" ) );
-                DrawBasicColorProperty( _methodColorProperty, new GUIContent( "Basic Methods" ) );
+                ColorPickerHandler.DrawPropertyWithColorPicker( _blockMethodColorProperty, new GUIContent( "Block Methods" ) );
+                ColorPickerHandler.DrawPropertyWithColorPicker( _methodColorProperty, new GUIContent( "Basic Methods" ) );
             }
             EditorGUI.indentLevel--;
             
@@ -165,13 +158,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
             EditorGUILayout.LabelField( "Log Symbols", EditorStyles.boldLabel );
             EditorGUI.indentLevel++;
             {
-                DrawCustomColorProperty( _logPrefixProperty );
-                DrawCustomColorProperty( _blockDividerProperty );
-                DrawCustomColorProperty( _indentMarkerProperty );
-                DrawCustomColorProperty( _methodDividersProperty );
-                DrawCustomColorProperty( _logBlockStartProperty );
-                DrawCustomColorProperty( _logBlockEndProperty );
-                DrawCustomColorProperty( _logEventPrefixProperty );
+                EditorGUILayout.PropertyField( _logPrefixProperty );
+                EditorGUILayout.PropertyField( _blockDividerProperty );
+                EditorGUILayout.PropertyField( _indentMarkerProperty );
+                EditorGUILayout.PropertyField( _methodDividersProperty );
+                EditorGUILayout.PropertyField( _logBlockStartProperty );
+                EditorGUILayout.PropertyField( _logBlockEndProperty );
+                EditorGUILayout.PropertyField( _logEventPrefixProperty );
             }
             EditorGUI.indentLevel--;
             
@@ -200,61 +193,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
             }
             EditorGUI.indentLevel--;
         }
-
-
-        private void DrawPropertyWithColorPicker( SerializedProperty fieldProperty, SerializedProperty targetProperty, GUIContent guiContent )
-        {
-            Rect controlRect = EditorGUILayout.GetControlRect();
-            
-            ColorPickerHandler.SetWindowPosition( controlRect.position );
-
-            // Exclude color picker button width from available width.
-            float availableWidth = controlRect.width - ColorPickerHandler.GetColorPickerButtonWidth();
-
-            var lineRect = new Rect( controlRect )
-            {
-                width = availableWidth
-            };
-            // DrawRectOutline( lineRect, Color.grey );
-
-            // Draw Property label and field.
-            var propertyFieldRect = new Rect( lineRect );
-            // DrawRectOutline( propertyField, Color.magenta );
-            if ( guiContent != null )
-            {
-                EditorGUI.PropertyField( propertyFieldRect, fieldProperty, guiContent );
-            }
-            else
-            {
-                EditorGUI.PropertyField( propertyFieldRect, fieldProperty );
-            }
-
-            // Set the color picker button rect to start at the end of the available space plus a spacer.
-            // Then get the width from the color picker handler.
-            var buttonRect = new Rect( controlRect );
-            buttonRect.xMin += availableWidth + 2f;
-            buttonRect.width = ColorPickerHandler.GetColorPickerButtonWidth();
-            // DrawRectOutline( buttonRect, Color.yellow );
-            
-            // Finally, pass the button rect and the color property to the color picker handler.
-            // This can either be a direct color property via serializedObject.FindProperty or an indirect one via property.FindPropertyRelative.
-            ColorPickerHandler.DrawColorPickerPropertyButton( buttonRect, targetProperty );
-        }
-
-        private void DrawBasicColorProperty( SerializedProperty property, GUIContent guiContent = null ) => 
-            DrawPropertyWithColorPicker( property, property, guiContent );
-
-        private void DrawCustomColorProperty( SerializedProperty property, GUIContent guiContent = null )
-        {
-            SerializedProperty colorProperty = property.FindPropertyRelative( "customColor" ).FindPropertyRelative( "color" );
-            if ( colorProperty == null )
-            {
-                Debug.LogError( "Failed to find 'customColor' property or its 'color' property." );
-                return;
-            }
-            DrawPropertyWithColorPicker( property, colorProperty, guiContent );
-        }
-
+        
         private void DrawResetButton()
         {
             Rect buttonRect = EditorGUILayout.GetControlRect();
@@ -264,50 +203,5 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
                 _targetScript.SetValuesToDefault();
             }
         }
-        
-        
-        
-        // private void DrawBasicColorProperty( SerializedProperty property )
-        // {
-        //     DrawPropertyWithColorPicker( property, property );
-        //
-        //     // Rect controlRect = EditorGUILayout.GetControlRect();
-        //     //
-        //     // float availableWidth = controlRect.width - _colorPickerHandler.GetColorPickerButtonWidth();
-        //     //
-        //     // var lineRect = new Rect( controlRect )
-        //     // {
-        //     //     width = availableWidth
-        //     // };
-        //     // DrawRectOutline( lineRect, Color.grey );
-        //     //
-        //     // var labelRect = new Rect( lineRect );
-        //     // labelRect.width = EditorGUIUtility.labelWidth;
-        //     // // DrawRectOutline( labelRect, Color.green );
-        //     //
-        //     // // EditorGUI.LabelField( labelRect, property.name );
-        //     //
-        //     // var loggerSymbolRect = new Rect( lineRect );
-        //     // loggerSymbolRect.xMin += labelRect.width + 2f;
-        //     // loggerSymbolRect.width *= 0.9f;
-        //     // // DrawRectOutline( loggerSymbolRect, Color.cyan );
-        //     //
-        //     // var propertyField = new Rect( lineRect );
-        //     // // propertyField.xMax = loggerSymbolRect.xMax;
-        //     // DrawRectOutline( propertyField, Color.magenta );
-        //     //
-        //     // // int cachedIndentLevel = EditorGUI.indentLevel;
-        //     // // EditorGUI.indentLevel = 0;
-        //     // EditorGUI.PropertyField( propertyField, property );
-        //     // // EditorGUI.indentLevel = cachedIndentLevel;
-        //     //
-        //     // var buttonRect = new Rect( controlRect );
-        //     // // buttonRect.xMin += labelRect.width + 2f + loggerSymbolRect.width + 2f;
-        //     // buttonRect.xMin += availableWidth + 2f;
-        //     // buttonRect.width = _colorPickerHandler.GetColorPickerButtonWidth();
-        //     // DrawRectOutline( buttonRect, Color.yellow );
-        //     //
-        //     // _colorPickerHandler.DrawColorPickerPropertyButton( buttonRect, property );
-        // }
     }
 }

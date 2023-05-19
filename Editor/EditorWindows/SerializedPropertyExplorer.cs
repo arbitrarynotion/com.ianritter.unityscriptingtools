@@ -167,7 +167,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                 _optionsRect.yMin = _optionsRect.yMax;
                 _optionsRect.width = _width - 6f;
                 _optionsRect.yMax = _outputOutlineRect.yMax + optionsRectHeight + 44f;
-                DrawRectOutline( _optionsRect, Color.grey );
+                if ( _object != null )
+                    DrawRectOutline( _optionsRect, Color.grey );
 
             }
             EditorGUI.indentLevel--;
@@ -264,7 +265,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 
             bool enterChildren = true;
             SerializedProperty endProp = prop;
-            Debug.Log( $"{GetColoredStringBlue( "-->" )} End property set to {GetColoredStringGreen(endProp.name)} for array {GetColoredStringOrange(prop.name)}" );
+            // Debug.Log( $"{GetColoredStringBlue( "-->" )} End property set to {GetColoredStringGreen(endProp.name)} for array {GetColoredStringOrange(prop.name)}" );
             bool foundEndProperty = true;
 
             
@@ -272,11 +273,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             {
                 if ( prop.isArray && ( prop.propertyType == SerializedPropertyType.Generic ) )
                 {
-                    Debug.Log( $"{GetColoredStringOrange(prop.name)} is an array of type {prop.arrayElementType} and is {GetColoredStringYellow( IsExplorableType( prop ).ToString() )} explorable." );
+                    // Debug.Log( $"{GetColoredStringOrange(prop.name)} is an array of type {prop.arrayElementType} and is {GetColoredStringYellow( IsExplorableType( prop ).ToString() )} explorable." );
                     
                     if ( SerializedProperty.EqualContents( prop, endProp ) && !foundEndProperty )
                     {
-                        Debug.Log( $"{GetColoredStringGreen( "<--" )} Found end property {GetColoredStringGreen(endProp.name)}, which is an array." );
+                        // Debug.Log( $"{GetColoredStringGreen( "<--" )} Found end property {GetColoredStringGreen(endProp.name)}, which is an array." );
                         foundEndProperty = true;
                     }
                     
@@ -285,7 +286,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                     if ( foundEndProperty )
                     {
                         endProp = prop.GetEndProperty();
-                        Debug.Log( $"{GetColoredStringBlue( "-->" )} End property set to {GetColoredStringGreen(endProp.name)} for array {GetColoredStringOrange(prop.name)}" );
+                        // Debug.Log( $"{GetColoredStringBlue( "-->" )} End property set to {GetColoredStringGreen(endProp.name)} for array {GetColoredStringOrange(prop.name)}" );
                         foundEndProperty = false;
                     }
                 }
@@ -295,7 +296,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                     
                     if ( SerializedProperty.EqualContents( prop, endProp ) && !foundEndProperty )
                     {
-                        Debug.Log( $"{GetColoredStringGreen( "<--" )} Found end property: {GetColoredStringGreen(endProp.name)}" );
+                        // Debug.Log( $"{GetColoredStringGreen( "<--" )} Found end property: {GetColoredStringGreen(endProp.name)}" );
                         foundEndProperty = true;
                     }
                 }
