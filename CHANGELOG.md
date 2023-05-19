@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.4.2...v1.4.3) (2023-05-19)
+
+
+### Bug Fixes
+
+* Updated property drawers ([74ad4ba](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/74ad4ba88697b4ff6b1d021f914c13ca4a7e09b3))
+
 ## [1.4.2](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.4.1...v1.4.2) (2023-05-18)
 
 
