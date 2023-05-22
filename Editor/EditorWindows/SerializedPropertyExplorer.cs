@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomColorPicker;
 using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
 using UnityEditor;
@@ -22,7 +23,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 
         public bool expandArrays = true;
         public bool simplifyPaths = true;
-        public CustomColor titleHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutTitleText, Color.grey );
+        [SerializeField] public CustomColor titleHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutTitleText, Color.grey );
         public CustomColor pathHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutPathText, new Color( 0.13f, 0.7f, 0.67f ) );
         public CustomColor typeHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutTypeText, new Color( 1f, 0.65f, 0f ) );
         public CustomColor objectHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutObjectIDText, new Color( 0.2f, 0.8f, 0.2f ) );
@@ -111,7 +112,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
         private void OnColorSelection( CustomColor color )
         {
             // Debug.Log( $"Color picker returned color: {GetColoredString( color.name, color.GetHex() )}" );
-            ColorPickerHandler.Close();
+            // ColorPickerHandler.Close();
             UpdateHexColors();
             Repaint();
         }

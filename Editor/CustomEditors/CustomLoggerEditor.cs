@@ -110,8 +110,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
         private void OnColorSelection( CustomColor color )
         {
             // Debug.Log( $"Color picker returned color: {GetColoredString( color.name, color.GetHex() )}" );
-            ColorPickerHandler.Close();
-            serializedObject.ApplyModifiedProperties();
+            // ColorPickerHandler.Close();
+            // serializedObject.ApplyModifiedProperties();
             Repaint();
         }
 

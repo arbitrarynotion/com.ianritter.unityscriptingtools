@@ -23,6 +23,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
         private static void OnColorSelectedNotify( CustomColor color )
         {
             OnColorSelected?.Invoke( color );
+            Close();
         }
 
         static ColorPickerHandler()
@@ -46,7 +47,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
         public static void SetButtonsPerLine( int buttonsPerLine ) => CustomColorPicker.SetButtonsPerLine( buttonsPerLine );
 
 
-        public static void Close() => CustomColorPicker.editorWindow.Close();
+        private static void Close() => CustomColorPicker.editorWindow.Close();
 
         /// <summary>
         ///     Use this as the button callback to trigger the color picker popup window.
@@ -67,18 +68,19 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
         {
             Rect lineRect = EditorGUILayout.GetControlRect( true );
             SetWindowPosition( new Vector2( lineRect.x, lineRect.y ) );
-            float availableWidth = lineRect.width - _buttonWidth;
+            // float availableWidth = lineRect.width - _buttonWidth;
+            const float colorFieldWidth = 250f;
 
             var colorFieldRect = new Rect( lineRect )
             {
-                width = availableWidth
+                width = colorFieldWidth
             };
             // DrawRectOutline( colorFieldRect, Color.cyan );
             EditorGUI.BeginChangeCheck();
             {
                 targetColor.color = EditorGUI.ColorField( colorFieldRect, targetColor.name, targetColor.color );
                 var buttonRect = new Rect( lineRect ) { width = _buttonWidth };
-                buttonRect.x += availableWidth;
+                buttonRect.x += colorFieldWidth;
                 buttonRect.xMin += 2f;
                 // DrawRectOutline( buttonRect, Color.green );
                 DrawColorPickerButton( buttonRect, targetColor );
