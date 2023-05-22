@@ -16,6 +16,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             window.titleContent = new GUIContent( CustomColorEntryHelperMenuTitle );
             window.Show();
         }
+
+        [SerializeField] public CustomColor[] colorList;
         
         private readonly Vector2 _windowSize = new Vector2( 350f, 150f);
         
@@ -33,14 +35,20 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
         private int _charSequenceIndex = 0;
         private List<char> _outputCharList = new List<char>();
 
+        [SerializeField] public SerializedObject _serializedObject;
+        [SerializeField] private SerializedProperty _colorListProperty;
+
         private void OnEnable()
         {
             minSize = _windowSize;
             // maxSize = _windowSize;
+            _serializedObject = new SerializedObject( this );
+            _colorListProperty = _serializedObject.FindProperty( "colorList" );
         }
 
         public void OnGUI()
         {
+            EditorGUILayout.PropertyField( _colorListProperty );
             float singleLineHeight = EditorGUIUtility.singleLineHeight;
 
             Rect customColorArea = EditorGUILayout.GetControlRect();
@@ -89,7 +97,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             Rect printButtonRect = EditorGUILayout.GetControlRect();
             if ( GUI.Button( printButtonRect, "Print List to Console" ) )
             {
-                Debug.Log( _completeListOfColors );
+                OutputColorList();
+                // Debug.Log( _completeListOfColors );
             }
             
             
@@ -107,6 +116,37 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                 ResetValues();
             }
             _rbgConversionText = EditorGUILayout.TextArea( _rbgConversionText );
+        }
+
+        private void OutputColorList()
+        {
+            string outputString = "Color List:\n";
+            
+            _serializedObject.Update ();
+            for (int x = 0; x < _colorListProperty.arraySize; x++)
+            {
+                SerializedProperty customColorProperty = _colorListProperty.GetArrayElementAtIndex( x );
+                SerializedProperty nameProperty = customColorProperty.FindPropertyRelative( "name" );
+                SerializedProperty colorProperty = customColorProperty.FindPropertyRelative( "color" );
+                
+                outputString += $"public static CustomColor {nameProperty.stringValue} = " +
+                                $"new CustomColor( nameof( {nameProperty.stringValue} ), new Color(" +
+                                $" {colorProperty.colorValue.r:0.00}f, " +
+                                $"{colorProperty.colorValue.g:0.00}f, " +
+                                $"{colorProperty.colorValue.b:0.00}f ) );\n";
+            }
+
+
+            // foreach ( CustomColor customColor in colorList )
+            // {
+            //     outputString += $"public static CustomColor {customColor.name} = " +
+            //                              $"new CustomColor( nameof( {customColor.name} ), new Color(" +
+            //                              $" {customColor.color.r.ToString( "0.00" )}f, " +
+            //                              $"{customColor.color.g.ToString( "0.00" )}f, " +
+            //                              $"{customColor.color.b.ToString( "0.00" )}f ) );\n";
+            // }
+
+            Debug.Log( outputString );
         }
 
         private void ResetValues()

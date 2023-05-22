@@ -60,6 +60,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomC
             {
                 // _targetColorProperty.FindPropertyRelative( "color" ).colorValue = buttonCustomColor.color;
                 _targetColorProperty.colorValue = buttonCustomColor.color;
+                _targetColorProperty.serializedObject.ApplyModifiedProperties();
             }
             else
             {
