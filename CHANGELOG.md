@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.4.5...v1.5.0) (2023-05-28)
+
+
+### Features
+
+* Added minor features to existing classes. ([3fde560](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/3fde560cf8af6a4cc97bb115a9c561b1e3490c1c))
+
 ## [1.4.5](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.4.4...v1.4.5) (2023-05-22)
 
 
