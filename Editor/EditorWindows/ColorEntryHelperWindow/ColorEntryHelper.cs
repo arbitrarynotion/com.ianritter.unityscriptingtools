@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.SerializedPropertyExplorerWindow;
+using Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods;
 using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
 using UnityEditor;
 using UnityEngine;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.ToolingConstants;
+using static Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods.AssetDatabaseWrapper;
+using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting.TextFormat;
 
-namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
+namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.ColorEntryHelperWindow
 {
     public class CustomColorEntryHelper : EditorWindow
     {
@@ -18,6 +23,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
         }
 
         [SerializeField] public CustomColor[] colorList;
+        [SerializeField] public CustomColorLibrary[] colorLibraries;
         
         private readonly Vector2 _windowSize = new Vector2( 350f, 150f);
         
@@ -25,68 +31,103 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
         private const float VerticalSeparator = 2f;
         private const float EdgePadding = 5f;
 
-        private CustomColor _customColor = new CustomColor( "Name_Here", Color.black );
-
-        private string _completeListOfColors = "";
+        // Single-line entry field.
+        [SerializeField] private CustomColor customColorSingleEntry = new CustomColor( "Name_Here", Color.black );
         private int _numberOfEntries = 0;
+        // For building the output string.
+        private string _completeListOfColors = "";
 
+        // These are for the text conversion.
+        [TextArea()]
         private string _rbgConversionText = "";
         private char[] _currentSequence = new[] { '0', '0', '0' };
         private int _charSequenceIndex = 0;
         private List<char> _outputCharList = new List<char>();
 
-        [SerializeField] public SerializedObject _serializedObject;
-        [SerializeField] private SerializedProperty _colorListProperty;
+        [SerializeField] public SerializedObject serializedObject;
+        [SerializeField] private SerializedProperty colorListProperty;
+        [SerializeField] private SerializedProperty colorLibrariesProperty;
+        [SerializeField] private SerializedProperty customColorSingleEntryProperty;
+        
+        public CustomColorLibrary customColorLibrary;
 
         private void OnEnable()
         {
+            List<CustomColorLibrary> assets = AssetLoader.GetAssetsByType<CustomColorLibrary>();
+            if ( assets.Count > 0 )
+            {
+                Debug.Log( "Assets lookup returns results." );
+                customColorLibrary = assets.FirstOrDefault();
+                Debug.Log( $"Loading of existing color entry helper database: {( ( customColorLibrary == null ) ? $"{GetColoredStringMaroon( "failed" )}" : $"{GetColoredStringGreenYellow( "succeeded" )}")}." );
+            }
+
+            if ( customColorLibrary == null )
+            {
+                const string fileName = "CustomColorLibrary";
+                Debug.Log( "Creating new color entry helper database." );
+                customColorLibrary = CreateInstance<CustomColorLibrary>();
+                if ( !CreateAssetSafely( customColorLibrary, "Packages/com.ianritter.unityscriptingtools/Editor/EditorWindows/ColorEntryHelperWindow", fileName ) )
+                    Debug.Log( $"Asset creation aborted. Asset with file name '{fileName}' already exists." );
+            }
+            Debug.Log( $"After initialization, loading of color entry helper database: {( ( customColorLibrary == null ) ? $"{GetColoredStringMaroon( "failed" )}" : $"{GetColoredStringGreenYellow( "succeeded" )}")}." );
+
+            
             minSize = _windowSize;
             // maxSize = _windowSize;
-            _serializedObject = new SerializedObject( this );
-            _colorListProperty = _serializedObject.FindProperty( "colorList" );
+            serializedObject = new SerializedObject( this );
+            colorListProperty = serializedObject.FindProperty( "colorList" );
+            colorLibrariesProperty = serializedObject.FindProperty( "colorLibraries" );
+            customColorSingleEntryProperty = serializedObject.FindProperty( "customColorSingleEntry" );
         }
 
         public void OnGUI()
         {
-            EditorGUILayout.PropertyField( _colorListProperty );
+            EditorGUILayout.PropertyField( colorListProperty );
             float singleLineHeight = EditorGUIUtility.singleLineHeight;
 
-            Rect customColorArea = EditorGUILayout.GetControlRect();
-            
-            float halfWidthOfCustomColorArea = ( customColorArea.width / 2f );
-
-            var customColorLabelRect = new Rect( customColorArea )
+            using ( new EditorGUI.DisabledScope( true ) )
             {
-                width = halfWidthOfCustomColorArea, 
-                height = singleLineHeight
-            };
-            // DrawRectOutline( customColorLabelRect, Color.cyan );
-            _customColor.name = EditorGUI.TextField( customColorLabelRect, _customColor.name );
+                EditorGUILayout.PropertyField( colorLibrariesProperty );
+            }
+            EditorGUILayout.PropertyField( customColorSingleEntryProperty );
 
-            var customColorFieldRect = new Rect( customColorLabelRect );
-            customColorFieldRect.x += customColorFieldRect.width + Separator;
-            customColorFieldRect.width -= Separator;
-            // DrawRectOutline( customColorFieldRect, Color.white );
-            _customColor.color = EditorGUI.ColorField( customColorFieldRect, _customColor.color );
+            // Rect customColorArea = EditorGUILayout.GetControlRect();
+            //
+            // float halfWidthOfCustomColorArea = ( customColorArea.width / 2f );
+            //
+            // var customColorLabelRect = new Rect( customColorArea )
+            // {
+            //     width = halfWidthOfCustomColorArea, 
+            //     height = singleLineHeight
+            // };
+            // // DrawRectOutline( customColorLabelRect, Color.cyan );
+            // customColorSingleEntry.name = EditorGUI.TextField( customColorLabelRect, customColorSingleEntry.name );
+            //
+            // var customColorFieldRect = new Rect( customColorLabelRect );
+            // customColorFieldRect.x += customColorFieldRect.width + Separator;
+            // customColorFieldRect.width -= Separator;
+            // // DrawRectOutline( customColorFieldRect, Color.white );
+            // customColorSingleEntry.color = EditorGUI.ColorField( customColorFieldRect, customColorSingleEntry.color );
+            
             EditorGUILayout.LabelField( $"Total Entries: {_numberOfEntries.ToString()}" );
             
             Rect recordColorButton = EditorGUILayout.GetControlRect();
             if ( GUI.Button( recordColorButton, "Record Color" ) )
             {
-                // Debug.Log( $"Color Recorded: {_customColor.name}, {_customColor.color.ToString()}" );
+                // Debug.Log( $"Color Recorded: {_customColorSingleEntry.name}, {_customColorSingleEntry.color.ToString()}" );
 
-                _completeListOfColors += $"public static CustomColor {_customColor.name} = " +
-                                         $"new CustomColor( nameof( {_customColor.name} ), new Color(" +
-                                         $" {_customColor.color.r.ToString( "0.00" )}f, " +
-                                         $"{_customColor.color.g.ToString( "0.00" )}f, " +
-                                         $"{_customColor.color.b.ToString( "0.00" )}f ) );\n";
+                _completeListOfColors += $"public static CustomColor {customColorSingleEntry.name} = " +
+                                         $"new CustomColor( nameof( {customColorSingleEntry.name} ), new Color(" +
+                                         $" {customColorSingleEntry.color.r.ToString( "0.00" )}f, " +
+                                         $"{customColorSingleEntry.color.g.ToString( "0.00" )}f, " +
+                                         $"{customColorSingleEntry.color.b.ToString( "0.00" )}f ) );\n";
                 _numberOfEntries++;
             }
             
             Rect resetButtonRect = EditorGUILayout.GetControlRect();
             if ( GUI.Button( resetButtonRect, "Reset List" ) )
             {
-                // Debug.Log( $"Color Recorded: {_customColor.name}, {_customColor.color.ToString()}" );
+                // Debug.Log( $"Color Recorded: {_customColorSingleEntry.name}, {_customColorSingleEntry.color.ToString()}" );
 
                 _completeListOfColors = "";
                 _numberOfEntries = 0;
@@ -99,6 +140,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             {
                 OutputColorList();
                 // Debug.Log( _completeListOfColors );
+                
+                SerializedPropertyInfoExtractor.PrintSerializedPropertyInfo( serializedObject, nameof(colorLibraries), true, false );
+
+                // string serializedColorListDatabase = JsonUtility.ToJson( customColorLibrary );
+                // Debug.Log( serializedColorListDatabase );
             }
             
             
@@ -109,7 +155,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             Rect convertTextButtonRect = EditorGUILayout.GetControlRect();
             if ( GUI.Button( convertTextButtonRect, "Convert Text" ) )
             {
-                // Debug.Log( $"Color Recorded: {_customColor.name}, {_customColor.color.ToString()}" );
+                // Debug.Log( $"Color Recorded: {_customColorSingleEntry.name}, {_customColorSingleEntry.color.ToString()}" );
                 ConvertRgbText();
                 // Debug.Log( _rbgConversionText.Equals( "" ) ? "No text entered." : _rbgConversionText );
                 Debug.Log( new string ( _outputCharList.ToArray() ) );
@@ -122,10 +168,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
         {
             string outputString = "Color List:\n";
             
-            _serializedObject.Update ();
-            for (int x = 0; x < _colorListProperty.arraySize; x++)
+            serializedObject.Update ();
+            for (int x = 0; x < colorListProperty.arraySize; x++)
             {
-                SerializedProperty customColorProperty = _colorListProperty.GetArrayElementAtIndex( x );
+                SerializedProperty customColorProperty = colorListProperty.GetArrayElementAtIndex( x );
                 SerializedProperty nameProperty = customColorProperty.FindPropertyRelative( "name" );
                 SerializedProperty colorProperty = customColorProperty.FindPropertyRelative( "color" );
                 

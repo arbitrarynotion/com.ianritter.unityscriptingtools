@@ -4,7 +4,7 @@ using Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting
 using UnityEditor;
 using UnityEngine;
 
-namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
+namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.SerializedPropertyExplorerWindow
 {
     [Serializable]
     public class SerializedPropertyData

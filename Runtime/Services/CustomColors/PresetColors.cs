@@ -8,8 +8,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColo
 {
     public static class PresetColors
     {
-
-        
         // Grey Tones.
         // public static CustomColor Black = new CustomColor( nameof( Black ), new Color(0, 0, 0 ) );
         public static readonly CustomColor Grey = new CustomColor( nameof( Grey ), new Color( 0.5f, 0.5f, 0.5f ) );

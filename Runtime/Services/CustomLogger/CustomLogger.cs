@@ -54,12 +54,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         public CustomLogger( Object sender )
         {
             _sender = sender;
+            SetValuesToDefault();
         }
         
         
         private void OnEnable()
         {
-            UpdatePrefixColor();
             UpdatePrefixColor();
             if ( _methodStack == null )
                 _methodStack = new Stack<MethodEntry>();
@@ -178,6 +178,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             if ( !LogAllowed() ) return;
 
             PrintLog( $"{GetIndentString()}{message}", logType );
+        }
+
+        public void LogObjectAssignmentResult( string objectName, Object targetObject ) => LogObjectAssignmentResult( objectName, targetObject, CustomLogType.Standard );
+        
+        public void LogObjectAssignmentResult( string objectName, Object targetObject, CustomLogType logType )
+        {
+            if ( !LogAllowed() ) return;
+
+            PrintLog( $"{GetIndentString()}Loading of {objectName} {(targetObject == null ? $"{GetColoredStringFireBrick( "failed" )}" : $"{GetColoredStringGreenYellow( "succeeded" )}")}.", logType );
         }
 
         public void LogIndentStart( string message, bool startHere = false, int incrementAmount = 1 )

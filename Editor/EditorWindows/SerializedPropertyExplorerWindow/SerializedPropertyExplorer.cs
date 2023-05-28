@@ -1,13 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomColorPicker;
-using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
+using System.Collections.Generic;
+using Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.SerializedPropertyExplorerWindow;
+using Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomColorPicker;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting.TextFormat;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.ToolingConstants;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics.UIRectGraphics;
+using Object = UnityEngine.Object;
 
 namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 {
@@ -23,7 +24,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
 
         public bool expandArrays = true;
         public bool simplifyPaths = true;
-        [SerializeField] public CustomColor titleHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutTitleText, Color.grey );
+        public CustomColor titleHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutTitleText, Color.grey );
         public CustomColor pathHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutPathText, new Color( 0.13f, 0.7f, 0.67f ) );
         public CustomColor typeHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutTypeText, new Color( 1f, 0.65f, 0f ) );
         public CustomColor objectHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutObjectIDText, new Color( 0.2f, 0.8f, 0.2f ) );

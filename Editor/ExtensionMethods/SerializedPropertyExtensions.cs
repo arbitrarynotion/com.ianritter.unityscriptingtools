@@ -12,10 +12,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods
         /// </summary>
         /// <param name="prop">Serialized Property that contains the value to be extracted.</param>
         /// <returns>The Unity Object ID of the property as an int.</returns>
-        public static int GetUnityObjectID( this SerializedProperty prop )
+        public static int GetUnityObjectID( this SerializedProperty property )
         {
-            if ( prop.propertyType == SerializedPropertyType.ObjectReference && prop.objectReferenceValue != null )
-                return prop.objectReferenceValue.GetInstanceID();
+            if ( property.propertyType == SerializedPropertyType.ObjectReference && property.objectReferenceValue != null )
+                return property.objectReferenceValue.GetInstanceID();
             return 0;
         }
         
