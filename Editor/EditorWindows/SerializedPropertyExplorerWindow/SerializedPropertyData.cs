@@ -1,17 +1,17 @@
 ﻿using System;
-using Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods;
-using Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting;
 using UnityEditor;
 using UnityEngine;
+using Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting;
 
 namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.SerializedPropertyExplorerWindow
 {
     [Serializable]
     public class SerializedPropertyData
     {
-        public SerializedProperty Property;
+        public SerializedProperty property;
         public int Depth { get; }
-        public int ObjectID { get; }
+        public int ObjectId { get; }
         public readonly string Type;
         public readonly string Path;
         
@@ -20,7 +20,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.Serial
 
         public SerializedPropertyData( SerializedProperty property )
         {
-            Property = property;
+            this.property = property;
             Depth = Mathf.Max( property.depth, 0 );
             Path = property.propertyPath.Equals( "" ) ? "ROOT: " : property.propertyPath;
             _name = property.name;
@@ -28,7 +28,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.Serial
             _value = ( property.isArray && ( property.propertyType != SerializedPropertyType.String ) ) 
                 ? $"array of {property.arraySize.ToString()} {property.arrayElementType}(s)." 
                 : property.GetValueAsString();
-            ObjectID = property.GetUnityObjectID();
+            ObjectId = property.GetUnityObjectId();
         }
 
         public string GetColorizedInfoLine( 
@@ -57,8 +57,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.Serial
             string outputString = $"{TextFormat.GetColoredString( outputPath, pathHighlightHexColor )} = ";
             
             // Add objectID to output string.
-            if ( ObjectID > 0 )
-                outputString += $"{TextFormat.GetColoredString( "objectID", titleHighlightHexColor )}: {TextFormat.GetColoredString( ObjectID.ToString(), nameHighlightHexColor )}, ";
+            if ( ObjectId > 0 )
+                outputString += $"{TextFormat.GetColoredString( "objectID", titleHighlightHexColor )}: {TextFormat.GetColoredString( ObjectId.ToString(), nameHighlightHexColor )}, ";
             
             // Add type to output string.
             outputString += $"{TextFormat.GetColoredString( "type", titleHighlightHexColor )}: {TextFormat.GetColoredString( Type, typeHighlightHexColor )}";
@@ -86,8 +86,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.Serial
             }
             
             string outputString = $"{outputPath} = ";
-            if ( ObjectID > 0 )
-                outputString += $"objectID: {ObjectID.ToString()}, ";
+            if ( ObjectId > 0 )
+                outputString += $"objectID: {ObjectId.ToString()}, ";
             outputString += $"type: {Type}";
             if ( !_value.Equals( "" ))
                 outputString += $", value: {_value}";

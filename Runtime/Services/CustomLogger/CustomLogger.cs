@@ -181,12 +181,17 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         }
 
         public void LogObjectAssignmentResult( string objectName, Object targetObject ) => LogObjectAssignmentResult( objectName, targetObject, CustomLogType.Standard );
-        
+
         public void LogObjectAssignmentResult( string objectName, Object targetObject, CustomLogType logType )
+        {
+            LogObjectAssignmentResult( objectName, ( targetObject == null ), logType );
+        }
+        
+        public void LogObjectAssignmentResult( string objectName, bool result, CustomLogType logType )
         {
             if ( !LogAllowed() ) return;
 
-            PrintLog( $"{GetIndentString()}Loading of {objectName} {(targetObject == null ? $"{GetColoredStringFireBrick( "failed" )}" : $"{GetColoredStringGreenYellow( "succeeded" )}")}.", logType );
+            PrintLog( $"{GetIndentString()}Loading of {objectName} {(result ? $"{GetColoredStringFireBrick( "failed" )}" : $"{GetColoredStringGreenYellow( "succeeded" )}")}.", logType );
         }
 
         public void LogIndentStart( string message, bool startHere = false, int incrementAmount = 1 )

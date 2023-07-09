@@ -1,6 +1,6 @@
 using System;
-using Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting;
 using UnityEditor;
+using Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting;
 
 namespace Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods
 {
@@ -10,9 +10,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods
         /// <summary>
         ///     Returns the ID of the Unity object, or 0 if is doesn't have one.
         /// </summary>
-        /// <param name="prop">Serialized Property that contains the value to be extracted.</param>
+        /// <param name="property">Serialized Property that contains the value to be extracted.</param>
         /// <returns>The Unity Object ID of the property as an int.</returns>
-        public static int GetUnityObjectID( this SerializedProperty property )
+        public static int GetUnityObjectId( this SerializedProperty property )
         {
             if ( property.propertyType == SerializedPropertyType.ObjectReference && property.objectReferenceValue != null )
                 return property.objectReferenceValue.GetInstanceID();
@@ -26,74 +26,53 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods
         /// <returns>The value of the property as a string.</returns>
         public static string GetValueAsString( this SerializedProperty property )
         {
-            switch (property.propertyType)
+            return property.propertyType switch
             {
-                case SerializedPropertyType.String:
-                    return property.stringValue;
-                
+                SerializedPropertyType.String => property.stringValue,
                 // This will never be called as chars are typed as ints.
-                case SerializedPropertyType.Character:
-                    
-                case SerializedPropertyType.Integer:
-                    return ( property.type == "char" ) ? Convert.ToChar( property.intValue ).ToString() : property.intValue.ToString();
-
-                case SerializedPropertyType.ObjectReference:
-                    return ( property.objectReferenceValue != null ) ? property.objectReferenceValue.ToString() : "(null)";
-                
-                case SerializedPropertyType.Boolean:
-                    return property.boolValue.ToString();
-                
-                case SerializedPropertyType.Float:
-                    return property.floatValue.ToString( "N");
-                
-                case SerializedPropertyType.Color:
-                    return $"{property.colorValue.ToString()}: {TextFormat.GetColoredString( "Example", property.colorValue )}";
-                
-                case SerializedPropertyType.Vector2:
-                    return property.vector2Value.ToString();
-                case SerializedPropertyType.Vector2Int:
-                    return property.vector2IntValue.ToString();
-                
-                case SerializedPropertyType.Vector3:
-                    return property.vector3Value.ToString();
-                case SerializedPropertyType.Vector3Int:
-                    return property.vector3IntValue.ToString();
-                
-                case SerializedPropertyType.Vector4:
-                    return property.vector4Value.ToString();
-                
-                case SerializedPropertyType.Rect:
-                    return property.rectValue.ToString();
-                case SerializedPropertyType.RectInt:
-                    return property.rectIntValue.ToString();
-                
-                case SerializedPropertyType.ArraySize:
-                    // A this properties level, the array itself can't be accesses so printing arraySize will
-                    // throw an error. Print at parent level only.
-                    return string.Empty;
-                
-                case SerializedPropertyType.Bounds:
-                    return property.boundsValue.ToString();
-                case SerializedPropertyType.BoundsInt:
-                    return property.boundsIntValue.ToString();
-                
-                case SerializedPropertyType.Quaternion:
-                    return property.quaternionValue.ToString();
-                
-                case SerializedPropertyType.Generic:
-                    // Skip if "Array" as it will just echo the print from it's parent.
-                    return property.isArray && !property.name.Equals( "Array" ) ? $"This is an array of {property.arraySize.ToString()} '{property.arrayElementType}' elements" : string.Empty;
-                    
-                case SerializedPropertyType.ExposedReference:
-                case SerializedPropertyType.FixedBufferSize:
-                case SerializedPropertyType.Gradient:
-                case SerializedPropertyType.AnimationCurve:
-                case SerializedPropertyType.LayerMask:
-                case SerializedPropertyType.Enum:
-                case SerializedPropertyType.ManagedReference:
-                default:
-                    return "";
-            }
+                SerializedPropertyType.Character => ( ( property.type == "char" ) 
+                    ? Convert.ToChar( property.intValue ).ToString() 
+                    : property.intValue.ToString() ),
+                SerializedPropertyType.Integer => ( ( property.type == "char" ) 
+                    ? Convert.ToChar( property.intValue ).ToString() 
+                    : property.intValue.ToString() ),
+                SerializedPropertyType.ObjectReference =>
+                ( ( property.objectReferenceValue != null ) 
+                    ? property.objectReferenceValue.GetType() == typeof( MonoScript ) 
+                        ? "MonoScript" 
+                        : property.objectReferenceValue.ToString() 
+                    : "(null)" ),
+                SerializedPropertyType.Boolean => property.boolValue.ToString(),
+                SerializedPropertyType.Float => property.floatValue.ToString( "N" ),
+                SerializedPropertyType.Color => $"{property.colorValue.ToString()}: {TextFormat.GetColoredString( "Example", property.colorValue )}",
+                SerializedPropertyType.Vector2 => property.vector2Value.ToString(),
+                SerializedPropertyType.Vector2Int => property.vector2IntValue.ToString(),
+                SerializedPropertyType.Vector3 => property.vector3Value.ToString(),
+                SerializedPropertyType.Vector3Int => property.vector3IntValue.ToString(),
+                SerializedPropertyType.Vector4 => property.vector4Value.ToString(),
+                SerializedPropertyType.Rect => property.rectValue.ToString(),
+                SerializedPropertyType.RectInt => property.rectIntValue.ToString(),
+                SerializedPropertyType.ArraySize =>
+                // At this properties level, the array itself can't be accesses so printing arraySize will
+                // throw an error. Print at parent level only.
+                string.Empty,
+                SerializedPropertyType.Bounds => property.boundsValue.ToString(),
+                SerializedPropertyType.BoundsInt => property.boundsIntValue.ToString(),
+                SerializedPropertyType.Quaternion => property.quaternionValue.ToString(),
+                SerializedPropertyType.Generic =>
+                // Skip if "Array" as it will just echo the print from it's parent.
+                ( property.isArray && !property.name.Equals( "Array" ) 
+                    ? $"This is an array of {property.arraySize.ToString()} '{property.arrayElementType}' elements" 
+                    : string.Empty ),
+                SerializedPropertyType.ExposedReference => string.Empty,
+                SerializedPropertyType.FixedBufferSize => string.Empty,
+                SerializedPropertyType.Gradient => string.Empty,
+                SerializedPropertyType.AnimationCurve => string.Empty,
+                SerializedPropertyType.LayerMask => string.Empty,
+                SerializedPropertyType.Enum => string.Empty,
+                SerializedPropertyType.ManagedReference => string.Empty,
+                _ => string.Empty
+            };
         }
     }
 }

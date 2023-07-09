@@ -1,16 +1,15 @@
-﻿using System;
-using UnityEditor;
-using UnityEngine;
-using System.Collections.Generic;
-using Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.SerializedPropertyExplorerWindow;
+﻿using System.Collections.Generic;
 using Packages.com.ianritter.unityscriptingtools.Editor.PopupWindows.CustomColorPicker;
 using Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomColors;
+using UnityEditor;
+using UnityEngine;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFormatting.TextFormat;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.ToolingConstants;
 using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics.UIRectGraphics;
+using static Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.SerializedPropertyExplorerWindow.SerializedPropertyInfoExtractor;
 using Object = UnityEngine.Object;
 
-namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
+namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.SerializedPropertyExplorerWindow
 {
     public class SerializedPropertyExplorer : EditorWindow
     {
@@ -58,52 +57,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
         private bool _optionsFoldoutToggle = false;
         private float _width;
         
-        // private ColorPickerHandler _colorPickerHandler;
-
-        // private SerializedPropertyExplorerData _serializedPropertyExplorerData;
-
-        // private SerializedObject _serializedObject;
-
-
+        
         private void OnEnable()
         {
             _object = null;
-            // _serializedObject = new SerializedObject( this );
-            // expandArraysProp = _serializedObject.FindProperty( "expandArrays" );
-            // simplifyPathsProp = _serializedObject.FindProperty( "simplifyPaths" );
-            // titleHighlightColorProp = _serializedObject.FindProperty( "titleHighlightColor" );
-            // pathHighlightColorProp = _serializedObject.FindProperty( "pathHighlightColor" );
-            // typeHighlightColorProp = _serializedObject.FindProperty( "typeHighlightColor" );
-            // objectHighlightColorProp = _serializedObject.FindProperty( "objectHighlightColor" );
-            // valueHighlightColorProp = _serializedObject.FindProperty( "valueHighlightColor" );
-            // searchHighlightColorProp = _serializedObject.FindProperty( "searchHighlightColor" );
-            
-            
-            // _serializedPropertyExplorerData = GetAssetByName<SerializedPropertyExplorerData>( SerializedPropertyExplorerDataAssetName );
-            // string conclusion = (_serializedPropertyExplorerData != null) ? "found" : "not found";
-            // Debug.Log( $"SerializedPropertyExplorerData was {conclusion}." );
-            
+
             UpdateHexColors();
-            // _colorPickerHandler = new ColorPickerHandler( 
-            //     new Vector2( 10f, 10f ), 
-            //     350f, 400f,
-            //     5
-            // );
-            
+
             ColorPickerHandler.OnColorSelected += OnColorSelection;
         }
-
-        // private void InitializeProperties()
-        // {
-        //     expandArraysProp = _serializedPropertyExplorerData.expandArrays
-        //     simplifyPathsProp = _serializedPropertyExplorerData.simplifyPaths
-        //     titleHighlightColorProp = _serializedPropertyExplorerData.titleHighlightColor
-        //     pathHighlightColorProp = _serializedPropertyExplorerData.pathHighlightColor
-        //     typeHighlightColorProp = _serializedPropertyExplorerData.typeHighlightColor
-        //     objectHighlightColorProp = _serializedPropertyExplorerData.objectHighlightColor
-        //     valueHighlightColorProp = _serializedPropertyExplorerData.valueHighlightColor
-        //     searchHighlightColorProp = _serializedPropertyExplorerData.searchHighlightColor
-        // }
 
         private void OnDisable()
         {
@@ -156,6 +118,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                 // DrawRectOutline( lastOptionsRect, Color.green );
 
                 
+                
                 _optionsRect.yMax = lastOptionsRect.yMax;
                 _outputOutlineRect = new Rect( lastOptionsRect );
 
@@ -203,7 +166,16 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
             
 
             DrawColorSettingsToWindow();
-            
+
+            Rect buttonRect = EditorGUILayout.GetControlRect();
+            buttonRect.xMin = buttonRect.width - 150f;
+            // buttonRect.width = 150f;
+            if ( GUI.Button( buttonRect, new GUIContent( "Print SO to Console" ) ) )
+            {
+                if ( _object != null )
+                    PrintSerializedPropertyInfo( new SerializedObject( _object ) );
+            }
+
             EditorGUI.BeginChangeCheck();
             {
                 _searchStr = $@"{EditorGUILayout.TextField( SerializedPropertyExplorerMenuExpandSearchText, _searchStr )}";
@@ -350,7 +322,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                     controlRect.xMax -= 4f;
 
                     // If line is not an object, just print its data.
-                    if ( line.ObjectID <= 0 || line.Type.Equals( "PPtr<Prefab>" ) )
+                    if ( line.ObjectId <= 0 || line.Type.Equals( "PPtr<Prefab>" ) )
                     {
                         EditorGUI.LabelField( controlRect, outputString, _richTextStyle );
                         continue;
@@ -368,9 +340,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows
                         GUI.color = objectHighlightColor.color;
                         if ( GUI.Button( buttonRect, SerializedPropertyExplorerReadoutButtonText ) )
                         {
-                            EditorGUIUtility.PingObject( line.ObjectID );
+                            EditorGUIUtility.PingObject( line.ObjectId );
                             
-                            Selection.activeInstanceID = line.ObjectID;
+                            Selection.activeInstanceID = line.ObjectId;
                         }
                         GUI.color = cachedColor;
                     }
