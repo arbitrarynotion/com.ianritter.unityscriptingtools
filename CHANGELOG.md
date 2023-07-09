@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.5.0...v1.5.1) (2023-07-09)
+
+
+### Bug Fixes
+
+* Fixed MonoScript print issue in SPExtensions ([f4bf6a7](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/f4bf6a7e5cbed4f481ba4f8a6863b1f97394e8b0))
+
 # [1.5.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.4.5...v1.5.0) (2023-05-28)
 
 
