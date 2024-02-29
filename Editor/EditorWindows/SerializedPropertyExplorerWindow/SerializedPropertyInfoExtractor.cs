@@ -11,16 +11,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.Serial
     {
         private static bool _expandArrays = true;
         private static bool _simplifyPaths = true;
-        // private static Object _object;
         private static List<SerializedPropertyData> _extractedData;
         private static string _searchStr;
         private static string _searchStrRep;
-        // private static GUIStyle _richTextStyle;
-        // private static Vector2 _scrollPos;
-        // private static Rect _outputOutlineRect;
-        // private static Rect _optionsRect;
-        // private static bool _optionsFoldoutToggle = false;
-        // private static float _width;
 
         private static CustomColor _titleHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutTitleText, Color.grey );
         private static CustomColor _pathHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutPathText, new Color( 0.13f, 0.7f, 0.67f ) );
@@ -28,16 +21,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.Serial
         private static CustomColor _objectHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutObjectIDText, new Color( 0.2f, 0.8f, 0.2f ) );
         private static CustomColor _valueHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutValueText, new Color( 1f, 1f, 0f ) );
         private static CustomColor _searchHighlightColor = new CustomColor( SerializedPropertyExplorerReadoutSearchText, new Color( 0f, 1f, 0f ) );
-        
-        // private static void AnalyzeObject()
-        // {
-        //     _extractedData = new List<SerializedPropertyData>();
-        //
-        //     if ( _object == null ) 
-        //         return;
-        //     
-        //     Search( new SerializedObject( _object ).GetIterator() );
-        // }
 
         public static void PrintSerializedPropertyInfo( SerializedObject serializedObject, string searchString = "", bool expandArrays = true, bool simplifyPaths = true )
         {
@@ -50,6 +33,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.EditorWindows.Serial
             _searchStrRep = $@"{GetColoredString( _searchStr, _searchHighlightColor.GetHex() )}";
             _expandArrays = expandArrays;
             _simplifyPaths = simplifyPaths;
+
+            if ( property == null )
+            {
+                Debug.LogWarning( "Can not extract: SerializedProperty is null!" );
+                return;
+            }
             
             _extractedData = new List<SerializedPropertyData>();
             Search( property.Copy() );

@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraphics
 {
+    /// <summary>
+    ///     This class provides various methods for drawing in either the Inspector Window or and Editor Window.
+    /// </summary>
     public static class UIRectGraphics
     {
         /// <summary>

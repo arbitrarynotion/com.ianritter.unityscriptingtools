@@ -56,8 +56,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             _sender = sender;
             SetValuesToDefault();
         }
-        
-        
+
+#region LifeCycle
+
         private void OnEnable()
         {
             UpdatePrefixColor();
@@ -69,7 +70,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         }
 
         private void OnValidate() => UpdatePrefixColor();
-        
+
+#endregion
+
+
+#region Colors
+
         private void UpdatePrefixColor()
         {
             logPrefix.UpdateHexColor();
@@ -84,14 +90,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             _methodHexColor = $"#{ColorUtility.ToHtmlStringRGBA( methodColor )}";
         }
 
+#endregion
+
 
 #region Log Methods
         
-        
-        
         /// <summary>
-        /// Print the starting line of a log sequence preceded by a Log Block Start symbol where subsequent logs will be
-        /// indented based on their depth in the call stack. If blockStart is true, log will be encapsulated in
+        /// Print the starting line of a log sequence preceded by a Log Block Start symbol where subsequent logs will be<br/>
+        /// indented based on their depth in the call stack. If blockStart is true, log will be encapsulated in<br/>
         /// Log Block Divider symbols - note that the matching LogEnd will automatically include such encapsulation as well.
         /// </summary>
         public void LogStart( bool blockStart = false, string introMessage = "", CustomLogType logType = CustomLogType.Standard )
@@ -187,11 +193,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
             LogObjectAssignmentResult( objectName, ( targetObject == null ), logType );
         }
         
-        public void LogObjectAssignmentResult( string objectName, bool result, CustomLogType logType )
+        public void LogObjectAssignmentResult( string objectName, bool failedIf, CustomLogType logType )
         {
             if ( !LogAllowed() ) return;
 
-            PrintLog( $"{GetIndentString()}Loading of {objectName} {(result ? $"{GetColoredStringFireBrick( "failed" )}" : $"{GetColoredStringGreenYellow( "succeeded" )}")}.", logType );
+            PrintLog( $"{GetIndentString()}Loading of {objectName} {(failedIf ? $"{GetColoredStringFireBrick( "failed" )}" : $"{GetColoredStringGreenYellow( "succeeded" )}")}.", logType );
         }
 
         public void LogIndentStart( string message, bool startHere = false, int incrementAmount = 1 )
@@ -433,7 +439,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.CustomLogg
         private void ResetMethodTabLevelForLogEnd() => GetCurrentMethodEntry().ResetTabLevel();
         
         private void IncrementBlockTabLevel() => ++_blockTabLevel;
-        
         private void DecrementBlockTabLevel() => _blockTabLevel = Mathf.Max( ( _blockTabLevel - 1 ), 0 );
         
         private string GetIndentString()

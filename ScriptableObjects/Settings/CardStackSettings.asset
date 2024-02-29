@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95e6606282a94f9f8d655e5cec129dc4, type: 3}
+  m_Name: CardStackSettings
+  m_EditorClassIdentifier: 
+  seed: 31
+  noiseOffsetHorizontal: 0
+  noiseOffsetVertical: 0
+  noiseScale: 12.7
+  octaves: 7
+  persistence: 1
+  lacunarity: 1.433
+  noiseDampeningCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  verticalOffset: 0.0003
+  yRotOffset: 0.05
+  deckYRotSkew: -0.244
+  topSkewCardCount: 7
+  topCardsYRotSkew: 39
+  rotationDampeningCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.0035514832
+      value: 0.0022468567
+      inSlope: 0.02133862
+      outSlope: 0.02133862
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0
+      outWeight: 0.69152474
+    - serializedVersion: 3
+      time: 0.1272265
+      value: 0.32834244
+      inSlope: 8.195747
+      outSlope: 8.195747
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.16060005
+      value: 0.7679692
+      inSlope: 5.6655655
+      outSlope: 5.6655655
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.3245624
+      value: 0.46598676
+      inSlope: -3.7884986
+      outSlope: -3.7884986
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.22430015
+      outWeight: 0.09893375
+    - serializedVersion: 3
+      time: 0.61950034
+      value: 0.06995833
+      inSlope: -0.27939424
+      outSlope: -0.27939424
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.21457842
+      outWeight: 0.16766956
+    - serializedVersion: 3
+      time: 1.00354
+      value: 0.0022468567
+      inSlope: -0.111717
+      outSlope: -0.111717
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.20951769
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  positionAffected: 0
+  faceUp: 0

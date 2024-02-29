@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-using static Packages.com.ianritter.unityscriptingtools.Editor.AssetLoader;
+using static Packages.com.ianritter.unityscriptingtools.Editor.Services.AssetLoader;
 
 namespace Packages.com.ianritter.unityscriptingtools.Editor.ExtensionMethods
 {

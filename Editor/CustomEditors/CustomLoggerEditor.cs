@@ -8,7 +8,7 @@ using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.UIGraph
 
 namespace Packages.com.ianritter.unityscriptingtools.Editor.CustomEditors
 {
-    [CustomEditor( typeof( CustomLogger ))]
+    [CustomEditor( typeof( CustomLogger )), CanEditMultipleObjects]
     public class CustomLoggerEditor : UnityEditor.Editor
     {
         public Texture buttonTexture;
