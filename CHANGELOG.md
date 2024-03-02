@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.6.0...v1.7.0) (2024-03-02)
+
+
+### Features
+
+* Added Noise Map Visualization for Object Stacker ([601bdc3](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/601bdc30e52e3882879ba86dc3293d7f8865a3a6))
+
 # [1.6.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.5.1...v1.6.0) (2024-02-29)
 
 
