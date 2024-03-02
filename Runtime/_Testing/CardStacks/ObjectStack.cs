@@ -14,23 +14,32 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
         [SerializeField] [Delayed] private int totalObjects = 3;
 
         // The list that hold the noise transform effects for all positions in the stack.
-        [SerializeField] [HideInInspector]
-        private List<PseudoTransform> objectStack = new List<PseudoTransform>();
-        
-        [SerializeField] 
-        private ObjectStackerSettingsSO settingsSo;
+        [HideInInspector]
+        [SerializeField] private List<PseudoTransform> objectStack = new List<PseudoTransform>();
 
-        [SerializeField] private bool showWireFrames = false;
+
+        [SerializeField] private ObjectStackerSettingsSO settingsSo;
+
+        [SerializeField] private SceneViewDebugVisualsMode sceneViewVisualsMode = SceneViewDebugVisualsMode.Off;
         [SerializeField] private GameObject prefab;
         [SerializeField] private CustomLogger logger;
 
         private int _currentStackPosition;
 
-        private float[] _noiseMap;
-        private float _yRotAdjustment;
-        private float _yRotCorrectedNoiseValue;
+        [SerializeField] [HideInInspector]
+        // private float[] noiseMap;
+        private float[,] _noiseMap2D;
+        // private float[,] _noiseMap2DScaled;
+        // private float _yRotAdjustment;
+        // private float _yRotCorrectedNoiseValue;
+        private float _noiseDrivenRotationValue;
 
         private bool _updateRequired = false;
+
+
+        // public float[,] Get2DNoiseMap() => _noiseMap2D;
+        // public float[] GetNoiseMap() => noiseMap;
+        
         
         public override string GetPrefabVarName()
         {
@@ -204,78 +213,182 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
         {
             logger.LogStart();
             
-            _noiseMap = NoiseGenerator.GetPerlinNoiseArray(
+            // noiseMap = NoiseGenerator.GetPerlinNoiseArray(
+            //     totalObjects,
+            //     settingsSo.seed,
+            //     settingsSo.noiseScale,
+            //     settingsSo.octaves,
+            //     settingsSo.persistence,
+            //     settingsSo.lacunarity,
+            //     settingsSo.noiseOffsetHorizontal,
+            //     settingsSo.noiseOffsetVertical
+            // );
+
+            _noiseMap2D = NoiseGenerator.GenerateNoiseMap(
+                totalObjects,
                 totalObjects,
                 settingsSo.seed,
                 settingsSo.noiseScale,
                 settingsSo.octaves,
                 settingsSo.persistence,
                 settingsSo.lacunarity,
-                settingsSo.noiseOffsetHorizontal,
-                settingsSo.noiseOffsetVertical
+                new Vector2( settingsSo.noiseOffsetHorizontal,  settingsSo.noiseOffsetVertical )
             );
+
+            // _noiseMap2DScaled = NoiseGenerator.GetNoiseMapScaledToGrid( 
+            //     _noiseMap2D, 
+            //     totalObjects, 
+            //     totalObjects, 
+            //     totalObjects, 
+            //     totalObjects 
+            // );
+            
+            // Debug.Log( $"Noise Map 2D is [{GetColoredStringYellow( _noiseMap2D.GetLength( 0 ).ToString() )}, " +
+            //            $"{GetColoredStringYellow( _noiseMap2D.GetLength( 1 ).ToString() )}]" );
+            // Debug.Log( $"Noise Map 2D Scaled is [{GetColoredStringYellow( _noiseMap2DScaled.GetLength( 0 ).ToString() )}, " +
+            //            $"{GetColoredStringYellow( _noiseMap2DScaled.GetLength( 1 ).ToString() )}]" );
             
             logger.LogEnd();
+        }
+
+        // public float[,] GetNoiseMap2DScaled()
+        // {
+        //     return NoiseGenerator.GenerateNoiseMap(
+        //         totalObjects,
+        //         totalObjects,
+        //         settingsSo.seed,
+        //         settingsSo.noiseScale,
+        //         settingsSo.octaves,
+        //         settingsSo.persistence,
+        //         settingsSo.lacunarity,
+        //         new Vector2( settingsSo.noiseOffsetHorizontal,  settingsSo.noiseOffsetVertical )
+        //     );
+        // }
+        
+        public float[,] GetNoiseMap2D()
+        {
+            return NoiseGenerator.GenerateNoiseMap(
+                5,
+                totalObjects,
+                settingsSo.seed,
+                settingsSo.noiseScale,
+                settingsSo.octaves,
+                settingsSo.persistence,
+                settingsSo.lacunarity,
+                new Vector2( settingsSo.noiseOffsetHorizontal,  settingsSo.noiseOffsetVertical )
+            );
         }
 
         private void UpdatePseudoTransforms()
         {
-            logger.LogStart();
+            // logger.LogStart();
             
             float currentOffset = 0f;
+
+            float firstCardYRot = GetNoiseDrivenRotationValue( 0 );
 
             // Flip the z axis if face up is checked.
             float zAxisRot = settingsSo.faceUp ? 0f : 180f;
             
+            // logger.LogIndentStart( "Getting noise values:" );
             for (int i = 0; i < totalObjects; i++)
             {
-                // Get the percent of the deck traversed so far.
-                float percentProgress = ( i / (float)totalObjects );
-                float noiseCurveValue = settingsSo.noiseDampeningCurve.Evaluate( percentProgress );
-                
-                SetRotationEffects( i, noiseCurveValue );
-
                 PseudoTransform pseudoTransform = objectStack[i];
                 pseudoTransform.position = transform.position + new Vector3( 0f, currentOffset, 0f );
-                pseudoTransform.rotation = Quaternion.Euler( 0, _yRotCorrectedNoiseValue + _yRotAdjustment, zAxisRot );
+                pseudoTransform.rotation = Quaternion.Euler( 0, GetNoiseDrivenRotationValue( i ) - firstCardYRot, zAxisRot );
                 pseudoTransform.scale = Vector3.one;
-
-                // If spawning debug models, apply the noise effects to the transform of the model.
-                // if ( spawnModels ) 
-                //     pseudoTransform.ApplyPositionAndRotation( _debugModels[i].transform );
 
                 currentOffset += settingsSo.verticalOffset;
             }
-            
-            logger.LogEnd();
+
+            // logger.DecrementMethodIndent();
+            // logger.LogEnd();
         }
 
-        private void SetRotationEffects( int i, float noiseCurveValue )
+        private float GetTotalRotationAdjustment( int i, float firstCardYRot )
         {
-            float firstCardYRot = _noiseMap[0];
-
-            // Apply an increasing skew to the y rotation to all cards.
-            float ySkew = i * ( settingsSo.deckYRotSkew );
-                
-            // Apply an increasing skew to only the top cards.
-            float topCardsYSkew = 0;
-            int currentCard = ( totalObjects - settingsSo.topSkewCardCount );
-            if ( i > currentCard )
-            {
-                // Get the percent traversed from the top card range.
-                int relativeIndex = ( i - currentCard );
-                int totalCardsInTop = ( totalObjects - currentCard );
-                float percentOfTopCardsTraversed = ( relativeIndex / (float) totalCardsInTop );
-                topCardsYSkew = settingsSo.rotationDampeningCurve.Evaluate( percentOfTopCardsTraversed ) * settingsSo.topCardsYRotSkew;
-            }
-                
-            // Keep the deck from rotating by locking the bottom card in placed and subtracting its rotation from all other cards.
-            _yRotCorrectedNoiseValue = ( ( _noiseMap[i] * noiseCurveValue ) - firstCardYRot );
-            // _yRotCorrectedNoiseValue = _noiseMap[i];
-
-            // Combine all other y rotation adjustments;
-            _yRotAdjustment = settingsSo.yRotOffset + ySkew + topCardsYSkew;
+            return GetNoiseDrivenRotationValue( i ) - firstCardYRot;
         }
+
+        private float GetCurveDampenedNoiseValueAtIndex( int i )
+        {
+            // Get the percent of the deck traversed so far.
+            float percentProgress = ( i / (float)totalObjects );
+            float noiseCurveValue = settingsSo.noiseDampeningCurve.Evaluate( percentProgress );
+            return _noiseMap2D[0, i] * noiseCurveValue;
+        }
+
+        private float GetNoiseDrivenRotationValue( int i )
+        {
+            // Get manual y rotation skews.
+            float ySkew = GetDeckYRotSkew( i );
+            float topCardsYSkew = GetTopCardsYRotSkew( i );
+
+            // Get noise rotation skew.
+            float noiseValue = GetCurveDampenedNoiseValueAtIndex( i ) * settingsSo.noiseMultiplier;
+
+            // Return combined y rotation adjustment.
+            return ( noiseValue + ySkew + topCardsYSkew + settingsSo.yRotOffset );
+        }
+
+        private float GetDeckYRotSkew( int i )
+        {
+            return i * ( settingsSo.deckYRotSkew );
+        }
+
+        private float GetTopCardsYRotSkew( int i )
+        {
+            // Apply an increasing skew to only the top cards.
+            
+            // int currentCard = ( totalObjects - settingsSo.topDownSkewPercent );
+            int thresholdIndex = Mathf.RoundToInt( ( 1 - settingsSo.topDownSkewPercent ) * totalObjects );
+            // int thresholdIndex = Mathf.RoundToInt( settingsSo.topDownSkewPercent * totalObjects );
+            thresholdIndex = Mathf.Clamp( thresholdIndex, 0, totalObjects );
+            // thresholdIndex = 0;
+            if ( i < thresholdIndex ) return 0f;
+            
+            // Get the percent traversed from the top card range.
+            int relativeIndex = ( i - thresholdIndex );
+            int totalCardsInTop = ( totalObjects - thresholdIndex );
+            float percentOfTopCardsTraversed = ( relativeIndex / (float) totalCardsInTop );
+            float result = settingsSo.rotationDampeningCurve.Evaluate( percentOfTopCardsTraversed ) * settingsSo.topCardsYRotSkew;
+
+            // if ( i < 2 )
+            // logger.Log( $"i: {GetColoredStringYellow( i.ToString() )}, " +
+            //             $"thresholdIndex: {GetColoredStringYellow( thresholdIndex.ToString() )}, " +
+            //             $"relativeIndex: {GetColoredStringYellow( relativeIndex.ToString() )}, " +
+            //             $"totalCardsInTop: {GetColoredStringYellow( totalCardsInTop.ToString() )}, " +
+            //             $"percentOfTopCardsTraversed: {GetColoredStringYellow( percentOfTopCardsTraversed.ToString("0.00") )}, " +
+            //             $"result: {GetColoredStringYellow( result.ToString("0.00") )}" );
+            return result;
+        }
+        
+        // private float GetTopCardsYRotSkew( int i )
+        // {
+        //     // Apply an increasing skew to only the top cards.
+        //     float topCardsYSkew = 0;
+        //     
+        //     // Is this index within the top down percent?
+        //     float currentPercentOfTotal = i / (float) totalObjects;
+        //     int thresholdObject = Mathf.RoundToInt( settingsSo.topDownSkewPercent * totalObjects );
+        //     
+        //     if ( currentPercentOfTotal < ( 1f - settingsSo.topDownSkewPercent ) ) return topCardsYSkew;
+        //     
+        //     // The range of objects to apply the rotation to is from threshold to total.
+        //     // So the number of objects in the skew group is total - threshold.
+        //     int totalInSkewGroup = ( totalObjects - thresholdObject );
+        //     
+        //     // Get the percent traversed from the top card range.
+        //     // Relative index will always be greater than 0 because otherwise 
+        //     int relativeIndex = ( i - totalInSkewGroup );
+        //     int totalCardsInTop = ( totalObjects - totalInSkewGroup );
+        //     
+        //     
+        //     float percentOfTopCardsTraversed = ( relativeIndex / (float) totalCardsInTop );
+        //     topCardsYSkew = settingsSo.rotationDampeningCurve.Evaluate( percentOfTopCardsTraversed ) * settingsSo.topCardsYRotSkew;
+        //
+        //     return topCardsYSkew;
+        // }
 
 #endregion
         
@@ -331,32 +444,35 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
 
 #endregion
 
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
-            if ( !showWireFrames ) return;
+            if ( sceneViewVisualsMode != SceneViewDebugVisualsMode.WireFrames ) return;
             // Gizmos.DrawSphere( transform.position, 0.001f );
             
             // Gizmos.DrawIcon( Vector3.zero, "warning" );
+
+            if ( _noiseMap2D == null ) return;
             
             Matrix4x4 cachedMatrix = Gizmos.matrix;
-            foreach ( PseudoTransform pseudoTransform in objectStack )
+            for (int i = 0; i < objectStack.Count; i++)
             {
-                // if ( pseudoTransform.rotation != new Quaternion( 0.000000f, 0.000000f, 0.000000f, 0.000000f ) )
-                // {
-                // var scale = new Vector3( pseudoTransform.scale.x, 1, pseudoTransform.scale.z );
-                Matrix4x4 rotationMatrix = Matrix4x4.TRS( pseudoTransform.position, pseudoTransform.rotation, Vector3.one );
-                Gizmos.matrix = rotationMatrix;
-                // }
+                PseudoTransform pseudoTransform = objectStack[i];
+
+                Matrix4x4 matrix = Matrix4x4.TRS( pseudoTransform.position, pseudoTransform.rotation, Vector3.one );
+                Gizmos.matrix = matrix;
                 
-                // Gizmos.DrawWireCube( Vector3.zero, new Vector3( 0.032f, 0.0002f, 0.0445f ) );
-                // Gizmos.DrawWireCube( Vector3.zero, new Vector3( 0.1f, 0.002f, 0.1f ) );
                 Gizmos.color = Color.cyan;
                 Gizmos.DrawSphere( pseudoTransform.position, 0.0002f );
-                Gizmos.color = Color.white;
-                Gizmos.DrawWireCube( pseudoTransform.position, new Vector3( 0.064f, 0.0002f, 0.0889f ) );
-                // Gizmos.DrawWireCube( pseudoTransform.position, new Vector3( 0.032f, 0.0002f, 0.0445f ) );
+                // float noiseSample = noiseMap[i];
+                // float noiseSample = _noiseMap2D[0, i];
+                float noiseSample = _noiseMap2D[0, i];
+                // Debug.Log( $"Noisemap[{i.ToString()}]: {GetColoredStringYellow( noiseSample.ToString( "0.00" ) )}" );
+                
+                // Note that we don't need to use the PseudoTransform's position here because we've already transformed the Gizmos' space.
+                Gizmos.color = new Color( 1f, noiseSample, noiseSample );
+                Gizmos.DrawWireCube( transform.position, new Vector3( 0.064f, 0.0002f, 0.0889f ) );
             }
-        
+
             Gizmos.matrix = cachedMatrix;
         }
 

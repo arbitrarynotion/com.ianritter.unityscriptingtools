@@ -19,7 +19,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.PrefabSpawn
     {
 #region DataMembers
 
-        private SerializedProperty _showPreviewProp;
+        private SerializedProperty _sceneViewVisualsModeProp;
         private SerializedProperty _prefabToSpawnProp;
         private SerializedProperty _spawnPointsProp;
 
@@ -36,6 +36,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.PrefabSpawn
         protected virtual void OnDisableLast() {}
         
         protected virtual void OnInspectorGUIFirst() {}
+        
+        protected virtual void DuringSceneGUIFirst() {}
+        protected virtual void DuringSceneGUILast() {}
 
 #endregion
 
@@ -109,7 +112,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.PrefabSpawn
 
         private void LoadSerializedProperties()
         {
-            _showPreviewProp = serializedObject.FindProperty( "showPreview" );
+            _sceneViewVisualsModeProp = serializedObject.FindProperty( "sceneViewVisualsMode" );
+            
             _prefabToSpawnProp = serializedObject.FindProperty( _prefabVarName );
             _logger.LogObjectAssignmentResult( nameof( _prefabToSpawnProp ), _prefabToSpawnProp == null, CustomLogType.Standard );
             _logger.LogObjectAssignmentResult( "PrefabToSpawnProp's object reference: ", _prefabToSpawnProp.objectReferenceValue == null, CustomLogType.Standard );
@@ -137,7 +141,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.PrefabSpawn
 
         private void DuringSceneGUI( SceneView sceneView )
         {
-            if ( !_showPreviewProp.boolValue ) return;
+            DuringSceneGUIFirst();
+            
+            if ( _sceneViewVisualsModeProp.intValue != 2 ) return;
             
             // Refresh the scene view any time the mouse is moved while in the view window.
             // if ( Event.current.type == EventType.MouseMove )
@@ -155,6 +161,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.PrefabSpawn
                 _spawnPointsProp,
                 sceneView
             );
+            
+            DuringSceneGUILast();
         }
 
 #endregion

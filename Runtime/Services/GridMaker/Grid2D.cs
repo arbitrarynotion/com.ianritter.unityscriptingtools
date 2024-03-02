@@ -34,5 +34,29 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime.Services.GridMaker
             // The position acts as the world center.
             worldTopLeft = ( worldTopLeft + transform.position );
         }
+        
+        public void UpdateNodeNoiseValues( float[,] noiseMap )
+        {
+            int noiseMapWidth = noiseMap.GetLength( 0 );
+            int noiseMapHeight = noiseMap.GetLength( 1 );
+            
+            // Loop through each cell of the grid one line at a time starting at the bottom.
+            for (int y = 0; y < gridSizeY; y++)
+            {
+                for (int x = 0; x < gridSizeX; x++)
+                {
+                    float halfCell = nodeWidth / 2f;
+                    float percentOfWidth = ( ( x * nodeWidth ) + halfCell ) / gridWidth;
+                    float percentOfHeight = ( ( y * nodeWidth ) + halfCell ) / gridHeight;
+                    
+                    int xSample = Mathf.FloorToInt( percentOfWidth * noiseMapWidth);
+                    int ySample = Mathf.FloorToInt( percentOfHeight * noiseMapHeight);
+
+                    float value = noiseMap[xSample, ySample];
+
+                }
+            }
+        }
+        
     }
 }
