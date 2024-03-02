@@ -18,7 +18,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.PrefabSpawn
     public class PrefabSpawnerEditor : UnityEditor.Editor
     {
 #region DataMembers
-
+        // Note that this is a variable of a child of PrefabSpawnerRoot. We can access it because the serialized object
+        // essentially combines the parent and child class data so it looks like it's all coming from the same level.
         private SerializedProperty _sceneViewVisualsModeProp;
         private SerializedProperty _prefabToSpawnProp;
         private SerializedProperty _spawnPointsProp;

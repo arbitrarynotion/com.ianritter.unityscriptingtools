@@ -16,8 +16,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
         // The list that hold the noise transform effects for all positions in the stack.
         [HideInInspector]
         [SerializeField] private List<PseudoTransform> objectStack = new List<PseudoTransform>();
-
-
+        
         [SerializeField] private ObjectStackerSettingsSO settingsSo;
 
         [SerializeField] private SceneViewDebugVisualsMode sceneViewVisualsMode = SceneViewDebugVisualsMode.Off;
@@ -27,20 +26,20 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
         private int _currentStackPosition;
 
         [SerializeField] [HideInInspector]
-        // private float[] noiseMap;
-        private float[,] _noiseMap2D;
-        // private float[,] _noiseMap2DScaled;
-        // private float _yRotAdjustment;
-        // private float _yRotCorrectedNoiseValue;
+        private float[,] noiseMap2D;
         private float _noiseDrivenRotationValue;
 
+        /// <summary>
+        /// As changes in settings are handled by an event subscribed to the settings so, the only reason this class should<br/>
+        /// update the stack is when the object total is changed. The var should be set to true when that occurs and set to<br/>
+        /// false after the update is performed. This is an optimization to avoid recreating the stack every frame.
+        /// </summary>
         private bool _updateRequired = false;
 
+        private ObjectStackerSettingsSO _previousSettingsSo;
 
-        // public float[,] Get2DNoiseMap() => _noiseMap2D;
-        // public float[] GetNoiseMap() => noiseMap;
-        
-        
+        public ObjectStackerSettingsSO GetSettingsSO() => settingsSo;
+
         public override string GetPrefabVarName()
         {
             logger.Log( "GetPrefabVarName was called." );
@@ -55,17 +54,17 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
 
 #region LifeCycle
 
-        private void Awake()
-        {
-            logger.LogStart( true );
-            logger.LogEnd();
-        }
+        // private void Awake()
+        // {
+        //     logger.LogStart( true );
+        //     logger.LogEnd();
+        // }
 
         private void OnEnable()
         {
             logger.LogStart( true );
-            
-            SubscribeToEvents();
+
+            UpdateSettingsSoSubscriptions();
             
             UpdateStack();
             
@@ -75,8 +74,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
         private void OnDisable()
         {
             logger.LogStart( true );
-            
-            UnsubscribeToEvents();
+
+            UpdateSettingsSoSubscriptions();
             
             logger.LogEnd();
         }
@@ -86,6 +85,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
             logger.LogStart( true );
 
             _updateRequired = true;
+            UpdateSettingsSoSubscriptions();
             UpdateStack();
             
             logger.LogEnd();
@@ -96,24 +96,94 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
 
 #region EventFunctions
         
-        private void SubscribeToEvents()
+        /// <summary>
+        /// This class handles when to subscribe and unsubscribe from settings SOs. It should be called during any Unity<br/>
+        /// event in which the settings SO object reference could be changed (either to null or to another settings SO).
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void UpdateSettingsSoSubscriptions()
         {
             logger.LogStart();
             
-            settingsSo.onSettingsUpdated += OnSettingsSOUpdated;
+            // Let: previousSettingsSO = P (for previous), and settingsSO = C (for current)
+            
+            if ( _previousSettingsSo == null && settingsSo == null )
+            {
+                // Case 1: P is null and C is null.
+                //     This means settings have not been set so we do nothing.
+                logger.LogEnd( "Case 1: No settings ref, aborting." );
+                return;
+            }
+            
+            if ( _previousSettingsSo == null && settingsSo != null )
+            {
+                // Case 2: P is null and C is null.
+                //     This means this is the first run so no subscriptions have taken place so we need to:
+                //         - set P equal to C
+                //         - subscribe to C
+
+                _previousSettingsSo = settingsSo;
+                SubscribeToEvents( settingsSo );
+                logger.LogEnd( $"Case 2: New settings set, subscribing to {GetColoredStringYellow( settingsSo.name )}." );
+                return;
+            }
+
+            if ( _previousSettingsSo != null && settingsSo == null )
+            {
+                // Case 3: P is not null but C is null.
+                //     This means that C has been set to null in the editor so we need to:
+                //         - unsubscribe from P
+                //         - set P to null
+                UnsubscribeToEvents( _previousSettingsSo );
+                _previousSettingsSo = null;
+                logger.LogEnd( $"Settings cleared. Unsubscribing from {GetColoredStringYellow( _previousSettingsSo.name )}" );
+                return;
+            }
+
+            if ( _previousSettingsSo != null && settingsSo != null )
+            {
+                // Case 4: neither P or C are null
+                //     This means we're in one of two states:
+                //         Case 4a: P is equal to C meaning no change has occured so we do nothing.
+                //         Case 4b: P is not equal to C so we need to:
+                //             - unsubscribe from P
+                //             - set P equal to C
+                //             - subscribe to C
+                UnsubscribeToEvents( _previousSettingsSo );
+                _previousSettingsSo = settingsSo;
+                SubscribeToEvents( settingsSo );
+                logger.LogEnd( $"Settings changed. Unsubscribing from {GetColoredStringYellow( _previousSettingsSo.name )} " +
+                               $"and subscribing to {GetColoredStringYellow( settingsSo.name )}." );
+                return;
+            }
+            
+            // If we get to this point, it means that P is null but C is not null. As P is always set equal to C, this would be an erroneous state.
+            throw new ArgumentOutOfRangeException();
+        }
+        
+        private void SubscribeToEvents( ObjectStackerSettingsSO so )
+        {
+            logger.LogStart();
+            
+            so.onSettingsUpdated += OnSettingsSOUpdated;
             
             logger.LogEnd();
         }
         
-        private void UnsubscribeToEvents()
+        private void UnsubscribeToEvents( ObjectStackerSettingsSO so )
         {
-            logger.LogStart();
+            logger.LogStart( false, $"Unsubscribing from {GetColoredStringYellow( so.name )}" );
             
-            settingsSo.onSettingsUpdated -= OnSettingsSOUpdated;
+            if ( so.onSettingsUpdated == null ) return;
+            so.onSettingsUpdated -= OnSettingsSOUpdated;
             
             logger.LogEnd();
         }
 
+        /// <summary>
+        /// This method should only be called in response to a change in the settingsSO's settings. That is triggered<br/>
+        /// in the settingsSO class's OnValidate() method.
+        /// </summary>
         private void OnSettingsSOUpdated()
         {
             logger.LogStart( true );
@@ -127,8 +197,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
 #endregion
 
 
-#region StandManagement
+#region StackManagement
 
+        /// <summary>
+        /// Checks to see if the stack size is still correct. If not, it rebuilds the stack and regenerates<br/>
+        /// the noise map and pseudoTransforms. This should only be called when the stack size variable has been changed.
+        /// </summary>
         private void UpdateStack()
         {
             logger.LogStart();
@@ -140,26 +214,28 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
                 return;
             }
             
-            GenerateNoiseMap();
-            UpdatePseudoTransforms();
+            UpdateStackTransforms();
             _updateRequired = false;
 
             logger.LogEnd();
         }
-
+        
         private void UpdateStackTransforms()
         {
             GenerateNoiseMap();
             UpdatePseudoTransforms();
         }
 
-
-
 #endregion
 
 
 #region Interface
         
+        /// <summary>
+        /// Returns the next position in the stack, automatically incrementing the internal current position counter.<br/>
+        /// Use this to progress through the stack positions sequentially from 0 to n.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public PseudoTransform GetNextPosition()
         {
             if ( _currentStackPosition >= objectStack.Count )
@@ -168,8 +244,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
             return objectStack[_currentStackPosition++];
         }
 
+        /// <summary>
+        /// Returns the index the current stack position is set to.
+        /// </summary>
         public int GetCurrentStackPosition() => _currentStackPosition;
 
+        /// <summary>
+        /// Resets the internal stack counter back to 0. Use this to loop back to the beginning of the stack.
+        /// </summary>
         public void ResetStackCounter() => _currentStackPosition = 0;
 
 #endregion
@@ -213,18 +295,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
         {
             logger.LogStart();
             
-            // noiseMap = NoiseGenerator.GetPerlinNoiseArray(
-            //     totalObjects,
-            //     settingsSo.seed,
-            //     settingsSo.noiseScale,
-            //     settingsSo.octaves,
-            //     settingsSo.persistence,
-            //     settingsSo.lacunarity,
-            //     settingsSo.noiseOffsetHorizontal,
-            //     settingsSo.noiseOffsetVertical
-            // );
-
-            _noiseMap2D = NoiseGenerator.GenerateNoiseMap(
+            noiseMap2D = NoiseGenerator.GenerateNoiseMap(
                 totalObjects,
                 totalObjects,
                 settingsSo.seed,
@@ -235,36 +306,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
                 new Vector2( settingsSo.noiseOffsetHorizontal,  settingsSo.noiseOffsetVertical )
             );
 
-            // _noiseMap2DScaled = NoiseGenerator.GetNoiseMapScaledToGrid( 
-            //     _noiseMap2D, 
-            //     totalObjects, 
-            //     totalObjects, 
-            //     totalObjects, 
-            //     totalObjects 
-            // );
-            
-            // Debug.Log( $"Noise Map 2D is [{GetColoredStringYellow( _noiseMap2D.GetLength( 0 ).ToString() )}, " +
-            //            $"{GetColoredStringYellow( _noiseMap2D.GetLength( 1 ).ToString() )}]" );
-            // Debug.Log( $"Noise Map 2D Scaled is [{GetColoredStringYellow( _noiseMap2DScaled.GetLength( 0 ).ToString() )}, " +
-            //            $"{GetColoredStringYellow( _noiseMap2DScaled.GetLength( 1 ).ToString() )}]" );
-            
             logger.LogEnd();
         }
 
-        // public float[,] GetNoiseMap2DScaled()
-        // {
-        //     return NoiseGenerator.GenerateNoiseMap(
-        //         totalObjects,
-        //         totalObjects,
-        //         settingsSo.seed,
-        //         settingsSo.noiseScale,
-        //         settingsSo.octaves,
-        //         settingsSo.persistence,
-        //         settingsSo.lacunarity,
-        //         new Vector2( settingsSo.noiseOffsetHorizontal,  settingsSo.noiseOffsetVertical )
-        //     );
-        // }
-        
         public float[,] GetNoiseMap2D()
         {
             return NoiseGenerator.GenerateNoiseMap(
@@ -305,19 +349,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
             // logger.LogEnd();
         }
 
-        private float GetTotalRotationAdjustment( int i, float firstCardYRot )
-        {
-            return GetNoiseDrivenRotationValue( i ) - firstCardYRot;
-        }
-
-        private float GetCurveDampenedNoiseValueAtIndex( int i )
-        {
-            // Get the percent of the deck traversed so far.
-            float percentProgress = ( i / (float)totalObjects );
-            float noiseCurveValue = settingsSo.noiseDampeningCurve.Evaluate( percentProgress );
-            return _noiseMap2D[0, i] * noiseCurveValue;
-        }
-
         private float GetNoiseDrivenRotationValue( int i )
         {
             // Get manual y rotation skews.
@@ -333,62 +364,41 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
 
         private float GetDeckYRotSkew( int i )
         {
-            return i * ( settingsSo.deckYRotSkew );
+            return ( i *  settingsSo.deckYRotSkew );
         }
 
+        /// <summary>
+        /// Applies a relative rotation to the top object group. The group size is determined by the topDownSkewPercent<br/>
+        /// which represents the percent of object, starting from the top, that will be in the group. The topCardsYRotSkew<br/>
+        /// and the dampening curve are then applied to that group only.
+        /// </summary>
         private float GetTopCardsYRotSkew( int i )
         {
-            // Apply an increasing skew to only the top cards.
-            
-            // int currentCard = ( totalObjects - settingsSo.topDownSkewPercent );
+            // The threshold index represents the point where the group starts. All objects above this index are in the group.
+            // Note that the topDownSkewPercent is inverted to allow the UI slider to increase from left to right.
             int thresholdIndex = Mathf.RoundToInt( ( 1 - settingsSo.topDownSkewPercent ) * totalObjects );
-            // int thresholdIndex = Mathf.RoundToInt( settingsSo.topDownSkewPercent * totalObjects );
+            // The clamp is just a failsafe to ensure the rounding doesn't result in one digit to high or low.
             thresholdIndex = Mathf.Clamp( thresholdIndex, 0, totalObjects );
-            // thresholdIndex = 0;
+            // Filter out all objects below the threshold index.
             if ( i < thresholdIndex ) return 0f;
             
-            // Get the percent traversed from the top card range.
+            // Get the index relative to this group.
             int relativeIndex = ( i - thresholdIndex );
+            // Get the group size.
             int totalCardsInTop = ( totalObjects - thresholdIndex );
+            // Use the relative index and the group size to determine what percent of the group has been traversed.
             float percentOfTopCardsTraversed = ( relativeIndex / (float) totalCardsInTop );
-            float result = settingsSo.rotationDampeningCurve.Evaluate( percentOfTopCardsTraversed ) * settingsSo.topCardsYRotSkew;
-
-            // if ( i < 2 )
-            // logger.Log( $"i: {GetColoredStringYellow( i.ToString() )}, " +
-            //             $"thresholdIndex: {GetColoredStringYellow( thresholdIndex.ToString() )}, " +
-            //             $"relativeIndex: {GetColoredStringYellow( relativeIndex.ToString() )}, " +
-            //             $"totalCardsInTop: {GetColoredStringYellow( totalCardsInTop.ToString() )}, " +
-            //             $"percentOfTopCardsTraversed: {GetColoredStringYellow( percentOfTopCardsTraversed.ToString("0.00") )}, " +
-            //             $"result: {GetColoredStringYellow( result.ToString("0.00") )}" );
-            return result;
+            // Use the percent to get the value on the dampening curve and multiply it by the topCardsYRotSkew setting.
+            return settingsSo.rotationDampeningCurve.Evaluate( percentOfTopCardsTraversed ) * settingsSo.topCardsYRotSkew;
         }
-        
-        // private float GetTopCardsYRotSkew( int i )
-        // {
-        //     // Apply an increasing skew to only the top cards.
-        //     float topCardsYSkew = 0;
-        //     
-        //     // Is this index within the top down percent?
-        //     float currentPercentOfTotal = i / (float) totalObjects;
-        //     int thresholdObject = Mathf.RoundToInt( settingsSo.topDownSkewPercent * totalObjects );
-        //     
-        //     if ( currentPercentOfTotal < ( 1f - settingsSo.topDownSkewPercent ) ) return topCardsYSkew;
-        //     
-        //     // The range of objects to apply the rotation to is from threshold to total.
-        //     // So the number of objects in the skew group is total - threshold.
-        //     int totalInSkewGroup = ( totalObjects - thresholdObject );
-        //     
-        //     // Get the percent traversed from the top card range.
-        //     // Relative index will always be greater than 0 because otherwise 
-        //     int relativeIndex = ( i - totalInSkewGroup );
-        //     int totalCardsInTop = ( totalObjects - totalInSkewGroup );
-        //     
-        //     
-        //     float percentOfTopCardsTraversed = ( relativeIndex / (float) totalCardsInTop );
-        //     topCardsYSkew = settingsSo.rotationDampeningCurve.Evaluate( percentOfTopCardsTraversed ) * settingsSo.topCardsYRotSkew;
-        //
-        //     return topCardsYSkew;
-        // }
+
+        private float GetCurveDampenedNoiseValueAtIndex( int i )
+        {
+            // Get the percent of the deck traversed so far.
+            float percentProgress = ( i / (float)totalObjects );
+            float noiseCurveValue = settingsSo.noiseDampeningCurve.Evaluate( percentProgress );
+            return noiseMap2D[0, i] * noiseCurveValue;
+        }
 
 #endregion
         
@@ -451,7 +461,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
             
             // Gizmos.DrawIcon( Vector3.zero, "warning" );
 
-            if ( _noiseMap2D == null ) return;
+            if ( noiseMap2D == null ) return;
             
             Matrix4x4 cachedMatrix = Gizmos.matrix;
             for (int i = 0; i < objectStack.Count; i++)
@@ -465,7 +475,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
                 Gizmos.DrawSphere( pseudoTransform.position, 0.0002f );
                 // float noiseSample = noiseMap[i];
                 // float noiseSample = _noiseMap2D[0, i];
-                float noiseSample = _noiseMap2D[0, i];
+                float noiseSample = noiseMap2D[0, i];
                 // Debug.Log( $"Noisemap[{i.ToString()}]: {GetColoredStringYellow( noiseSample.ToString( "0.00" ) )}" );
                 
                 // Note that we don't need to use the PseudoTransform's position here because we've already transformed the Gizmos' space.
