@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.7.0...v1.7.1) (2024-03-02)
+
+
+### Bug Fixes
+
+* Restructured the Object Stacker Settings Window ([32beca8](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/32beca85b3ea53abdb81cf3fed093c0f00414416))
+
 # [1.7.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.6.0...v1.7.0) (2024-03-02)
 
 
