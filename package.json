@@ -1,6 +1,6 @@
 {
   "name": "com.ianritter.unityscriptingtools",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "displayName": "Unity Scripting Tools",
   "description": "This is my personal collection of tools that I use to help with scripting in Unity. This includes tools specific to helping with Editor coding.",
   "unity": "2021.1",

@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.5.1...v1.6.0) (2024-02-29)
+
+
+### Features
+
+* Added an Object Stacker tool ([f16f09e](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/f16f09e061d8499b9d3856611acab9464980719e))
+
 ## [1.5.1](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.5.0...v1.5.1) (2023-07-09)
 
 
