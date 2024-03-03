@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.7.1...v1.8.0) (2024-03-03)
+
+
+### Features
+
+* Improved Object Stacker Options and UI ([2c16df7](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/2c16df7573de4aef02a745c7abc35c51c319581f))
+
 ## [1.7.1](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.7.0...v1.7.1) (2024-03-02)
 
 
