@@ -1,0 +1,20 @@
+{
+    "name": "ianritter.noisegen.editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:c24d380d7b16607488b4f3f6b6a4fe97",
+        "GUID:8c64a276186c0884daeeeee55360faa8",
+        "GUID:c06660795a3106e4d89b47bc8065e935"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
