@@ -21,10 +21,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.ObjectStack
     {
 #region DataMembers
 
-        private const float PreviewImageWidth = 9f;
-        private const float PreviewImageHeight = 400f;
-        private const float PreviewImageMargin = 5f;
-        private const float TopMarginOffset = 110f;
+        private const float PreviewImageWidth = 25f;
+        private const float PreviewImageRightMargin = 43f;
+        private const float TopMarginOffset = 125f;
+        
+        private const float PreviewLabelWidth = 80f;
+        private const float PreviewLabelRightMargin = 0f;
         
         private ObjectStack _objectStack;
         
@@ -137,14 +139,29 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.ObjectStack
             }
             EditorGUI.indentLevel--;
             
-            serializedObject.ApplyModifiedProperties();
+            if ( serializedObject.ApplyModifiedProperties() )
+            {
+                _localLogger.Log( "Change in Settings SO detected. Repainting Scene Views." );
+                SceneView.RepaintAll();
+            }
+        }
+
+        protected override void DuringSceneGUILast()
+        {
+            // if ( Event.current.type == EventType.Repaint )
+            // {
+            //     _localLogger.Log( "DuringSceneGUI triggered on Repaint event." );
+            //     return;
+            // }
+            // _localLogger.Log( "DuringSceneGUI triggered on non-Repaint event." );
+            
+            SceneView.RepaintAll();
         }
 
         protected void OnSceneGUI()
         {
             // Todo: Directly referencing the value is ugly. Should find a clean way with serialized properties. This works for now.
             if ( !_objectStack.GetSettingsSO().showNoiseMeter ) return;
-            
             
             DrawSceneViewNoiseMapPreview();
         }
@@ -160,6 +177,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.ObjectStack
         }
 
 #endregion
+
+
+#region Helpers
 
         /// <summary>
         /// Returns true if the editor variable holds a usable editor.
@@ -212,7 +232,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.ObjectStack
             EditorGUILayout.Space( VerticalSeparator );
 
             // Draw Foldout with frame.
-            Rect labelRect = GetFramedControlRect( Color.gray, FoldoutFrameType, true, ParentFrameWidth, FoldoutFramePadding );
+            Rect labelRect = GetFramedControlRect( Color.gray, FoldoutFrameType, 0f, true, ParentFrameWidth, FoldoutFramePadding );
             _showSoSettings = EditorGUI.Foldout( labelRect, _showSoSettings, "Object Stacker Settings", true );
             if ( !_showSoSettings ) return;
 
@@ -223,34 +243,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.ObjectStack
             DrawSOFrame( startRect, endRect );
             
             EditorGUILayout.Space( VerticalSeparator );
-
-        }
-
-        /// <summary>
-        /// Draws a vertical bar that shows a preview of how the noise settings are being applied to the stack. Also includes ticks along the<br/>
-        /// left side that indicate where the objects are sampling the noise.
-        /// </summary>
-        private void DrawSceneViewNoiseMapPreview()
-        {
-            Rect currentViewPortRect = Camera.current.pixelRect;
-            var positionVector = new Vector2( 
-                currentViewPortRect.width - PreviewImageMargin - PreviewImageWidth, 
-                PreviewImageMargin + TopMarginOffset
-            );
-            var sizeVector = new Vector2( 
-                PreviewImageWidth, 
-                currentViewPortRect.height / 2f 
-            );
-            var positionRect = new Rect( positionVector, sizeVector );
-
-            NoiseEditorUtilities.DrawSceneViewNoiseMapPreview(
-                positionRect,
-                _objectStack.GetNoiseMap2D(),
-                Color.black, 
-                Color.white,
-                _totalObjectsProp.intValue,
-                Color.black
-            );
         }
 
         private static void DrawSOFrame( Rect startRect, Rect endRect )
@@ -262,83 +254,71 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.ObjectStack
             };
             finalRect.xMin += ParentFrameWidth;
             DrawRect( finalRect, EditorFrameType, Color.gray, Color.gray, childFrameWidth, false );
-            
-            // // labelRect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing + FoldoutFramePadding;
-            // // DrawSOFrame( labelRect );
-            //
-            // float totalHeight = 0f;
-            //
-            // Rect wholeFrameRect = new Rect( startRect );
-            //
-            // Debug.Log( "Summing the property heights:");
-            //
-            // SerializedProperty property = _editor.serializedObject.GetIterator().Copy();
-            // property.Next( true );
-            //
-            // // totalHeight += EditorGUI.GetPropertyHeight( property );
-            // // Debug.Log( $"    adding property: {property.name}" );
-            //
-            //
-            //
-            // while ( property.Next( false ) )
-            // {
-            //     if ( property.name.Substring( 0, 2 ).Equals( "m_" ) ) continue;
-            //
-            //     var currentHeight = EditorGUI.GetPropertyHeight( property );
-            //     totalHeight += currentHeight;
-            //     
-            //     DrawRectOutline( startRect, Color.white, 1 );
-            //     startRect.y += currentHeight + EditorGUIUtility.standardVerticalSpacing;
-            //     
-            //     Debug.Log( $"    adding property: {property.name}" );
-            // }
-            //
-            // wholeFrameRect.yMax += totalHeight + 
-            //                        ( 5 * EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing + ( 2 * VerticalSeparator ) );
-            //
-            // // var testRect = EditorGUILayout.GetControlRect( false, totalHeight );
-            // // DrawRectOutline( wholeFrameRect, Color.cyan, 1 );
         }
-        
-        
-        
-        
-        
-        // /// <summary>
-        // /// Draws a vertical bar that shows a preview of how the noise settings are being applied to the stack. Also includes ticks along the<br/>
-        // /// left side that indicate where the objects are sampling the noise.
-        // /// </summary>
-        // private void DrawSceneViewNoiseMapPreview()
-        // {
-        //     Handles.BeginGUI();
-        //     
-        //     Texture2D noiseMap2D = MapDisplay.GetNoiseMapTexture( _objectStack.GetNoiseMap2D(), Color.black, Color.white );
-        //
-        //     Rect windowWidth = Camera.current.pixelRect;
-        //     var positionRect = new Vector2( 
-        //         windowWidth.width - PreviewImageMargin - PreviewImageWidth, 
-        //         PreviewImageMargin + TopMarginOffset
-        //     );
-        //     
-        //     float variableHeight = windowWidth.height / 2f;
-        //     var sizeRect = new Vector2( PreviewImageWidth, variableHeight );
-        //     
-        //     
-        //     EditorGUI.DrawPreviewTexture( new Rect( positionRect, sizeRect ), noiseMap2D, null, ScaleMode.ScaleAndCrop, 0.0f, -1 );
-        //     DrawRectOutline( new Rect( positionRect, sizeRect ), Color.black, 2f );
-        //
-        //     var nodeRect = new Rect( positionRect, new Vector2( 5, 2 ) );
-        //     nodeRect.x -= 3f;
-        //     
-        //     float spacing = variableHeight / noiseMap2D.height;
-        //     nodeRect.y += spacing / 2f;
-        //     for (int x = 0; x < _totalObjectsProp.intValue; x++)
-        //     {
-        //         DrawRectOutline( nodeRect, Color.black );
-        //         nodeRect.y += spacing;
-        //     }
-        //     
-        //     Handles.EndGUI();
-        // }
+
+#endregion
+
+
+#region SceneViewNoiseMapPreview
+
+        /// <summary>
+        /// Draws a vertical bar that shows a preview of how the noise settings are being applied to the stack. Also includes ticks along the<br/>
+        /// left side that indicate where the objects are sampling the noise.
+        /// </summary>
+        private void DrawSceneViewNoiseMapPreview()
+        {
+            Rect currentViewPortRect = Camera.current.pixelRect;
+            float previewImageHeight = currentViewPortRect.height / 2f;
+            float value = 0.25f;
+            var outlineColor = new Color( value, value, value );
+            value = 0.15f;
+            var backgroundColor = new Color( value, value, value );
+
+            var positionVector = new Vector2( 
+                currentViewPortRect.width - PreviewImageRightMargin - PreviewImageWidth, 
+                // TopMarginOffset + PreviewImageRightMargin + 35f
+                TopMarginOffset
+            );
+            var sizeVector = new Vector2( 
+                PreviewImageWidth, 
+                previewImageHeight
+            );
+            var positionRect = new Rect( positionVector, sizeVector );
+            
+            DrawRectOutline( positionRect, Color.black );
+
+            NoiseEditorUtilities.DrawSceneViewNoiseMapPreview(
+                positionRect,
+                _objectStack.GetNoiseMap2D(),
+                Color.black, 
+                Color.white,
+                _totalObjectsProp.intValue,
+                outlineColor,
+                2f,
+                ScaleMode.StretchToFill
+            );
+            
+            var labelPositionVector = new Vector2(
+                currentViewPortRect.width - PreviewLabelWidth + PreviewLabelRightMargin,
+                // TopMarginOffset + singleLineHeight + standardVerticalSpacing
+                TopMarginOffset + ( previewImageHeight / 2f )
+            );
+            var labelSizeRect = new Vector2(
+                PreviewLabelWidth,
+                EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing
+            );
+            var labelRect = new Rect( labelPositionVector, labelSizeRect );
+            
+            Handles.BeginGUI();
+            {
+                GUIUtility.RotateAroundPivot(90, labelRect.center );
+                DrawSolidRectWithOutline( labelRect, outlineColor, backgroundColor, 2f );
+                GUI.Label( labelRect, " Noise Meter" );
+                GUIUtility.RotateAroundPivot(-90, labelRect.center );
+            }
+            Handles.EndGUI();
+        }
+
+#endregion
     }
 }

@@ -6,11 +6,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
     [CreateAssetMenu(menuName = "Utilities/Object Stacker Settings")]
     public class ObjectStackerSettingsSO : ScriptableObject
     {
-        // private const int CardCount = 52;
+
+#region DataMembers
         
-        // [Header("Noise Generation")]
-        public int seed = 31;
+#region NoiseSettings
+
         public bool showNoiseMeter = true;
+        public int seed = 31;
         [Range( -5.0f, 5.0f )] public float noiseOffsetHorizontal = 0f;
         [Range( -5.0f, 5.0f )] public float noiseOffsetVertical = 0f;
         [Range( 1.1f, 50.0f )] public float noiseScale = 12.7f;
@@ -19,14 +21,38 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
         [Range( 0.5f, 1.0f )] public float persistence = 1f;
         [Range( 0.5f, 1.5f )] public float lacunarity = 1.433f;
         
+#endregion
+
+#region NoiseDrivenEffects
+
+#region RotationSkew
+
         public AnimationCurve noiseDampeningCurve = AnimationCurve.EaseInOut( 0, 0, 1, 1 );
         [Range(0f, 50f)]
         public float noiseMultiplier = 1;
         
-        // [Header("Offsets")]
-        [Range( 0.0001f, 0.001f )] public float verticalOffset = 0.0003f;
-        
-        // [Header("Rotation Effects")]
+
+#endregion
+
+#region PositionShift
+
+        [Range( -0.01f, 0.01f )] 
+        public float posXNoiseShift = 0f;
+        public AnimationCurve posXNoiseCurve = AnimationCurve.EaseInOut( 0, 0, 1, 1 );
+
+        [Range( -0.01f, 0.01f )] 
+        public float posZNoiseShift = 0f;
+        public AnimationCurve posZNoiseCurve = AnimationCurve.EaseInOut( 0, 0, 1, 1 );
+
+#endregion
+
+#endregion
+
+
+#region ManualAdjustments
+
+#region Rotation
+
         [Range( -10f, 10f )] public float yRotOffset = 0.05f;
         [Range( -0.5f, 0.5f )] public float deckYRotSkew = -0.244f;
         [Range( 0f, 1f )] public float topDownSkewPercent = 0f;
@@ -83,22 +109,37 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
                 )
             } 
         );
-        
-        // [Header("Position Effects")]
-        [Range( -10f, 10f )] 
-        public float positionAffected = 0f;
-
-        // [Header("Orientation")]
         public bool faceUp = false;
+
+#endregion
+
+#region Position
+
+        public float modelHeight = 1f;
+        [Range( 0, 0.001f )] public float verticalOffset = 0.0003f;
+
+#endregion
+#endregion
+#endregion
+
+        
+#region Events
 
         [SerializeField]
         public UnityAction onSettingsUpdated;
         private void RaiseOnSettingsUpdated() => onSettingsUpdated?.Invoke();
+
+#endregion
+
+
+#region LifeCycle
 
         private void OnValidate()
         {
             // Debug.Log( "ObjectStackerSettingsSO OnValidate called." );
             RaiseOnSettingsUpdated();
         }
+
+#endregion
     }
 }

@@ -8,7 +8,64 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.Graphics.UI
 {
     public static class UIEditorOnlyRectGraphics
     {
-        public static Rect GetFramedControlRect( Color frameColor, ElementFrameType frameType = ElementFrameType.FullOutline, bool isFoldout = false, float frameWidth = 2f, float padding = 2f )
+        public static Rect GetFramedControlRect
+        (
+            Color frameColor,
+            Color backgroundColor,
+            ElementFrameType frameType = ElementFrameType.FullOutline,
+            float leftPadding = 2f,
+            bool isFoldout = false,
+            float frameWidth = 2f,
+            float padding = 2f
+        )
+        {
+            return GetFramedControlRect
+            (
+                frameColor,
+                backgroundColor,
+                true,
+                frameType,
+                leftPadding,
+                isFoldout,
+                frameWidth,
+                padding
+            );
+        }
+
+        public static Rect GetFramedControlRect
+            ( 
+                Color frameColor, 
+                ElementFrameType frameType = ElementFrameType.FullOutline, 
+                float leftPadding = 2f, 
+                bool isFoldout = false, 
+                float frameWidth = 2f, 
+                float padding = 2f 
+            )
+        {
+            return GetFramedControlRect
+            (
+                frameColor,
+                frameColor,
+                false,
+                frameType,
+                leftPadding,
+                isFoldout,
+                frameWidth,
+                padding
+            );
+        }
+
+        private static Rect GetFramedControlRect
+        (
+            Color frameColor,
+            Color backgroundColor,
+            bool showBackground,
+            ElementFrameType frameType = ElementFrameType.FullOutline,
+            float leftPadding = 2f,
+            bool isFoldout = false,
+            float frameWidth = 2f,
+            float padding = 2f
+        )
         {
             if ( frameType == ElementFrameType.None ) 
                 padding = 0f;
@@ -19,10 +76,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor.Graphics.UI
             // Set the frame rect to have an indent, with foldouts needing one less to fit their arrow.
             var frameRect = new Rect( controlRect);
             frameRect.xMin += ( isFoldout ? ( EditorGUI.indentLevel - 1 ) : EditorGUI.indentLevel ) * 15f;
-            DrawRect( frameRect, frameType, frameColor, LightGray.color, frameWidth, false );
+            DrawRect( frameRect, frameType, frameColor, backgroundColor, frameWidth, showBackground );
             
             // Prep the return rect to have padding on the left side to move the text away from the frame.
-            controlRect.xMin += isFoldout ? padding : padding + 2f;
+            controlRect.xMin += padding + leftPadding;
             return controlRect;
         }
     }

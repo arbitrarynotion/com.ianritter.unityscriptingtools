@@ -142,6 +142,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Editor._Testing.PrefabSpawn
 
         private void DuringSceneGUI( SceneView sceneView )
         {
+            if ( Event.current.type != EventType.Repaint ) return;
+            
             DuringSceneGUIFirst();
             
             if ( _sceneViewVisualsModeProp.intValue != 2 ) return;

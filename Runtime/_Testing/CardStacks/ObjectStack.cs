@@ -8,6 +8,26 @@ using static Packages.com.ianritter.unityscriptingtools.Runtime.Services.TextFor
 
 namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
 {
+    public interface INoiseModule
+    {
+        
+    }
+    
+    /// <summary>
+    /// A component that can provide noise value at an x and y coordinate.
+    /// </summary>
+    public class NoiseModule : MonoBehaviour
+    {
+        // Holds a 2D noise map.
+        
+        // Holds a NoiseSettingsSO
+        
+        // Noise map size can be set and changed.
+        
+        // Has an event that is raised when a setting to the noise map has changed.
+    }
+    
+    
     [ExecuteInEditMode]
     public class ObjectStack : PrefabSpawnerRoot
     {
@@ -27,7 +47,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
 
         [SerializeField] [HideInInspector]
         private float[,] noiseMap2D;
-        private float _noiseDrivenRotationValue;
+        private const int NoiseMapWidth = 1;
 
         /// <summary>
         /// As changes in settings are handled by an event subscribed to the settings so, the only reason this class should<br/>
@@ -295,16 +315,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
         {
             logger.LogStart();
             
-            noiseMap2D = NoiseGenerator.GenerateNoiseMap(
-                totalObjects,
-                totalObjects,
-                settingsSo.seed,
-                settingsSo.noiseScale,
-                settingsSo.octaves,
-                settingsSo.persistence,
-                settingsSo.lacunarity,
-                new Vector2( settingsSo.noiseOffsetHorizontal,  settingsSo.noiseOffsetVertical )
-            );
+            noiseMap2D = GetNoiseMap2D();
 
             logger.LogEnd();
         }
@@ -312,7 +323,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
         public float[,] GetNoiseMap2D()
         {
             return NoiseGenerator.GenerateNoiseMap(
-                5,
+                NoiseMapWidth,
                 totalObjects,
                 settingsSo.seed,
                 settingsSo.noiseScale,
@@ -330,6 +341,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
             float currentOffset = 0f;
 
             float firstCardYRot = GetNoiseDrivenRotationValue( 0 );
+            float firstCardXShift = GetNoiseDrivePositionValue( 0, settingsSo.posXNoiseCurve, settingsSo.posXNoiseShift );
+            float firstCardYShift = GetNoiseDrivePositionValue( 0, settingsSo.posZNoiseCurve, settingsSo.posZNoiseShift );
 
             // Flip the z axis if face up is checked.
             float zAxisRot = settingsSo.faceUp ? 0f : 180f;
@@ -338,16 +351,23 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
             for (int i = 0; i < totalObjects; i++)
             {
                 PseudoTransform pseudoTransform = objectStack[i];
-                pseudoTransform.position = transform.position + new Vector3( 0f, currentOffset, 0f );
+                pseudoTransform.position = transform.position + new Vector3( 
+                                               GetNoiseDrivePositionValue( i, settingsSo.posXNoiseCurve, settingsSo.posXNoiseShift ) - firstCardXShift, 
+                                               currentOffset, 
+                                               GetNoiseDrivePositionValue( i, settingsSo.posZNoiseCurve, settingsSo.posZNoiseShift ) - firstCardYShift
+                                            );
                 pseudoTransform.rotation = Quaternion.Euler( 0, GetNoiseDrivenRotationValue( i ) - firstCardYRot, zAxisRot );
                 pseudoTransform.scale = Vector3.one;
 
-                currentOffset += settingsSo.verticalOffset;
+                currentOffset += settingsSo.modelHeight + settingsSo.verticalOffset;
             }
 
             // logger.DecrementMethodIndent();
             // logger.LogEnd();
         }
+
+        private float GetNoiseDrivePositionValue( int i, AnimationCurve curve, float axisNoise ) =>
+            ( GetCurveDampenedNoiseValueAtIndex( i, curve ) * axisNoise );
 
         private float GetNoiseDrivenRotationValue( int i )
         {
@@ -356,7 +376,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
             float topCardsYSkew = GetTopCardsYRotSkew( i );
 
             // Get noise rotation skew.
-            float noiseValue = GetCurveDampenedNoiseValueAtIndex( i ) * settingsSo.noiseMultiplier;
+            float noiseValue = GetCurveDampenedNoiseValueAtIndex( i, settingsSo.noiseDampeningCurve ) * settingsSo.noiseMultiplier;
 
             // Return combined y rotation adjustment.
             return ( noiseValue + ySkew + topCardsYSkew + settingsSo.yRotOffset );
@@ -392,11 +412,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Runtime._Testing.CardStacks
             return settingsSo.rotationDampeningCurve.Evaluate( percentOfTopCardsTraversed ) * settingsSo.topCardsYRotSkew;
         }
 
-        private float GetCurveDampenedNoiseValueAtIndex( int i )
+        private float GetCurveDampenedNoiseValueAtIndex( int i, AnimationCurve curve )
         {
             // Get the percent of the deck traversed so far.
             float percentProgress = ( i / (float)totalObjects );
-            float noiseCurveValue = settingsSo.noiseDampeningCurve.Evaluate( percentProgress );
+            float noiseCurveValue = curve.Evaluate( percentProgress );
+            // float noiseCurveValue = settingsSo.noiseDampeningCurve.Evaluate( percentProgress );
             return noiseMap2D[0, i] * noiseCurveValue;
         }
 
