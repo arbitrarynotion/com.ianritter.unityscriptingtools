@@ -1,4 +1,5 @@
 using UnityEditor;
+
 using UnityEngine;
 
 
@@ -60,7 +61,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
                 {
                     // While this tool is open, only allow the user to select scene
                     // objects with a Collider component on them
-                    if ( !Select<Collider>( current ) )
+                    if( !Select<Collider>( current ) )
                     {
                         // If nothing with Collider found, unselect everything
                         Selection.activeGameObject = null;
@@ -68,7 +69,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
 
                     break;
                 }
-                
+
                 // After you've done all your custom event interpreting and swallowing,
                 // you have to call this code to make sure swallowed events don't bleed out.
                 // Not sure why, but that's the rules.
@@ -90,27 +91,27 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
         public static GameObject Select<T>( Event e ) where T : Component
         {
             // Abort is there is not camera.
-            if ( Camera.current == null ) return null;
-            
+            if( Camera.current == null ) return null;
+
             Ray ray = HandleUtility.GUIPointToWorldRay( e.mousePosition );
 
             // Abort if the raycast fails to hit anything.
-            if ( !Physics.Raycast( ray, out RaycastHit hit ) ) return null;
+            if( !Physics.Raycast( ray, out RaycastHit hit ) ) return null;
 
             // Abort if what the raycast hits has no collider (technically not possible).
-            if ( hit.collider == null ) return null;
-            
+            if( hit.collider == null ) return null;
+
             GameObject gameObj = hit.collider.gameObject;
-            
+
             // Finally, bail if the object the raycast hit doesn't have the component we're looking for.
-            if ( gameObj.GetComponent<T>() == null ) return null;
-            
+            if( gameObj.GetComponent<T>() == null ) return null;
+
             // Consume the event.
             e.Use();
-            
+
             // Select the object.
             Selection.activeGameObject = gameObj;
-            
+
             return gameObj;
         }
     }

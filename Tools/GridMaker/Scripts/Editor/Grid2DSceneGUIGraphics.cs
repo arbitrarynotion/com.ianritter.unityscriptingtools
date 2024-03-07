@@ -1,23 +1,23 @@
+using Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Runtime;
+
 using UnityEditor;
+
 using UnityEngine;
 using UnityEngine.Rendering;
 
-using Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Runtime;
-
-using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.GUIGraphics.SceneGUIHandles;
+using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Graphics.Scene.SceneGUIHandles;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Editor
 {
     public static class Grid2DSceneGUIGraphics
     {
-        
 #region 2DGrid
 
         public static void Draw2DGrid( Grid2D grid, Transform transform, bool showPlusAndMinusSigns, float lineThickness = 2f )
         {
             Draw2DGrid( transform, new Vector2( grid.gridWidth, grid.gridHeight ), grid.gridSizeX, grid.gridSizeY, showPlusAndMinusSigns, lineThickness );
         }
-        
+
         /// <summary>
         ///     Draws a 2d grid along the x and z axis. Note that this method does not currently support other axis or orientations.
         /// </summary>
@@ -29,44 +29,45 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Edi
         public static void Draw2DGrid( Transform transform, Vector2 gridSize, int gridSizeX, int gridSizeY, bool showPlusAndMinusSigns, float lineThickness = 2f )
         {
             // Note: grid is worked out in local space then converted to world space at the end (using transform.TransformPoint())..
-        
+
             var grid = new Grid2D( gridSizeX, gridSizeY, gridSize.x, gridSize.y, transform );
-        
+
             Vector3 horizontal = Vector3.right;
             var vertical = new Vector3( 0, 0, -1 );
-        
+
             // Draw horizontal lines.
-            for (int x = 0; x < gridSizeX + 1; x++)
+            for ( int x = 0; x < gridSizeX + 1; x++ )
             {
                 DrawGridLine( x, grid.nodeWidth, horizontal, vertical, grid.gridHeight );
             }
-        
+
             // Draw vertical lines.
-            for (int y = 0; y < gridSizeY + 1; y++)
+            for ( int y = 0; y < gridSizeY + 1; y++ )
             {
                 DrawGridLine( y, grid.nodeHeight, vertical, horizontal, grid.gridWidth );
             }
-        
-            if ( showPlusAndMinusSigns )
+
+            if( showPlusAndMinusSigns )
                 DrawPlusAndMinusSigns( grid.worldTopLeft, grid.gridWidth, grid.gridHeight );
-        
-            void DrawGridLine( 
-                    int currentLine, 
-                    float nodeWidth,
-                    Vector3 parallel, 
-                    Vector3 perpendicular, 
-                    float perpendicularScale 
-                )
+
+            void DrawGridLine
+            (
+                int currentLine,
+                float nodeWidth,
+                Vector3 parallel,
+                Vector3 perpendicular,
+                float perpendicularScale
+            )
             {
                 float parallelScale = currentLine * nodeWidth;
                 Vector3 lineStart = grid.worldTopLeft + parallel * parallelScale;
                 Vector3 lineEnd = lineStart + perpendicular * perpendicularScale;
-                
+
                 // With all points established, convert them from local to world space. This ensures they keep their
                 // position relative the position and rotation of their parent transform.
                 lineStart = transform.TransformPoint( lineStart );
                 lineEnd = transform.TransformPoint( lineEnd );
-                
+
                 Handles.DrawAAPolyLine( lineThickness, lineStart, lineEnd );
             }
         }
@@ -78,18 +79,18 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Edi
         public static void Draw2DGridNodes( Grid2D grid, Transform transform, Color color, float radius = 0.1f )
         {
             // Offset to place the nodes in the center of the grid cells.
-            var shiftToCenter = new Vector3( ( grid.nodeWidth / 2f ), 0f, ( -grid.nodeHeight / 2f ) );
+            var shiftToCenter = new Vector3( grid.nodeWidth / 2f, 0f, -grid.nodeHeight / 2f );
             Vector3 topLeft = grid.worldTopLeft + shiftToCenter;
-            
+
             topLeft = transform.TransformPoint( topLeft );
-            
+
             Handles.zTest = CompareFunction.LessEqual;
 
-            for (int x = 0; x < grid.gridSizeX; x++)
+            for ( int x = 0; x < grid.gridSizeX; x++ )
             {
-                for (int y = 0; y < grid.gridSizeY; y++)
+                for ( int y = 0; y < grid.gridSizeY; y++ )
                 {
-                    var nodePos = new Vector3( ( grid.nodeWidth * x ), 0f, ( -grid.nodeHeight * y ) );
+                    var nodePos = new Vector3( grid.nodeWidth * x, 0f, -grid.nodeHeight * y );
                     nodePos = transform.TransformPoint( nodePos );
                     DrawSphere( topLeft + nodePos, color, radius );
                 }
@@ -105,31 +106,33 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Edi
         /// <param name="gridHeight"></param>
         /// <param name="gridSizeX">Grid will be divided in to this many horizontal sections.</param>
         /// <param name="gridSizeY">Grid will be divided in to this many vertical sections.</param>
-        public static void Draw2DGridNodes( 
-                Transform transform, 
-                float gridWidth, 
-                float gridHeight, 
-                int gridSizeX, 
-                int gridSizeY, 
-                Color color, 
-                float radius = 0.1f  
-            )
+        public static void Draw2DGridNodes
+        (
+            Transform transform,
+            float gridWidth,
+            float gridHeight,
+            int gridSizeX,
+            int gridSizeY,
+            Color color,
+            float radius = 0.1f
+        )
         {
-            float nodeWidthX = ( gridWidth / gridSizeX );
-            float nodeWidthY = ( gridHeight / gridSizeY );
+            float nodeWidthX = gridWidth / gridSizeX;
+            float nodeWidthY = gridHeight / gridSizeY;
 
             // Get top left corner of grid space.
-            var worldTopLeft = new Vector3( ( -nodeWidthX * gridSizeX ) / 2f, 0f, ( nodeWidthY * gridSizeY ) / 2f );
+            var worldTopLeft = new Vector3( -nodeWidthX * gridSizeX / 2f, 0f, nodeWidthY * gridSizeY / 2f );
+
             // Offset center to be the center of the grid space.
-            var shiftToCenter = new Vector3( ( nodeWidthX / 2f ), 0f, ( -nodeWidthY / 2f ) );
+            var shiftToCenter = new Vector3( nodeWidthX / 2f, 0f, -nodeWidthY / 2f );
             worldTopLeft += shiftToCenter;
             worldTopLeft = transform.TransformPoint( worldTopLeft );
 
-            for (int x = 0; x < gridSizeX; x++)
+            for ( int x = 0; x < gridSizeX; x++ )
             {
-                for (int y = 0; y < gridSizeY; y++)
+                for ( int y = 0; y < gridSizeY; y++ )
                 {
-                    var nodePos = new Vector3( ( nodeWidthX * x ), 0f, ( -nodeWidthY * y ) );
+                    var nodePos = new Vector3( nodeWidthX * x, 0f, -nodeWidthY * y );
                     nodePos = transform.TransformPoint( nodePos );
                     DrawSphere( worldTopLeft + nodePos, color, radius );
                 }
@@ -137,8 +140,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Edi
         }
 
 #endregion
-        
-        
+
+
 #region Helpers
 
         /// <summary>
@@ -150,8 +153,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Edi
         /// <param name="edgePadding">World space distance between the edge of the grid and the center of the symbols.</param>
         /// <param name="scale">Size of the symbols.</param>
         /// <param name="lineThickness">Thickness of the lines used to draw the wire frame rectangles in the symbols.</param>
-        public static void DrawPlusAndMinusSigns( Vector3 worldTopLeft, float lengthX, float lengthY, float edgePadding = 0.2f,
-            float scale = 0.5f, float lineThickness = 3f )
+        public static void DrawPlusAndMinusSigns
+        ( Vector3 worldTopLeft, float lengthX, float lengthY, float edgePadding = 0.2f,
+            float scale = 0.5f, float lineThickness = 3f
+        )
         {
             DrawPlusAndMinusSigns( worldTopLeft, lengthX, lengthY, Color.red, Color.blue, edgePadding, scale, lineThickness );
         }
@@ -167,8 +172,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Edi
         /// <param name="edgePadding">World space distance between the edge of the grid and the center of the symbols.</param>
         /// <param name="scale">Size of the symbols.</param>
         /// <param name="lineThickness">Thickness of the lines used to draw the wire frame rectangles in the symbols.</param>
-        public static void DrawPlusAndMinusSigns( Vector3 worldTopLeft, float lengthX, float lengthY,
-            Color xAxisColor, Color yAxisColor, float edgePadding = 0.2f, float scale = 0.5f, float lineThickness = 3f )
+        public static void DrawPlusAndMinusSigns
+        ( Vector3 worldTopLeft, float lengthX, float lengthY,
+            Color xAxisColor, Color yAxisColor, float edgePadding = 0.2f, float scale = 0.5f, float lineThickness = 3f
+        )
         {
             Vector3 plusSignY = worldTopLeft + new Vector3( lengthX / 2, 0, edgePadding );
             DrawPlusSign( plusSignY, scale, lineThickness, yAxisColor );
@@ -211,7 +218,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Edi
             float height = 0.05f * scale;
             Draw2dWireRectangle( center, width, height, lineThickness, color );
         }
-        
+
         /// <summary>
         ///     Draw a 2D wire frame rectangle. This a essentially equivalent to a Gizmos.DrawWireSquare() but with Handles.
         /// </summary>

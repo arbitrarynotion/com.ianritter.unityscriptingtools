@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 875e9ed44325b8642b2e6bb4646bbb9c, type: 3}
+  m_Name: SceneGUIMeshesLogger
+  m_EditorClassIdentifier: 
+  showLogs: 0
+  useClassPrefix: 1
+  boldMethods: 1
+  boldBlockMethods: 1
+  nicifiedNames: 1
+  includeStackTrace: 0
+  fullPathName: 0
+  targetClass: 
+  targetMethod: 
+  logPrefix:
+    toggle: 1
+    customColor:
+      name: SGUIM
+      color: {r: 0.86, g: 0.44, b: 0.58, a: 1}
+  blockDivider:
+    toggle: 1
+    customColor:
+      name: "\u2015\u2015\u2015\u2015\u2015"
+      color: {r: 0, g: 0, b: 0, a: 1}
+  indentMarker:
+    toggle: 1
+    customColor:
+      name: '|'
+      color: {r: 0, g: 0, b: 0, a: 1}
+  methodDividers:
+    toggle: 1
+    customColor:
+      name: .
+      color: {r: 0, g: 0, b: 0, a: 1}
+  logBlockStart:
+    toggle: 1
+    customColor:
+      name: "\u25BA"
+      color: {r: 0.29803923, g: 0.8, b: 0.29803923, a: 1}
+  logBlockEnd:
+    toggle: 1
+    customColor:
+      name: "\u25C0"
+      color: {r: 0.29803923, g: 0.6, b: 0.9019608, a: 1}
+  logEventPrefix:
+    toggle: 1
+    customColor:
+      name: '***'
+      color: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
+  blockMethodColor: {r: 1, g: 1, b: 0, a: 1}
+  methodColor: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}

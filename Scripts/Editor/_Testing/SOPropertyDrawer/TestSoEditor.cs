@@ -11,7 +11,5 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor._Testing.SOP
             // EditorGUI.LabelField( positionRect, "Test SO Custom Editor is working." );
             EditorGUILayout.LabelField( "Test SO Custom Editor is working." );
         }
-        
-        
     }
 }

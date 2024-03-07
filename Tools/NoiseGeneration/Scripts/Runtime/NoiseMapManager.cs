@@ -10,7 +10,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         // [Header("Editor Toggles")]
         public bool showNoiseMap;
         public bool autoUpdate = true;
-        // [SerializeField] private CustomLogger logger;
+        // [SerializeField] private FormattedLogger logger;
     
         // [Header("Noise Settings")]
         [SerializeField] private int seed = 31;

@@ -11,9 +11,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Run
         // [SerializeField] private GridNode[] nodeArray;
         // [SerializeField] private int _totalNodes;
         //
-        // [SerializeField] private CustomLogger logger;
+        // [SerializeField] private FormattedLogger logger;
         //
-        // public void Initialize( CustomLogger newLogger, int totalNodes, int gridSizeX, int gridSizeY,  )
+        // public void Initialize( FormattedLogger newLogger, int totalNodes, int gridSizeX, int gridSizeY,  )
         // {
         //     logger = newLogger;
         //     

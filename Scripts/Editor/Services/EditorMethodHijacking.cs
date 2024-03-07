@@ -1,8 +1,11 @@
 using System;
 using System.IO;
 using System.Reflection;
+
 using UnityEditor;
+
 using UnityEngine;
+
 // Type
 // Path
 // Assembly, MethodInfo, BindingFlags
@@ -15,7 +18,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
     {
         // The purpose of this script is to document methods used to access and hijack
         // Unity's internal methods.
-        
+
         // This is an example used in Unity's official tutorial projects to hijack the LoadWindowLayout method in UnityEditor.WindowLayout.
         private static void LoadLayout()
         {
@@ -28,14 +31,20 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
         }
 
         /// <summary>
-        /// Use reflection to the the method info for an otherwise inaccessible method.
+        ///     Use reflection to the the method info for an otherwise inaccessible method.
         /// </summary>
-        /// <param name="className">The name of the class that contains the method.<br/>
-        /// Example: "UnityEditor.WindowLayout"</param>
-        /// <param name="methodName">The name of the method.<br/>
-        /// Example: "LoadWindowLayout"</param>
-        /// <param name="bindingFlags">The binding flags that specific the type of access the method has.<br/>
-        /// Example: BindingFlags.Public | BindingFlags.Static</param>
+        /// <param name="className">
+        ///     The name of the class that contains the method.<br/>
+        ///     Example: "UnityEditor.WindowLayout"
+        /// </param>
+        /// <param name="methodName">
+        ///     The name of the method.<br/>
+        ///     Example: "LoadWindowLayout"
+        /// </param>
+        /// <param name="bindingFlags">
+        ///     The binding flags that specific the type of access the method has.<br/>
+        ///     Example: BindingFlags.Public | BindingFlags.Static
+        /// </param>
         /// <returns>The System.Reflection.MethodInfo for methodName in className.</returns>
         private static MethodInfo GetEditorMethodInfo( string className, string methodName, BindingFlags bindingFlags )
         {

@@ -8,7 +8,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime._Testing.Ed
         // to trigger something on that end, that would then request the info
         // from this end - resulting in a script on the runtime side having some
         // limited use of scripts on the editor side.
-        
+
         // Catch:
         // The main way that I know for doing this is using a Custom Editor. This
         // is a viable option, however a window would need to be open

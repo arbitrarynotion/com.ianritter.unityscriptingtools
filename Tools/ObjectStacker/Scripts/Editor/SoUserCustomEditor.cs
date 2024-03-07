@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Runtime;
-using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.GUIGraphics.UIRectGraphics;
+using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.UIRectGraphics;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Editor
 {

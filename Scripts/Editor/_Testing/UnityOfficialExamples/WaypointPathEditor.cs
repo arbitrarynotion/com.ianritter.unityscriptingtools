@@ -1,5 +1,7 @@
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime._Testing.UnityOfficialExamples;
+
 using UnityEditor;
+
 using UnityEngine;
 
 namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor._Testing.UnityOfficialExamples
@@ -8,24 +10,24 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor._Testing.Uni
     public class WaypointPathEditor : UnityEditor.Editor
     {
         private UnityEditor.Editor currentTransformEditor;
-        private Transform selectedTransform;
-        private string[] optionsList;
         private int index;
         private WaypointPath myWayPath;
+        private string[] optionsList;
+        private Transform selectedTransform;
 
         private void GetWaypoints()
         {
             myWayPath = target as WaypointPath;
 
-            if ( myWayPath.wayPointArray != null )
+            if( myWayPath.wayPointArray != null )
             {
                 optionsList = new string[myWayPath.wayPointArray.Length];
 
-                for (int i = 0; i < optionsList.Length; i++)
+                for ( int i = 0; i < optionsList.Length; i++ )
                 {
                     Transform wayPoint = myWayPath.wayPointArray[i];
 
-                    if ( wayPoint != null )
+                    if( wayPoint != null )
                         optionsList[i] = wayPoint.name;
                     else
                         optionsList[i] = $"Empty waypoint {i + 1}";
@@ -40,14 +42,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor._Testing.Uni
             EditorGUILayout.Space();
             EditorGUI.BeginChangeCheck();
 
-            if ( optionsList != null )
+            if( optionsList != null )
                 index = EditorGUILayout.Popup( "Select Waypoint", index, optionsList );
 
-            if ( EditorGUI.EndChangeCheck() )
+            if( EditorGUI.EndChangeCheck() )
             {
                 UnityEditor.Editor tmpEditor = null;
 
-                if ( index < myWayPath.wayPointArray.Length )
+                if( index < myWayPath.wayPointArray.Length )
                 {
                     selectedTransform = myWayPath.wayPointArray[index];
 
@@ -58,13 +60,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor._Testing.Uni
                     selectedTransform = null;
 
                 // If there isn't a Transform currently selected then destroy the existing editor
-                if ( currentTransformEditor != null ) DestroyImmediate( currentTransformEditor );
+                if( currentTransformEditor != null ) DestroyImmediate( currentTransformEditor );
 
                 currentTransformEditor = tmpEditor;
             }
 
             // Shows the created Editor beneath CustomEditor
-            if ( currentTransformEditor != null && selectedTransform != null ) currentTransformEditor.OnInspectorGUI();
+            if( currentTransformEditor != null &&
+                selectedTransform != null ) currentTransformEditor.OnInspectorGUI();
         }
     }
 }

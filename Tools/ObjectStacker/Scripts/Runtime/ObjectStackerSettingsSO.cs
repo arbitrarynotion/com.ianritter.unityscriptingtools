@@ -1,10 +1,18 @@
-﻿using UnityEngine;
+﻿using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Runtime
 {
+    // public interface ISettingsSO
+    // {
+    //     Action onSettingsUpdated;
+    //     void RaiseOnSettingsUpdated();
+    // }
+    
+    
     [CreateAssetMenu(menuName = "Utilities/Object Stacker Settings")]
-    public class ObjectStackerSettingsSO : ScriptableObject
+    public class ObjectStackerSettingsSO : SubscribableSO
     {
 
 #region DataMembers
@@ -24,6 +32,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 #endregion
 
 #region NoiseDrivenEffects
+        public bool lockBottomObject = false;
 
 #region RotationSkew
 
@@ -36,11 +45,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 #region PositionShift
 
-        [Range( -0.01f, 0.01f )] 
+        [Range( 0f, 1f )] 
         public float posXNoiseShift = 0f;
         public AnimationCurve posXNoiseCurve = AnimationCurve.EaseInOut( 0, 0, 1, 1 );
 
-        [Range( -0.01f, 0.01f )] 
+        [Range( 0f, 1f )] 
         public float posZNoiseShift = 0f;
         public AnimationCurve posZNoiseCurve = AnimationCurve.EaseInOut( 0, 0, 1, 1 );
 
@@ -56,7 +65,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         [Range( -10f, 10f )] public float yRotOffset = 0.05f;
         [Range( -0.5f, 0.5f )] public float deckYRotSkew = -0.244f;
         [Range( 0f, 1f )] public float topDownSkewPercent = 0f;
-        [Range( -50f, 50f )] public float topCardsYRotSkew = 39f;
+        [Range( -50f, 50f )] public float topObjectsYRotSkew = 39f;
         public AnimationCurve rotationDampeningCurve = new AnimationCurve( new []
             {
                 new Keyframe( time: 

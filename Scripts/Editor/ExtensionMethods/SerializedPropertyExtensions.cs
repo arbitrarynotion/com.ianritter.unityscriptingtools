@@ -1,12 +1,13 @@
 using System;
-using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.TextFormatting;
+
+using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI;
+
 using UnityEditor;
 
 namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMethods
 {
     public static class SerializedPropExtensions
     {
-        
         /// <summary>
         ///     Returns the ID of the Unity object, or 0 if is doesn't have one.
         /// </summary>
@@ -14,11 +15,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMet
         /// <returns>The Unity Object ID of the property as an int.</returns>
         public static int GetUnityObjectId( this SerializedProperty property )
         {
-            if ( property.propertyType == SerializedPropertyType.ObjectReference && property.objectReferenceValue != null )
+            if( property.propertyType == SerializedPropertyType.ObjectReference &&
+                property.objectReferenceValue != null )
                 return property.objectReferenceValue.GetInstanceID();
             return 0;
         }
-        
+
         /// <summary>
         ///     Get the value of the serialized property as a string.
         /// </summary>
@@ -29,22 +31,23 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMet
             return property.propertyType switch
             {
                 SerializedPropertyType.String => property.stringValue,
+
                 // This will never be called as chars are typed as ints.
-                SerializedPropertyType.Character => ( ( property.type == "char" ) 
-                    ? Convert.ToChar( property.intValue ).ToString() 
+                SerializedPropertyType.Character => ( property.type == "char"
+                    ? Convert.ToChar( property.intValue ).ToString()
                     : property.intValue.ToString() ),
-                SerializedPropertyType.Integer => ( ( property.type == "char" ) 
-                    ? Convert.ToChar( property.intValue ).ToString() 
+                SerializedPropertyType.Integer => ( property.type == "char"
+                    ? Convert.ToChar( property.intValue ).ToString()
                     : property.intValue.ToString() ),
                 SerializedPropertyType.ObjectReference =>
-                ( ( property.objectReferenceValue != null ) 
-                    ? property.objectReferenceValue.GetType() == typeof( MonoScript ) 
-                        ? "MonoScript" 
-                        : property.objectReferenceValue.ToString() 
+                ( property.objectReferenceValue != null
+                    ? property.objectReferenceValue.GetType() == typeof( MonoScript )
+                        ? "MonoScript"
+                        : property.objectReferenceValue.ToString()
                     : "(null)" ),
                 SerializedPropertyType.Boolean => property.boolValue.ToString(),
                 SerializedPropertyType.Float => property.floatValue.ToString( "N" ),
-                SerializedPropertyType.Color => $"{property.colorValue.ToString()}: {TextFormat.GetColoredString( "Example", property.colorValue )}",
+                SerializedPropertyType.Color => $"{property.colorValue.ToString()}: {TextFormatting.GetColoredString( "Example", property.colorValue )}",
                 SerializedPropertyType.Vector2 => property.vector2Value.ToString(),
                 SerializedPropertyType.Vector2Int => property.vector2IntValue.ToString(),
                 SerializedPropertyType.Vector3 => property.vector3Value.ToString(),
@@ -53,6 +56,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMet
                 SerializedPropertyType.Rect => property.rectValue.ToString(),
                 SerializedPropertyType.RectInt => property.rectIntValue.ToString(),
                 SerializedPropertyType.ArraySize =>
+
                 // At this properties level, the array itself can't be accesses so printing arraySize will
                 // throw an error. Print at parent level only.
                 string.Empty,
@@ -60,9 +64,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMet
                 SerializedPropertyType.BoundsInt => property.boundsIntValue.ToString(),
                 SerializedPropertyType.Quaternion => property.quaternionValue.ToString(),
                 SerializedPropertyType.Generic =>
+
                 // Skip if "Array" as it will just echo the print from it's parent.
-                ( property.isArray && !property.name.Equals( "Array" ) 
-                    ? $"This is an array of {property.arraySize.ToString()} '{property.arrayElementType}' elements" 
+                ( property.isArray && !property.name.Equals( "Array" )
+                    ? $"This is an array of {property.arraySize.ToString()} '{property.arrayElementType}' elements"
                     : string.Empty ),
                 SerializedPropertyType.ExposedReference => string.Empty,
                 SerializedPropertyType.FixedBufferSize => string.Empty,

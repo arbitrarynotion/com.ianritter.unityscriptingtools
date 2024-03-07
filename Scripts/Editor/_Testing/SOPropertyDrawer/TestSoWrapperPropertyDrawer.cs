@@ -1,5 +1,7 @@
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime._Testing.SOPropertyDrawer;
+
 using UnityEditor;
+
 using UnityEngine;
 
 namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor._Testing.SOPropertyDrawer
@@ -9,8 +11,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor._Testing.SOP
     {
         private const int ElementCount = 2;
         private const float VerticalSeparator = 2f;
-        
-        
+
+
         private UnityEditor.Editor _currentEditor;
         private Object _soObject;
 
@@ -24,16 +26,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor._Testing.SOP
             EditorGUI.LabelField( currentPosRect, "This is the SoWrapper's property drawer.", EditorStyles.boldLabel );
 
             currentPosRect.y += EditorGUIUtility.singleLineHeight + VerticalSeparator;
-            
+
             SerializedProperty soWrapperProp = property.FindPropertyRelative( nameof( TestScriptableObjectWrapper.so ) );
             _soObject = soWrapperProp.objectReferenceValue;
 
-            if ( _soObject == null )
-            {
-                EditorGUI.PropertyField( currentPosRect, soWrapperProp );
-                return;
-            }
-            
+            if( _soObject == null ) EditorGUI.PropertyField( currentPosRect, soWrapperProp );
+
             // DrawEditor();
         }
 
@@ -53,14 +51,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor._Testing.SOP
         {
             float totalElementHeight = ElementCount * EditorGUIUtility.singleLineHeight;
             const float combinedVerticalSeparators = ( ElementCount - 1 ) * VerticalSeparator;
-            return ( totalElementHeight + combinedVerticalSeparators );
+            return totalElementHeight + combinedVerticalSeparators;
         }
-        
+
         ~TestSoWrapperPropertyDrawer()
         {
             Debug.Log( "~~~~ObjectStackPropertyDrawer's deconstructor was called." );
-            if ( _currentEditor == null ) return;
-            
+            if( _currentEditor == null ) return;
+
             Object.DestroyImmediate( _currentEditor );
             _currentEditor = null;
         }

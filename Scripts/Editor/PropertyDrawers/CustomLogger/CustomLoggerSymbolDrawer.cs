@@ -1,11 +1,13 @@
 ﻿using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PopupWindows.CustomColorPicker;
-using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.CustomLogger;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger;
+
 using UnityEditor;
+
 using UnityEngine;
 
 namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PropertyDrawers.CustomLogger
 {
-    [CustomPropertyDrawer( typeof( CustomLoggerSymbol ) )]
+    [CustomPropertyDrawer( typeof( FormattedLoggerSymbol ) )]
     public class CustomLoggerSymbolDrawer : PropertyDrawer
     {
         public override void OnGUI( Rect position, SerializedProperty property, GUIContent label )
@@ -25,13 +27,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PropertyDraw
                 // Data field
                 var dataRect = new Rect( position );
 
-                if ( label != GUIContent.none )
+                if( label != GUIContent.none )
                 {
                     var labelRect = new Rect( position )
                     {
                         height = EditorGUIUtility.singleLineHeight + verticalPadding,
                         width = labelWidth
                     };
+
                     // DrawRectOutline( labelRect, Orange.color );
                     EditorGUI.LabelField( labelRect, label );
 
@@ -43,6 +46,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PropertyDraw
                 {
                     width = boolWidth
                 };
+
                 // DrawRectOutline( boolRect, Blue.color );
                 EditorGUI.PropertyField( boolRect, toggleProperty, GUIContent.none );
 
@@ -53,6 +57,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PropertyDraw
                 {
                     width = dataRect.width - ColorPickerHandler.GetColorPickerButtonWidth() - divider
                 };
+
                 // DrawRectOutline( symbolRect, Yellow.color );
 
                 dataRect.xMin += symbolRect.width + divider;
@@ -72,7 +77,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PropertyDraw
             EditorGUI.EndProperty();
         }
 
-        public override float GetPropertyHeight( SerializedProperty property, GUIContent label ) =>
-            EditorGUIUtility.singleLineHeight + 2f;
+        public override float GetPropertyHeight( SerializedProperty property, GUIContent label ) => EditorGUIUtility.singleLineHeight + 2f;
     }
 }

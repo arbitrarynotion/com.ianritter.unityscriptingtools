@@ -1,4 +1,4 @@
-﻿using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.CustomLogger;
+﻿using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger;
 using UnityEngine;
 
 /* This class is responsible for generating a list of nodes which represent a grid.
@@ -20,11 +20,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Run
         private int _gridSizeY;
         private float _nodeDiameter;
 
-        private CustomLogger _logger;
+        private FormattedLogger _logger;
 
         // [SerializeField] private List<ListWrapper> nodeList;
 
-        public PlacementGrid( Transform transform, float nodeRadius, Vector2 gridSize, float[,] noiseMap, CustomLogger logger )
+        public PlacementGrid( Transform transform, float nodeRadius, Vector2 gridSize, float[,] noiseMap, FormattedLogger logger )
         {
             _logger = logger;
             
@@ -41,7 +41,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Run
             _logger.LogEnd();
         }
         
-        // public void OnAwake( Transform transform, float nodeRadius, Vector2 gridSize, float[,] noiseMap, CustomLogger logger )
+        // public void OnAwake( Transform transform, float nodeRadius, Vector2 gridSize, float[,] noiseMap, FormattedLogger logger )
         // {
         //     _logger = logger;
         //     

@@ -1,12 +1,16 @@
 using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services;
-using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.CustomColors;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.CustomColors;
+
 using UnityEditor;
+
 using UnityEngine;
 
 namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PopupWindows.CustomColorPicker
 {
     public static class ColorPickerHandler
     {
+        public delegate void ColorSelected( CustomColor color );
+
         private static readonly CustomColorPicker CustomColorPicker;
         private static Rect _position;
 
@@ -14,35 +18,36 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PopupWindows
 
         private static float _buttonWidth = 22f;
         private static readonly Texture ButtonTextureAsset;
-        
-        public delegate void ColorSelected( CustomColor color );
+
+        static ColorPickerHandler()
+        {
+            ButtonTextureAsset = AssetLoader.GetAssetByName<Texture>( "color-circle" );
+
+            // string result = _buttonTextureAsset == null ? "failed" : "succeeded";
+            // Debug.Log( $"ColorPickerHandler: loading of button texture {TextFormatting.GetColoredStringYellow( result )}" );
+            _position = new Rect( Vector2.zero, Vector2.zero );
+
+            CustomColorPicker = new CustomColorPicker( new Vector2( 350f, 400f ), 5 );
+            CustomColorPicker.OnButtonPressed += OnColorSelection;
+        }
+
         /// <summary>
         ///     Subscribe to this event with the method that will receive the chosen custom color.
         /// </summary>
         public static event ColorSelected OnColorSelected;
+
         private static void OnColorSelectedNotify( CustomColor color )
         {
             OnColorSelected?.Invoke( color );
             Close();
         }
 
-        static ColorPickerHandler()
-        {
-            ButtonTextureAsset = AssetLoader.GetAssetByName<Texture>( "color-circle" );
-            // string result = _buttonTextureAsset == null ? "failed" : "succeeded";
-            // Debug.Log( $"ColorPickerHandler: loading of button texture {TextFormat.GetColoredStringYellow( result )}" );
-            _position = new Rect( Vector2.zero, Vector2.zero );
-            
-            CustomColorPicker = new CustomColorPicker( new Vector2( 350f, 400f ), 5 );
-            CustomColorPicker.OnButtonPressed += OnColorSelection;
-        }
-        
         public static float GetColorPickerButtonWidth() => _buttonWidth;
         public static void SetColorPickerButtonWidth( float buttonWidth ) => _buttonWidth = buttonWidth;
 
         public static void SetWindowPosition( Vector2 position ) => _position = new Rect( position, Vector2.zero );
-        public static void SetWindowSize( float windowWidth, float windowHeight ) => CustomColorPicker.SetWindowSize( new Vector2( windowWidth, windowHeight ));
-        
+        public static void SetWindowSize( float windowWidth, float windowHeight ) => CustomColorPicker.SetWindowSize( new Vector2( windowWidth, windowHeight ) );
+
         public static int GetButtonsPerLine() => CustomColorPicker.GetButtonsPerLine();
         public static void SetButtonsPerLine( int buttonsPerLine ) => CustomColorPicker.SetButtonsPerLine( buttonsPerLine );
 
@@ -63,11 +68,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PopupWindows
             CustomColorPicker.SetTargetCustomColor( customColorProperty );
             PopupWindow.Show( _position, CustomColorPicker );
         }
-        
+
         public static bool DrawCustomColorField( CustomColor targetColor )
         {
             Rect lineRect = EditorGUILayout.GetControlRect( true );
             SetWindowPosition( new Vector2( lineRect.x, lineRect.y ) );
+
             // float availableWidth = lineRect.width - _buttonWidth;
             const float colorFieldWidth = 250f;
 
@@ -75,6 +81,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PopupWindows
             {
                 width = colorFieldWidth
             };
+
             // DrawRectOutline( colorFieldRect, Color.cyan );
             EditorGUI.BeginChangeCheck();
             {
@@ -82,22 +89,23 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PopupWindows
                 var buttonRect = new Rect( lineRect ) { width = _buttonWidth };
                 buttonRect.x += colorFieldWidth;
                 buttonRect.xMin += 2f;
+
                 // DrawRectOutline( buttonRect, Color.green );
                 DrawColorPickerButton( buttonRect, targetColor );
             }
             return EditorGUI.EndChangeCheck();
         }
-        
+
         public static void DrawColorPickerButton( Rect position, CustomColor targetColor )
         {
             Vector2 cachedIconSize = EditorGUIUtility.GetIconSize();
             EditorGUIUtility.SetIconSize( new Vector2( 13, 13 ) );
-            if ( GUI.Button( position, new GUIContent( ButtonTextureAsset ) ))
+            if( GUI.Button( position, new GUIContent( ButtonTextureAsset ) ) )
                 ColorPickerButtonPressed( targetColor );
-            
+
             EditorGUIUtility.SetIconSize( cachedIconSize );
         }
-        
+
         public static void DrawColorPickerPropertyButton( Rect position, SerializedProperty customColorProperty )
         {
             // if ( GUI.Button( position, "..." ))
@@ -105,9 +113,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PopupWindows
             // var texture = _buttonTexture.objectReferenceValue as Texture;
             Vector2 cachedIconSize = EditorGUIUtility.GetIconSize();
             EditorGUIUtility.SetIconSize( new Vector2( 13, 13 ) );
-            if ( GUI.Button( position, new GUIContent( ButtonTextureAsset ) ))
+            if( GUI.Button( position, new GUIContent( ButtonTextureAsset ) ) )
                 ColorPickerPropertyButtonPressed( customColorProperty );
-            
+
             EditorGUIUtility.SetIconSize( cachedIconSize );
         }
 
@@ -116,54 +124,56 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PopupWindows
             CustomColorPicker.editorWindow.Close();
             OnColorSelectedNotify( color );
         }
-        
-        private static void DrawPropertyWithColorPicker( 
-            Rect positionRect, 
-            SerializedProperty fieldProperty, 
-            SerializedProperty targetProperty, 
-            GUIContent guiContent )
+
+        private static void DrawPropertyWithColorPicker
+        (
+            Rect positionRect,
+            SerializedProperty fieldProperty,
+            SerializedProperty targetProperty,
+            GUIContent guiContent
+        )
         {
             SetWindowPosition( positionRect.position );
-        
+
             // Exclude color picker button width from available width.
             float availableWidth = positionRect.width - GetColorPickerButtonWidth();
-        
+
             var lineRect = new Rect( positionRect )
             {
                 width = availableWidth
             };
+
             // DrawRectOutline( lineRect, Color.grey );
-        
+
             // Draw Property label and field.
             var propertyFieldRect = new Rect( lineRect );
+
             // DrawRectOutline( propertyField, Color.magenta );
-        
+
             EditorGUI.PropertyField( propertyFieldRect, fieldProperty, guiContent );
-            
+
             // Set the color picker button rect to start at the end of the available space plus a spacer.
             // Then get the width from the color picker handler.
             var buttonRect = new Rect( positionRect );
             buttonRect.xMin += availableWidth + 2f;
             buttonRect.width = GetColorPickerButtonWidth();
+
             // DrawRectOutline( buttonRect, Color.yellow );
-            
+
             // Finally, pass the button rect and the color property to the color picker handler.
             // This can either be a direct color property via serializedObject.FindProperty or an indirect one via property.FindPropertyRelative.
             DrawColorPickerPropertyButton( buttonRect, targetProperty );
         }
-        
-        /// <summary>
-        ///     Draw UnityEngine.Color serialized property and add a color picker button at the end.
-        /// </summary>
-        public static void DrawPropertyWithColorPicker( SerializedProperty property, GUIContent guiContent = null ) => 
-            DrawPropertyWithColorPicker( EditorGUILayout.GetControlRect(), property, property, guiContent ?? GUIContent.none );
-        
-        /// <summary>
-        ///     Draw UnityEngine.Color serialized property and add a color picker button at the end.
-        /// </summary>
-        public static void DrawPropertyWithColorPicker( Rect positionRect, SerializedProperty property, GUIContent guiContent = null ) => 
-            DrawPropertyWithColorPicker( positionRect, property, property, guiContent ?? GUIContent.none );
 
+        /// <summary>
+        ///     Draw UnityEngine.Color serialized property and add a color picker button at the end.
+        /// </summary>
+        public static void DrawPropertyWithColorPicker( SerializedProperty property, GUIContent guiContent = null ) => DrawPropertyWithColorPicker( EditorGUILayout.GetControlRect(), property, property, guiContent ?? GUIContent.none );
+
+        /// <summary>
+        ///     Draw UnityEngine.Color serialized property and add a color picker button at the end.
+        /// </summary>
+        public static void DrawPropertyWithColorPicker( Rect positionRect, SerializedProperty property, GUIContent guiContent = null ) => DrawPropertyWithColorPicker( positionRect, property, property, guiContent ?? GUIContent.none );
 
 
         // public static void DrawPropertyWithColorPicker( Rect positionRect, SerializedProperty fieldProperty, SerializedProperty targetProperty, GUIContent guiContent )
@@ -220,8 +230,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PopupWindows
         //     }
         //     DrawPropertyWithColorPicker( positionRect, property, colorProperty, guiContent ?? GUIContent.none );
         // }
-        
-        
+
+
         // private static void ResolveColorProperty( Rect positionRect, SerializedProperty property, GUIContent guiContent )
         // {
         //     SerializedProperty colorProperty = null;

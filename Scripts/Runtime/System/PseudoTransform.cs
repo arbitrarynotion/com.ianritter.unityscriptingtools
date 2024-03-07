@@ -1,4 +1,5 @@
 ﻿using System;
+
 using UnityEngine;
 
 namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System
@@ -26,7 +27,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System
 
         public PseudoTransform()
         {
-            
         }
 
         public void ApplyPositionAndRotation( Transform transform )
