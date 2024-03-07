@@ -165,12 +165,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
                     for ( int i = 0; i < octaves; i++ )
                     {
-                        // float sampleX = ( x - halfWidth ) / scale * frequency + octaveOffsets[i].x; // The higher the frequency, the further apart the 
-                        // float sampleY = ( y - halfHeight ) / scale * frequency + octaveOffsets[i].y; // sample points so height values will change more rapidly
-                        float scaledFrequency = scale * frequency;
-
-                        float sampleX = ( x - halfWidth ) / scaledFrequency;
-                        float sampleY = ( y - halfHeight ) / scaledFrequency;
+                        float sampleX = ( x - halfWidth ) / scale * frequency + octaveOffsets[i].x; // The higher the frequency, the further apart the 
+                        float sampleY = ( y - halfHeight ) / scale * frequency + octaveOffsets[i].y; // sample points so height values will change more rapidly
+                        // float scaledFrequency = scale * frequency;
+                        //
+                        // float sampleX = ( x - halfWidth ) / scaledFrequency;
+                        // float sampleY = ( y - halfHeight ) / scaledFrequency;
 
                         sampleX += octaveOffsets[i].x;
                         sampleY += octaveOffsets[i].y;

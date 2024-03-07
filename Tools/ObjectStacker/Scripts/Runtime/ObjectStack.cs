@@ -2,13 +2,10 @@ using System;
 using System.Collections.Generic;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger;
-using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger.Enums;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System;
 using Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Runtime;
 using Packages.com.ianritter.unityscriptingtools.Tools.PrefabSpawner.Scripts.Runtime;
-
 using UnityEngine;
-
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.TextFormatting;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Runtime
@@ -17,6 +14,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
     public class ObjectStack : PrefabSpawnerRoot, IObjectStack
     {
 #region DataMembers
+
         [SerializeField] [Delayed] private int totalObjects = 3;
 
         // The list that hold the noise transform effects for all positions in the stack.
@@ -40,9 +38,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         ///     false after the update is performed. This is an optimization to avoid recreating the stack every frame.
         /// </summary>
         private bool _updateRequired;
+
         private ObjectStackerSettingsSO _previousSettingsSo;
+        private ObjectStackerSettingsSO _previousNoiseSettingsSo;
         private const float NoisePosShiftIncreaseFactor = 100f;
-        // private SubscriptionsHandler _subscriptionsHandler;
+        private SubscriptionsHandler _subscriptionsHandler;
+
 #endregion
 
 
@@ -59,11 +60,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             logger.Log( "GetSpawnPointsVarName was called." );
             return nameof( objectStack );
         }
+
 #endregion
-        
-        
+
+
 #region Interface
-        
+
         public PseudoTransform GetNextPosition()
         {
             if( _currentStackPosition >= objectStack.Count )
@@ -71,15 +73,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
             return objectStack[_currentStackPosition++];
         }
-        
+
         public int GetCurrentStackPosition() => _currentStackPosition;
 
         public void ResetStackCounter() => _currentStackPosition = 0;
-        
+
         public ObjectStackerSettingsSO GetSettingsSO() => settingsSo;
 
 #endregion
-        
+
 
 #region LifeCycle
 
@@ -87,10 +89,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         {
             logger.LogStart( true );
 
-            // _subscriptionsHandler.Initialize( logger );
-            // _subscriptionsHandler.UpdateSubscriptions( ref _previousSettingsSo, ref settingsSo, OnSettingsSOUpdated );
-            
-            UpdateSettingsSoSubscriptions();
+            _subscriptionsHandler.Initialize( logger );
+
+            UpdateSubscriptions();
 
             UpdateStack();
 
@@ -101,20 +102,16 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         {
             logger.LogStart( true );
 
-            UpdateSettingsSoSubscriptions();
+            UpdateSubscriptions();
 
             logger.LogEnd();
         }
 
         private void OnValidate()
         {
-            logger.LogStart( true );
-
             _updateRequired = true;
-            UpdateSettingsSoSubscriptions();
+            UpdateSubscriptions();
             UpdateStack();
-
-            logger.LogEnd();
         }
 
 #endregion
@@ -122,92 +119,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 #region EventMethods
 
-        /// <summary>
-        ///     This class handles when to subscribe and unsubscribe from settings SOs. It should be called during any Unity<br/>
-        ///     event in which the settings SO object reference could be changed (either to null or to another settings SO).
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void UpdateSettingsSoSubscriptions()
+        public void UpdateSubscriptions()
         {
-            logger.LogStart();
-
-            // Let: previousSettingsSO = P (for previous), and settingsSO = C (for current)
-
-            if( _previousSettingsSo == null &&
-                settingsSo == null )
-            {
-                // Case 1: P is null and C is null.
-                //     This means settings have not been set so we do nothing.
-                logger.LogEnd( "Case 1: No settings ref, aborting." );
-                return;
-            }
-
-            if( _previousSettingsSo == null &&
-                settingsSo != null )
-            {
-                // Case 2: P is null and C is null.
-                //     This means this is the first run so no subscriptions have taken place so we need to:
-                //         - set P equal to C
-                //         - subscribe to C
-
-                _previousSettingsSo = settingsSo;
-                SubscribeToEvents( settingsSo );
-                logger.LogEnd( $"Case 2: New settings set, subscribing to {GetColoredStringYellow( settingsSo.name )}." );
-                return;
-            }
-
-            if( _previousSettingsSo != null &&
-                settingsSo == null )
-            {
-                // Case 3: P is not null but C is null.
-                //     This means that C has been set to null in the editor so we need to:
-                //         - unsubscribe from P
-                //         - set P to null
-                UnsubscribeToEvents( _previousSettingsSo );
-                logger.LogEnd( $"Settings cleared. Unsubscribing from {GetColoredStringYellow( _previousSettingsSo.name )}" );
-                _previousSettingsSo = null;
-                return;
-            }
-
-            if( _previousSettingsSo != null &&
-                settingsSo != null )
-            {
-                // Case 4: neither P or C are null
-                //     This means we're in one of two states:
-                //         Case 4a: P is equal to C meaning no change has occured so we do nothing.
-                //         Case 4b: P is not equal to C so we need to:
-                //             - unsubscribe from P
-                //             - set P equal to C
-                //             - subscribe to C
-                UnsubscribeToEvents( _previousSettingsSo );
-                _previousSettingsSo = settingsSo;
-                SubscribeToEvents( settingsSo );
-                logger.LogEnd( $"Settings changed. Unsubscribing from {GetColoredStringYellow( _previousSettingsSo.name )} " +
-                               $"and subscribing to {GetColoredStringYellow( settingsSo.name )}." );
-                return;
-            }
-
-            // If we get to this point, it means that P is null but C is not null. As P is always set equal to C, this would be an erroneous state.
-            throw new ArgumentOutOfRangeException();
-        }
-
-        private void SubscribeToEvents( ObjectStackerSettingsSO so )
-        {
-            logger.LogStart();
-
-            so.onSettingsUpdated += OnSettingsSOUpdated;
-
-            logger.LogEnd();
-        }
-
-        private void UnsubscribeToEvents( ObjectStackerSettingsSO so )
-        {
-            logger.LogStart( false, $"Unsubscribing from {GetColoredStringYellow( so.name )}" );
-
-            if( so.onSettingsUpdated == null ) return;
-            so.onSettingsUpdated -= OnSettingsSOUpdated;
-
-            logger.LogEnd();
+            _subscriptionsHandler.UpdateSubscriptions( _previousSettingsSo, settingsSo, OnSettingsSOUpdated );
+            _subscriptionsHandler.UpdateSubscriptions( _previousNoiseSettingsSo, noiseSettingsSO, OnSettingsSOUpdated );
         }
 
         /// <summary>
@@ -270,7 +185,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
                                     $"objectCount: {GetColoredStringYellow( totalObjects.ToString() )}." );
             if( objectStack.Count == totalObjects )
             {
-                logger.LogEnd( "Object stack is are the correct size." );
+                logger.LogEnd( "Object stack is at the correct size." );
                 _updateRequired = false;
                 return;
             }
@@ -303,12 +218,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             NoiseGenerator.GenerateNoiseMap(
                 NoiseMapWidth,
                 totalObjects,
-                settingsSo.seed,
-                settingsSo.noiseScale,
-                settingsSo.octaves,
-                settingsSo.persistence,
-                settingsSo.lacunarity,
-                new Vector2( settingsSo.noiseOffsetHorizontal, settingsSo.noiseOffsetVertical )
+                noiseSettingsSO.seed,
+                noiseSettingsSO.noiseScale,
+                noiseSettingsSO.octaves,
+                noiseSettingsSO.persistence,
+                noiseSettingsSO.lacunarity,
+                new Vector2( noiseSettingsSO.noiseOffsetHorizontal, noiseSettingsSO.noiseOffsetVertical )
             );
 
         private void UpdatePseudoTransforms()
@@ -385,6 +300,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             return settingsSo.rotationDampeningCurve.Evaluate( percentOfTopObjectssTraversed ) * settingsSo.topObjectsYRotSkew;
         }
 
+#endregion
+
 
 #region Noise
 
@@ -426,68 +343,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 #endregion
 
-#endregion
 
-
-// #region PrefabSpawning
-//
-//         private void HandlePrefabSpawning()
-//         {
-//             if( Event.current != null &&
-//                 Event.current.type != EventType.Repaint )
-//                 return;
-//
-//             logger.LogStart();
-//
-//             if( objectStack.Count == 0 )
-//                 logger.Log( "objectStack is empty!", FormattedLogType.Warning );
-//
-//             foreach ( PseudoTransform placementData in objectStack )
-//             {
-//                 DrawPrefab( placementData );
-//             }
-//
-//             logger.LogEnd();
-//         }
-//
-//         // This is modified from my Prefab Placement Brush Tool's DrawPrefab() method (originally from Freya Holmer Game Tools tutorial).
-//         private void DrawPrefab( PseudoTransform placementData )
-//         {
-//             logger.LogStart();
-//
-//             MeshFilter[] filters = prefab.GetComponentsInChildren<MeshFilter>();
-//
-//             Matrix4x4 localToWorldMtx = Matrix4x4.TRS( placementData.position, placementData.rotation, Vector3.one );
-//
-//             logger.Log( $"Found {GetColoredStringYellow( filters.Length.ToString() )} mesh filters." );
-//
-//             // This step is necessary in case prefab consists of more than one mesh.
-//             foreach ( MeshFilter filter in filters )
-//             {
-//                 // Calculate child object's local position in world space.
-//                 Matrix4x4 childToParentMtx = filter.transform.localToWorldMatrix;
-//                 Matrix4x4 childToWorldMtx = localToWorldMtx * childToParentMtx;
-//
-//                 // Material mat = spawnPoint.IsValid ? filter.GetComponent<MeshRenderer>().sharedMaterial : hologramMaterial;
-//                 Material mat = filter.GetComponent<MeshRenderer>().sharedMaterial;
-//
-//                 Graphics.DrawMesh( filter.sharedMesh, childToWorldMtx, mat, 0, Camera.main );
-//
-//                 // Graphics.DrawMesh( filter.sharedMesh, Matrix4x4.identity, mat, 0, Camera.main );
-//             }
-//
-//             logger.LogEnd();
-//         }
-//
-// #endregion
+#region Debug
 
         private void OnDrawGizmosSelected()
         {
             if( sceneViewVisualsMode != SceneViewDebugVisualsMode.WireFrames ) return;
-
-            // Gizmos.DrawSphere( transform.position, 0.001f );
-
-            // Gizmos.DrawIcon( Vector3.zero, "warning" );
 
             if( noiseMap2D == null ) return;
 
@@ -500,20 +361,19 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
                 Gizmos.matrix = matrix;
 
                 Gizmos.color = Color.cyan;
-                Gizmos.DrawSphere( transform.position, 0.0002f );
+                Vector3 parentsPosition = transform.position;
+                Gizmos.DrawSphere( parentsPosition, 0.0002f );
 
-                // float noiseSample = noiseMap[i];
-                // float noiseSample = _noiseMap2D[0, i];
                 float noiseSample = noiseMap2D[0, i];
-
-                // Debug.Log( $"Noisemap[{i.ToString()}]: {GetColoredStringYellow( noiseSample.ToString( "0.00" ) )}" );
 
                 // Note that we don't need to use the PseudoTransform's position here because we've already transformed the Gizmos' space.
                 Gizmos.color = new Color( 1f, noiseSample, noiseSample );
-                Gizmos.DrawWireCube( transform.position, new Vector3( 0.064f, 0.0002f, 0.0889f ) );
+                Gizmos.DrawWireCube( parentsPosition, new Vector3( 0.064f, 0.0002f, 0.0889f ) );
             }
 
             Gizmos.matrix = cachedMatrix;
         }
+
+#endregion
     }
 }

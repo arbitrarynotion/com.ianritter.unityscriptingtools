@@ -1,19 +1,21 @@
-using UnityEngine;
-using UnityEditor;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.Enums;
+using UnityEditor;
+using UnityEngine;
 using static UnityEditor.EditorGUILayout;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Graphics.UI.UIEditorOnlyRectGraphics;
 
-namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Editor
+namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
 {
     public static class EditorUIFormatting
     {
-        private const ElementFrameType Level0FrameType = ElementFrameType.FullOutline;
-        private const ElementFrameType Level1FrameType = ElementFrameType.BottomOnly;
-        private const ElementFrameType Level2FrameType = ElementFrameType.None;
-        private const float TitleFrameBottomPadding = 2f;
-        private const float BetweenSectionPadding = 8f;
-        private const float TitleLeftEdgePadding = 4f;
+        public const ElementFrameType Level0FrameType = ElementFrameType.FullOutline;
+        public const ElementFrameType Level1FrameType = ElementFrameType.BottomOnly;
+        public const ElementFrameType Level2FrameType = ElementFrameType.None;
+        public const float TitleFrameBottomPadding = 2f;
+        public const float BetweenSectionPadding = 8f;
+        public const float TitleLeftEdgePadding = 4f;
+        public const float VerticalSeparator = 8f;
+
 
         public static bool DrawFoldoutSection( string titleText, ElementFrameType frameType, bool toggle )
         {

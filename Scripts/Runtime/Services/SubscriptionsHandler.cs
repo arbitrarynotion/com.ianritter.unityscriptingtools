@@ -6,32 +6,21 @@ using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics
 
 namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
 {
-    // public interface ISubscribable
-    // {
-    //     void Subscribe( Action subscriberAction );
-    //     bool HasSubscribers();
-    //     void Unsubscribe( Action subscriberAction );
-    // }
-    //
-    // public interface ISubscriber
-    // {
-    //     void OnSubscribableUpdated();
-    // }
-
+    [Serializable]
     public class SubscriptionsHandler
     {
-        [SerializeField] private FormattedLogger _logger;
+        [SerializeField] private FormattedLogger logger;
 
-        public void Initialize( FormattedLogger logger ) => _logger = logger;
+        public void Initialize( FormattedLogger newLogger ) => logger = newLogger;
 
         /// <summary>
         ///     This class handles when to subscribedAction and unsubscribe from objects that can be swapped out like a settings SO. It should be called during any Unity<br/>
         ///     event in which the swappable object reference could be changed (either to null or to another subscribable object).
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void UpdateSubscriptions( ref SubscribableSO previous, ref SubscribableSO current, UnityAction subscribedAction )
+        public SubscribableSO UpdateSubscriptions( SubscribableSO previous, SubscribableSO current, UnityAction subscribedAction )
         {
-            _logger.LogStart();
+            logger.LogStart( true );
 
             // Let: previous = P, and current = C
 
@@ -40,8 +29,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
             {
                 // Case 1: P is null and C is null.
                 //     This means settings have not been set so we do nothing.
-                _logger.LogEnd( "Case 1: No valid objects, aborting." );
-                return;
+                logger.LogEnd( "Case 1: No valid objects, aborting." );
+                return previous;
             }
 
             if( previous == null &&
@@ -55,9 +44,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
                 previous = current;
                 SubscribeToEvents( current, subscribedAction );
 
-                // subscribedAction.Invoke( current );
-                _logger.LogEnd( $"Case 2: New settings set, subscribing to {GetColoredStringYellow( current.name )}." );
-                return;
+                logger.LogEnd( $"Case 2: New settings set, subscribing to {GetColoredStringYellow( current.name )}." );
+                return previous;
             }
 
             if( previous != null &&
@@ -69,10 +57,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
                 //         - set P to null
                 UnsubscribeToEvents( previous, subscribedAction );
 
-                // unsubscribe.Invoke( previous );
-                _logger.LogEnd( $"Settings cleared. Unsubscribing from {GetColoredStringYellow( previous.name )}" );
-                previous = null;
-                return;
+                logger.LogEnd( $"Case 2: Settings cleared. Unsubscribing from {GetColoredStringYellow( previous.name )}" );
+                // previous = null;
+                return null;
             }
 
 
@@ -86,34 +73,35 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
             //             - unsubscribe from P
             //             - set P equal to C
             //             - subscribedAction to C
+            logger.Log( $"Case 4: Settings changed. Unsubscribing from {GetColoredStringYellow( previous.name )} " +
+                            $"and subscribing to {GetColoredStringOrange( current.name )}." );
+
             UnsubscribeToEvents( previous, subscribedAction );
 
-            // unsubscribe.Invoke( previous );
             previous = current;
             SubscribeToEvents( current, subscribedAction );
-
-            // subscribedAction.Invoke( current );
-            _logger.LogEnd( $"Settings changed. Unsubscribing from {GetColoredStringYellow( previous.name )} " +
-                            $"and subscribing to {GetColoredStringYellow( current.name )}." );
+            
+            logger.LogEnd();
+            return previous;
         }
 
         private void SubscribeToEvents( SubscribableSO so, UnityAction subscribe )
         {
-            _logger.LogStart();
+            logger.LogStart( false,  $"Subscribing to {GetColoredStringBurlyWood( so.name )}" );
 
             so.onSettingsUpdated += subscribe;
 
-            _logger.LogEnd();
+            logger.LogEnd();
         }
 
         private void UnsubscribeToEvents( SubscribableSO so, UnityAction subscribe )
         {
-            _logger.LogStart( false, $"Unsubscribing from {GetColoredStringYellow( so.name )}" );
+            logger.LogStart( false, $"Unsubscribing from {GetColoredStringYellow( so.name )}" );
 
             if( so.onSettingsUpdated == null ) return;
             so.onSettingsUpdated -= subscribe;
 
-            _logger.LogEnd();
+            logger.LogEnd();
         }
     }
 }

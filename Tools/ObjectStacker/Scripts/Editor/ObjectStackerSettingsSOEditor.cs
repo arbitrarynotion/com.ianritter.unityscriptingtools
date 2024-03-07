@@ -2,14 +2,10 @@ using System;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMethods;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.Enums;
 using Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Runtime;
-
 using UnityEditor;
-
 using UnityEngine;
-
 using static UnityEditor.EditorGUILayout;
-
-using static Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Editor.EditorUIFormatting;
+using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.EditorUIFormatting;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Editor
 {
@@ -19,13 +15,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 #region DataMembers
 
         // Noise Settings
-        private SerializedProperty _seedProp;
-        private SerializedProperty _noiseOffsetHorizontalProp;
-        private SerializedProperty _noiseOffsetVerticalProp;
-        private SerializedProperty _noiseScaleProp;
-        private SerializedProperty _octavesProp;
-        private SerializedProperty _persistenceProp;
-        private SerializedProperty _lacunarityProp;
+        // private SerializedProperty _seedProp;
+        // private SerializedProperty _noiseOffsetHorizontalProp;
+        // private SerializedProperty _noiseOffsetVerticalProp;
+        // private SerializedProperty _noiseScaleProp;
+        // private SerializedProperty _octavesProp;
+        // private SerializedProperty _persistenceProp;
+        // private SerializedProperty _lacunarityProp;
 
         // Noise map visualization
         private SerializedProperty _showNoiseMeterProp;
@@ -58,15 +54,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 
         // UI Formatting Constants
-        private const ElementFrameType Level0FrameType = ElementFrameType.LeftOnly;
-        private const ElementFrameType Level1FrameType = ElementFrameType.BottomOnly;
-        private const ElementFrameType Level2FrameType = ElementFrameType.None;
-        private const float TitleFrameBottomPadding = 2f;
-        private const float BetweenSectionPadding = 8f;
-        private const float TitleLeftEdgePadding = 4f;
+        // private const ElementFrameType Level0FrameType = ElementFrameType.LeftOnly;
+        // private const ElementFrameType Level1FrameType = ElementFrameType.BottomOnly;
+        // private const ElementFrameType Level2FrameType = ElementFrameType.None;
+        // private const float TitleFrameBottomPadding = 2f;
+        // private const float BetweenSectionPadding = 8f;
+        // private const float TitleLeftEdgePadding = 4f;
 
         // Foldout Toggles
-        private bool _noiseSettingsToggle = true;
+        // private bool _noiseSettingsToggle = true;
         private bool _noisePreviewSettingsToggle = true;
         private bool _noiseDrivenEffectsToggle = true;
         private bool _manualAdjustmentToggle = true;
@@ -77,13 +73,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         private void OnEnable()
         {
-            _seedProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.seed ) );
-            _noiseOffsetHorizontalProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseOffsetHorizontal ) );
-            _noiseOffsetVerticalProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseOffsetVertical ) );
-            _noiseScaleProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseScale ) );
-            _octavesProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.octaves ) );
-            _persistenceProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.persistence ) );
-            _lacunarityProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.lacunarity ) );
+            // _seedProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.seed ) );
+            // _noiseOffsetHorizontalProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.noiseOffsetHorizontal ) );
+            // _noiseOffsetVerticalProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.noiseOffsetVertical ) );
+            // _noiseScaleProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.noiseScale ) );
+            // _octavesProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.octaves ) );
+            // _persistenceProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.persistence ) );
+            // _lacunarityProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.lacunarity ) );
 
             _lockBottomObjectProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.lockBottomObject ) );
             _noiseMultiplierProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMultiplier ) );
@@ -128,7 +124,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         {
             EditorGUI.indentLevel++;
             {
-                DrawNoiseSettings();
+                // DrawNoiseSettings();
                 DrawNoisePreviewSettingsSection();
                 DrawNoiseDrivenEffectsSection();
                 DrawManualAdjustmentsSection();
@@ -136,28 +132,28 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             EditorGUI.indentLevel--;
         }
 
-        private void DrawNoiseSettings()
-        {
-            _noiseSettingsToggle = DrawFoldoutSection( "Noise Settings", Level0FrameType, _noiseSettingsToggle );
-            if( !_noiseSettingsToggle ) return;
-
-            PropertyField( _seedProp );
-            PropertyField( _noiseOffsetHorizontalProp, new GUIContent( "X Offset" ) );
-            PropertyField( _noiseOffsetVerticalProp, new GUIContent( "Y Offset" ) );
-            PropertyField( _noiseScaleProp, new GUIContent( "Scale" ) );
-            PropertyField( _octavesProp );
-            using ( new EditorGUI.DisabledScope( _octavesProp.intValue <= 1 ) )
-            {
-                EditorGUI.indentLevel++;
-                {
-                    PropertyField( _persistenceProp );
-                    PropertyField( _lacunarityProp );
-                }
-                EditorGUI.indentLevel--;
-            }
-
-            Space( BetweenSectionPadding );
-        }
+        // private void DrawNoiseSettings()
+        // {
+        //     _noiseSettingsToggle = DrawFoldoutSection( "Noise Settings", Level0FrameType, _noiseSettingsToggle );
+        //     if( !_noiseSettingsToggle ) return;
+        //
+        //     PropertyField( _seedProp );
+        //     PropertyField( _noiseOffsetHorizontalProp, new GUIContent( "X Offset" ) );
+        //     PropertyField( _noiseOffsetVerticalProp, new GUIContent( "Y Offset" ) );
+        //     PropertyField( _noiseScaleProp, new GUIContent( "Scale" ) );
+        //     PropertyField( _octavesProp );
+        //     using ( new EditorGUI.DisabledScope( _octavesProp.intValue <= 1 ) )
+        //     {
+        //         EditorGUI.indentLevel++;
+        //         {
+        //             PropertyField( _persistenceProp );
+        //             PropertyField( _lacunarityProp );
+        //         }
+        //         EditorGUI.indentLevel--;
+        //     }
+        //
+        //     Space( BetweenSectionPadding );
+        // }
 
         private void DrawNoisePreviewSettingsSection()
         {
@@ -177,11 +173,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             PropertyField( _lockBottomObjectProp, new GUIContent( "Lock Bottom", "Forces the bottom object to remain in place. " +
                                                                                  "This will cause all rotation and position shift to center their effect over the bottom object." ) );
             PropertyField( _noiseMultiplierProp, new GUIContent( "Intensity" ) );
-            using ( new EditorGUI.DisabledScope( _topSkewCardCountProp.floatValue <= 0f ) )
+            using ( new EditorGUI.DisabledScope( _noiseMultiplierProp.floatValue <= 0f ) )
             {
                 PropertyField( _noiseDampeningCurveProp, new GUIContent( " " ) );
             }
-            
+
             Space( BetweenSectionPadding );
 
             DrawLabeledSection( "Position Shift", Level2FrameType );
@@ -190,18 +186,17 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             {
                 PropertyField( _xAxisCurveProp, new GUIContent( " " ) );
             }
+
             PropertyField( _yAxisNoiseProp, new GUIContent( "Z Intensity" ) );
             using ( new EditorGUI.DisabledScope( _yAxisNoiseProp.floatValue <= 0f ) )
             {
                 PropertyField( _yAxisCurveProp, new GUIContent( " " ) );
             }
-            
-            if( _noiseMultiplierProp.floatValue <= 0f
-                && _xAxisNoiseProp.floatValue <= 0f
-                && _yAxisNoiseProp.floatValue <= 0f )
-            {
+
+            if( _noiseMultiplierProp.floatValue <= 0f &&
+                _xAxisNoiseProp.floatValue <= 0f &&
+                _yAxisNoiseProp.floatValue <= 0f )
                 HelpBox( "Note: Noise has no effect when all intensities are set to 0.", MessageType.Info );
-            }
 
             Space( BetweenSectionPadding );
         }

@@ -1,10 +1,11 @@
+using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Runtime
 {
     [CreateAssetMenu(menuName = "Utilities/Noise Settings")]
-    public class NoiseSettingsSO : ScriptableObject
+    public class NoiseSettingsSO : SubscribableSO
     {
         public int seed = 31;
         [Range( -5.0f, 5.0f )] public float noiseOffsetHorizontal = 0f;
@@ -15,23 +16,23 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         [Range( 0.5f, 1.0f )] public float persistence = 1f;
         [Range( 0.5f, 1.5f )] public float lacunarity = 1.433f;
         
-#region Events
+// #region Events
+//
+//         [SerializeField]
+//         public UnityAction onSettingsUpdated;
+//         private void RaiseOnSettingsUpdated() => onSettingsUpdated?.Invoke();
+//
+// #endregion
 
-        [SerializeField]
-        public UnityAction onSettingsUpdated;
-        private void RaiseOnSettingsUpdated() => onSettingsUpdated?.Invoke();
 
-#endregion
-
-
-#region LifeCycle
-
-        private void OnValidate()
-        {
-            // Debug.Log( "ObjectStackerSettingsSO OnValidate called." );
-            RaiseOnSettingsUpdated();
-        }
-
-#endregion
+// #region LifeCycle
+//
+//         private void OnValidate()
+//         {
+//             // Debug.Log( "ObjectStackerSettingsSO OnValidate called." );
+//             RaiseOnSettingsUpdated();
+//         }
+//
+// #endregion
     }
 }

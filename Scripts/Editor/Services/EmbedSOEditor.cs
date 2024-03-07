@@ -1,18 +1,11 @@
 using System;
-
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger;
-
 using UnityEditor;
-
 using UnityEngine;
-
 using static UnityEditor.Editor;
-
 using static UnityEngine.Object;
-
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.TextFormatting;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System.SystemConstants;
-
 using Object = UnityEngine.Object;
 
 namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
@@ -36,7 +29,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
         public Rect DrawSettingsSoInspector()
         {
             // Optimization to avoid creating a new editor unless it's actually needed.
-            if( !SettingsSOEditorIsValid() ) return new Rect();
+            if( !SettingsSOEditorIsValid() )
+            {
+                return new Rect();
+            }
 
             Rect startRect = GUILayoutUtility.GetLastRect();
             settingsSOEditor.OnInspectorGUI();

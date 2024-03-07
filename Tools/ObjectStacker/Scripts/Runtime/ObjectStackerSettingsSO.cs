@@ -20,14 +20,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 #region NoiseSettings
 
         public bool showNoiseMeter = true;
-        public int seed = 31;
-        [Range( -5.0f, 5.0f )] public float noiseOffsetHorizontal = 0f;
-        [Range( -5.0f, 5.0f )] public float noiseOffsetVertical = 0f;
-        [Range( 1.1f, 50.0f )] public float noiseScale = 12.7f;
-
-        [Range( 1.0f, 8.0f )] public int octaves = 7;
-        [Range( 0.5f, 1.0f )] public float persistence = 1f;
-        [Range( 0.5f, 1.5f )] public float lacunarity = 1.433f;
+        // public int seed = 31;
+        // [Range( -5.0f, 5.0f )] public float noiseOffsetHorizontal = 0f;
+        // [Range( -5.0f, 5.0f )] public float noiseOffsetVertical = 0f;
+        // [Range( 1.1f, 50.0f )] public float noiseScale = 12.7f;
+        //
+        // [Range( 1.0f, 8.0f )] public int octaves = 7;
+        // [Range( 0.5f, 1.0f )] public float persistence = 1f;
+        // [Range( 0.5f, 1.5f )] public float lacunarity = 1.433f;
         
 #endregion
 
@@ -128,27 +128,29 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         [Range( 0, 0.001f )] public float verticalOffset = 0.0003f;
 
 #endregion
+        
 #endregion
+        
 #endregion
 
         
-#region Events
+// #region Events
+//
+//         [SerializeField]
+//         public UnityAction onSettingsUpdated;
+//         private void RaiseOnSettingsUpdated() => onSettingsUpdated?.Invoke();
+//
+// #endregion
 
-        [SerializeField]
-        public UnityAction onSettingsUpdated;
-        private void RaiseOnSettingsUpdated() => onSettingsUpdated?.Invoke();
 
-#endregion
-
-
-#region LifeCycle
-
-        private void OnValidate()
-        {
-            // Debug.Log( "ObjectStackerSettingsSO OnValidate called." );
-            RaiseOnSettingsUpdated();
-        }
-
-#endregion
+// #region LifeCycle
+//
+//         private void OnValidate()
+//         {
+//             // Debug.Log( "ObjectStackerSettingsSO OnValidate called." );
+//             RaiseOnSettingsUpdated();
+//         }
+//
+// #endregion
     }
 }

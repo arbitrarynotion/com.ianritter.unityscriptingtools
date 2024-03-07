@@ -13,7 +13,7 @@ using UnityEngine.Events;
 using static UnityEditor.EditorGUILayout;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.UIRectGraphics;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System.SystemConstants;
-using static Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Editor.EditorUIFormatting;
+using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.EditorUIFormatting;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Editor
 {
@@ -41,10 +41,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private bool _showNoiseSettings = true;
 
         // UI Formatting
-        private const float VerticalSeparator = 8f;
+        // private const float VerticalSeparator = 8f;
         private const float ParentFrameWidth = 2f;
         private const float ChildFrameWidth = 2f;
-        private const float FoldoutFramePadding = 2f;
+        // private const float FoldoutFramePadding = 2f;
         private const float EditorFrameBottomPadding = 10f;
         private const ElementFrameType FoldoutFrameType = ElementFrameType.LeftOnly;
         private const ElementFrameType EditorFrameType = ElementFrameType.PartialLeftFullBottom;
@@ -148,10 +148,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             {
                 PropertyField( _totalObjectsProp );
 
-                // PropertyField( _noiseSettingsSOProp );
-                // DrawSettingsSoInspector( ref _showNoiseSettings, "Noise Settings", _noiseSettingsEmbeddedSOEditor );
-                // if ( _noiseSettingsSOProp.objectReferenceValue != null && _showNoiseSettings )
-                //     Space( VerticalSeparator );
+                PropertyField( _noiseSettingsSOProp );
+                DrawSettingsSoInspector( ref _showNoiseSettings, "Noise Settings", _noiseSettingsEmbeddedSOEditor );
+                if ( _noiseSettingsSOProp.objectReferenceValue != null && _showNoiseSettings )
+                    Space( VerticalSeparator );
 
                 PropertyField( _settingsSOProp );
                 DrawSettingsSoInspector( ref _showObjectStackerSettings, "Object Stacker Settings", _settingsEmbeddedSOEditor );
@@ -184,7 +184,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private static void DrawSettingsSoInspector( ref bool toggle, string title, EmbedSOEditor editor )
         {
             // Optimization to avoid creating a new editor unless it's actually needed.
-            if( !editor.SettingsSOEditorIsValid() ) return;
+            if( !editor.SettingsSOEditorIsValid() )
+            {
+                HelpBox( "Populate the object field to display the object's settings.", MessageType.Info );
+                return;
+            }
 
             // Draw Foldout with frame.
             // EditorGUI.indentLevel++;
@@ -206,28 +210,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
             Space( VerticalSeparator );
         }
-
-        // private void DrawSettingsSoInspector()
-        // {
-        //     // Optimization to avoid creating a new editor unless it's actually needed.
-        //     if ( !_settingsEmbeddedSOEditor.SettingsSOEditorIsValid() ) return;
-        //
-        //     Space( VerticalSeparator );
-        //
-        //     // Draw Foldout with frame.
-        //     Rect labelRect = GetFramedControlRect( Color.gray, FoldoutFrameType, 0f, true );
-        //     _showObjectStackerSettings = EditorGUI.Foldout( labelRect, _showObjectStackerSettings, "Object Stacker Settings", true );
-        //     if ( !_showObjectStackerSettings ) return;
-        //
-        //     Rect frameRect = _settingsEmbeddedSOEditor.DrawSettingsSoInspector();
-        //
-        //     frameRect.xMin += ParentFrameWidth;
-        //     frameRect.yMax += EditorFrameBottomPadding;
-        //     DrawRect( frameRect, EditorFrameType, Color.gray, Color.gray, ChildFrameWidth, false );
-        //
-        //     Space( VerticalSeparator );
-        // }
-
+        
         protected override void DuringSceneGUILast()
         {
             // This solved the problem of the scene view not repainting until the next frame.
@@ -255,7 +238,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         private void OnScriptsLoaded()
         {
-            _objectStack.UpdateSettingsSoSubscriptions();
+            // _objectStack.UpdateSettingsSoSubscriptions();
+            _objectStack.UpdateSubscriptions();
         }
 
 #endregion
@@ -351,6 +335,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         /// </summary>
         private void DrawSceneViewNoiseMapPreview()
         {
+            if( _noiseSettingsSOProp.objectReferenceValue == null ) return;
+
             Rect currentViewPortRect = Camera.current.pixelRect;
             float previewImageHeight = currentViewPortRect.height / 2f;
             float value = 0.25f;
