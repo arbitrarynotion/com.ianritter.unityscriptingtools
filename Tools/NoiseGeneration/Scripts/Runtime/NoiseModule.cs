@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,7 +9,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         void Initialize( int noiseMapWidth, int noiseMapHeight );
         float GetNoiseAtIndex( int x, int y );
         void GenerateNoiseMap();
-
+        NoiseSettingsSO GetNoiseSettingsSO();
     }
 
     /// <summary>
@@ -21,12 +22,17 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
         private int _noiseMapWidth;
         private int _noiseMapHeight;
+
+        private bool _initialized = false;
         
         // Holds a 2D noise map.
         private float[,] NoiseMap2D
         {
             get
             {
+                if ( !_initialized )
+                    Debug.LogWarning( "Error! You need to initialized the noise module before getting its noise map!" );
+                
                 if( _noiseMap2D == null )
                     GenerateNoiseMap();
                 return _noiseMap2D;
@@ -35,24 +41,33 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         }
         private float[,] _noiseMap2D;
 
-
-        // Noise map size can be set and changed.
-
+        
         // Has an event that is raised when a setting to the noise map has changed.
         public UnityAction onSettingsUpdated;
         private void RaiseOnSettingsUpdated() => onSettingsUpdated?.Invoke();
+        
 
+        private void OnDisable()
+        {
+            _initialized = false;
+        }
 
+        // Noise map size can be set and changed.
         public void Initialize( int noiseMapWidth, int noiseMapHeight )
         {
             _noiseMapWidth = noiseMapWidth;
             _noiseMapHeight = noiseMapHeight;
+            _initialized = true;
+            GenerateNoiseMap();
         }
 
         public float GetNoiseAtIndex( int x, int y ) => NoiseMap2D[x, y];
         
-        public void GenerateNoiseMap() =>
-            NoiseMap2D = NoiseGenerator.GenerateNoiseMap(
+        public void GenerateNoiseMap()
+        {
+            if ( !_initialized ) return;
+            
+            NoiseMap2D = NoiseGenerator.GetNoiseMap(
                 _noiseMapWidth,
                 _noiseMapHeight,
                 settingsSo.seed,
@@ -62,5 +77,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
                 settingsSo.lacunarity,
                 new Vector2( settingsSo.noiseOffsetHorizontal, settingsSo.noiseOffsetVertical )
             );
+        }
+
+        public NoiseSettingsSO GetNoiseSettingsSO() => settingsSo;
     }
 }

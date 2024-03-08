@@ -14,17 +14,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
     {
 #region DataMembers
 
-        // Noise Settings
-        // private SerializedProperty _seedProp;
-        // private SerializedProperty _noiseOffsetHorizontalProp;
-        // private SerializedProperty _noiseOffsetVerticalProp;
-        // private SerializedProperty _noiseScaleProp;
-        // private SerializedProperty _octavesProp;
-        // private SerializedProperty _persistenceProp;
-        // private SerializedProperty _lacunarityProp;
-
         // Noise map visualization
         private SerializedProperty _showNoiseMeterProp;
+        private SerializedProperty _noiseMapTopMarginProp;
+        private SerializedProperty _noiseMapRightMarginProp;
+        private SerializedProperty _noiseMapWidthProp;
+        private SerializedProperty _noiseMapLabelWidthProp;
+        private SerializedProperty _noiseMapLabelRightMarginProp;
 
 
         // Noise Driven Effects
@@ -52,17 +48,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private SerializedProperty _modelHeightProp;
         private SerializedProperty _verticalOffsetProp;
 
-
-        // UI Formatting Constants
-        // private const ElementFrameType Level0FrameType = ElementFrameType.LeftOnly;
-        // private const ElementFrameType Level1FrameType = ElementFrameType.BottomOnly;
-        // private const ElementFrameType Level2FrameType = ElementFrameType.None;
-        // private const float TitleFrameBottomPadding = 2f;
-        // private const float BetweenSectionPadding = 8f;
-        // private const float TitleLeftEdgePadding = 4f;
-
         // Foldout Toggles
-        // private bool _noiseSettingsToggle = true;
         private bool _noisePreviewSettingsToggle = true;
         private bool _noiseDrivenEffectsToggle = true;
         private bool _manualAdjustmentToggle = true;
@@ -73,19 +59,18 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         private void OnEnable()
         {
-            // _seedProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.seed ) );
-            // _noiseOffsetHorizontalProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.noiseOffsetHorizontal ) );
-            // _noiseOffsetVerticalProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.noiseOffsetVertical ) );
-            // _noiseScaleProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.noiseScale ) );
-            // _octavesProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.octaves ) );
-            // _persistenceProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.persistence ) );
-            // _lacunarityProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.lacunarity ) );
-
+            _showNoiseMeterProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.showNoiseMeter ) );
+            _noiseMapTopMarginProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapTopMargin ) );
+            _noiseMapRightMarginProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapRightMargin ) );
+            _noiseMapWidthProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapWidth ) );
+            _noiseMapLabelWidthProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelWidth ) );
+            _noiseMapLabelRightMarginProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelRightMargin ) );
+            
+            
             _lockBottomObjectProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.lockBottomObject ) );
             _noiseMultiplierProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMultiplier ) );
             _noiseDampeningCurveProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseDampeningCurve ) );
 
-            _showNoiseMeterProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.showNoiseMeter ) );
 
             _xAxisNoiseProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.posXNoiseShift ) );
             _yAxisNoiseProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.posZNoiseShift ) );
@@ -118,13 +103,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 #region DrawUI
 
-        private static void DrawLabeledSection( string titleText, ElementFrameType frameType ) => DrawLabelSection( titleText, frameType, TitleLeftEdgePadding, TitleFrameBottomPadding );
+        private static void DrawLabeledSection( string titleText, ElementFrameType frameType ) => 
+            DrawLabelSection( titleText, frameType, TitleLeftEdgePadding, TitleFrameBottomPadding );
 
         private void DrawSettings()
         {
             EditorGUI.indentLevel++;
             {
-                // DrawNoiseSettings();
                 DrawNoisePreviewSettingsSection();
                 DrawNoiseDrivenEffectsSection();
                 DrawManualAdjustmentsSection();
@@ -132,34 +117,16 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             EditorGUI.indentLevel--;
         }
 
-        // private void DrawNoiseSettings()
-        // {
-        //     _noiseSettingsToggle = DrawFoldoutSection( "Noise Settings", Level0FrameType, _noiseSettingsToggle );
-        //     if( !_noiseSettingsToggle ) return;
-        //
-        //     PropertyField( _seedProp );
-        //     PropertyField( _noiseOffsetHorizontalProp, new GUIContent( "X Offset" ) );
-        //     PropertyField( _noiseOffsetVerticalProp, new GUIContent( "Y Offset" ) );
-        //     PropertyField( _noiseScaleProp, new GUIContent( "Scale" ) );
-        //     PropertyField( _octavesProp );
-        //     using ( new EditorGUI.DisabledScope( _octavesProp.intValue <= 1 ) )
-        //     {
-        //         EditorGUI.indentLevel++;
-        //         {
-        //             PropertyField( _persistenceProp );
-        //             PropertyField( _lacunarityProp );
-        //         }
-        //         EditorGUI.indentLevel--;
-        //     }
-        //
-        //     Space( BetweenSectionPadding );
-        // }
-
         private void DrawNoisePreviewSettingsSection()
         {
             _noisePreviewSettingsToggle = DrawFoldoutSection( "Noise Meter Settings", Level0FrameType, _noisePreviewSettingsToggle );
             if( !_noisePreviewSettingsToggle ) return;
             PropertyField( _showNoiseMeterProp, new GUIContent( "Noise Meter" ) );
+            PropertyField( _noiseMapTopMarginProp, new GUIContent( "Top Margin" ) );
+            PropertyField( _noiseMapRightMarginProp, new GUIContent( "Right Margin" ) );
+            PropertyField( _noiseMapWidthProp, new GUIContent( "Width" ) );
+            PropertyField( _noiseMapLabelWidthProp, new GUIContent( "Label Width" ) );
+            PropertyField( _noiseMapLabelRightMarginProp, new GUIContent( "Label Right Margin" ) );
 
             Space( BetweenSectionPadding );
         }

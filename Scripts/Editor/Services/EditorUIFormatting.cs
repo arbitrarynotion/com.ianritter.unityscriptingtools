@@ -8,7 +8,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
 {
     public static class EditorUIFormatting
     {
-        public const ElementFrameType Level0FrameType = ElementFrameType.FullOutline;
+        public const ElementFrameType Level0FrameType = ElementFrameType.LeftOnly;
         public const ElementFrameType Level1FrameType = ElementFrameType.BottomOnly;
         public const ElementFrameType Level2FrameType = ElementFrameType.None;
         public const float TitleFrameBottomPadding = 2f;

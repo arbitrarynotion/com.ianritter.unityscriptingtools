@@ -1,16 +1,8 @@
 ﻿using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Runtime
 {
-    // public interface ISettingsSO
-    // {
-    //     Action onSettingsUpdated;
-    //     void RaiseOnSettingsUpdated();
-    // }
-    
-    
     [CreateAssetMenu(menuName = "Utilities/Object Stacker Settings")]
     public class ObjectStackerSettingsSO : SubscribableSO
     {
@@ -20,15 +12,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 #region NoiseSettings
 
         public bool showNoiseMeter = true;
-        // public int seed = 31;
-        // [Range( -5.0f, 5.0f )] public float noiseOffsetHorizontal = 0f;
-        // [Range( -5.0f, 5.0f )] public float noiseOffsetVertical = 0f;
-        // [Range( 1.1f, 50.0f )] public float noiseScale = 12.7f;
-        //
-        // [Range( 1.0f, 8.0f )] public int octaves = 7;
-        // [Range( 0.5f, 1.0f )] public float persistence = 1f;
-        // [Range( 0.5f, 1.5f )] public float lacunarity = 1.433f;
-        
+        // Scene GUI Formatting
+        public float noiseMapTopMargin = 125f;
+        public float noiseMapRightMargin = 43f;
+        public float noiseMapWidth = 25f;
+        public float noiseMapLabelWidth = 80f;
+        public float noiseMapLabelRightMargin = 0f;
+
 #endregion
 
 #region NoiseDrivenEffects
@@ -132,25 +122,5 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 #endregion
         
 #endregion
-
-        
-// #region Events
-//
-//         [SerializeField]
-//         public UnityAction onSettingsUpdated;
-//         private void RaiseOnSettingsUpdated() => onSettingsUpdated?.Invoke();
-//
-// #endregion
-
-
-// #region LifeCycle
-//
-//         private void OnValidate()
-//         {
-//             // Debug.Log( "ObjectStackerSettingsSO OnValidate called." );
-//             RaiseOnSettingsUpdated();
-//         }
-//
-// #endregion
     }
 }

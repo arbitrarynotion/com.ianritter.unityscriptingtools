@@ -10,7 +10,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
         public void GenerateMap()
         {
-            // float[,] noiseMap = PerlinNoise.GenerateNoiseMap( mapWidth, mapHeight, noiseScale );
+            // float[,] noiseMap = PerlinNoise.GetNoiseMap( mapWidth, mapHeight, noiseScale );
         }
     }
 }

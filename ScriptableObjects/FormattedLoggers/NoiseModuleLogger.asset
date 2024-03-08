@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 875e9ed44325b8642b2e6bb4646bbb9c, type: 3}
-  m_Name: ObjectStackerEditorLogger
+  m_Name: NoiseModuleLogger
   m_EditorClassIdentifier: 
   blockDivider:
     customColor:
@@ -44,8 +44,8 @@ MonoBehaviour:
     toggle: 1
   logPrefix:
     customColor:
-      color: {r: 1, g: 0.65, b: 0, a: 1}
-      name: OSE
+      color: {r: 0, g: 0.75, b: 1, a: 1}
+      name: NM
     toggle: 1
   methodColor: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
   methodDividers:

@@ -45,7 +45,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         // public void Initialize( GameManager gameManager )
         // {
         //     _gameManager = gameManager;
-        //     GenerateNoiseMap();
+        //     GetNoiseMap();
         // }
 
         public int GetSeed() => seed;

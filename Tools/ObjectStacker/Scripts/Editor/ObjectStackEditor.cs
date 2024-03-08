@@ -3,6 +3,7 @@ using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMethods
 using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.Enums;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger.Enums;
 using Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Editor;
 using Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Runtime;
 using Packages.com.ianritter.unityscriptingtools.Tools.PrefabSpawner.Scripts.Editor;
@@ -34,8 +35,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private SerializedProperty _loggerProp;
 
         // This is a setting from within the settingsProp.
-        // private SerializedProperty _showNoiseMeterProp;
-
+        private SerializedProperty _showNoiseMeterProp;
+        private SerializedProperty _noiseMapTopMarginProp;
+        private SerializedProperty _noiseMapRightMarginProp;
+        private SerializedProperty _noiseMapWidthProp;
+        private SerializedProperty _noiseMapLabelWidthProp;
+        private SerializedProperty _noiseMapLabelRightMarginProp;
+        
+        
         // Foldout bools
         private bool _showObjectStackerSettings = true;
         private bool _showNoiseSettings = true;
@@ -53,13 +60,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private FormattedLogger _localLogger;
 
 
-        // Scene GUI Formatting
-        private const float NoiseMapTopMargin = 125f;
-        private const float NoiseMapRightMargin = 43f;
-        private const float NoiseMapWidth = 25f;
-        private const float NoiseMapLabelWidth = 80f;
-
-        private const float NoiseMapLabelRightMargin = 0f;
+        // // Scene GUI Formatting
+        // private const float NoiseMapTopMargin = 125f;
+        // private const float NoiseMapRightMargin = 43f;
+        // private const float NoiseMapWidth = 25f;
+        // private const float NoiseMapLabelWidth = 80f;
+        // private const float NoiseMapLabelRightMargin = 0f;
 
         // These are used to draw a frame around the editor area.
         private float _editorStartPosition;
@@ -68,22 +74,23 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         // Embedded Editor
         private UnityEditor.Editor _settingsSOEditor;
         private Object _settingsSOEditorTarget;
+        private EmbedSOEditor _settingsEmbeddedSOEditor;
 
         private UnityEditor.Editor _noiseSettingsSOEditor;
         private Object _noiseSettingsSOEditorTarget;
-
-        private EmbedSOEditor _settingsEmbeddedSOEditor;
         private EmbedSOEditor _noiseSettingsEmbeddedSOEditor;
 
-#endregion
-
-
-#region UnityActions
-
-        private static UnityAction _onRecompile;
-        private static void RaiseOnRecompile() => _onRecompile?.Invoke();
+        private SerializedObject _settingsSerializedObject;
 
 #endregion
+
+
+// #region UnityActions
+//
+//         private static UnityAction _onRecompile;
+//         private static void RaiseOnRecompile() => _onRecompile?.Invoke();
+//
+// #endregion
 
 
 #region LifeCycle
@@ -97,42 +104,57 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
             _objectStack = target as ObjectStack;
 
-            // Get the so prop.
+            LoadObjectStackProperties();
+            InitializeEmbeddedEditors();
+            LoadSettingsSOProperties();
+            
+            // _onRecompile += OnScriptsLoaded;
+
+            _localLogger.LogEnd();
+        }
+
+        private void InitializeEmbeddedEditors()
+        {
+            _settingsEmbeddedSOEditor.OnEnable();
+            _noiseSettingsEmbeddedSOEditor.OnEnable();
+        }
+
+        private void LoadObjectStackProperties()
+        {
             _totalObjectsProp = serializedObject.FindProperty( "totalObjects" );
 
             _settingsSOProp = serializedObject.FindProperty( "settingsSo" );
             _settingsEmbeddedSOEditor = new EmbedSOEditor( _settingsSOProp );
+            
             _noiseSettingsSOProp = serializedObject.FindProperty( "noiseSettingsSO" );
             _noiseSettingsEmbeddedSOEditor = new EmbedSOEditor( _noiseSettingsSOProp );
-
-            // _settingsSOProp.PrintSerializedPropertyInfo();
-
-            // _settingsSerializedObject = new SerializedObject( _settingsSOProp.objectReferenceValue );
-            // _showNoiseMeterProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.showNoiseMeter ) );
-            // _showNoiseMeterProp.PrintSerializedPropertyInfo();
-            // _localLogger.LogObjectAssignmentResult( nameof(_showNoiseMeterProp ), _showNoiseMeterProp == null, FormattedLogType.Standard );
 
             _sceneViewVisualsModeProp = serializedObject.FindProperty( "sceneViewVisualsMode" );
             _prefabProp = serializedObject.FindProperty( "prefab" );
             _loggerProp = serializedObject.FindProperty( "logger" );
+        }
 
-            // SettingsSOEditorIsValid();
-            _settingsEmbeddedSOEditor.OnEnable();
-            _noiseSettingsEmbeddedSOEditor.OnEnable();
-
-            _onRecompile += OnScriptsLoaded;
-
-            _localLogger.LogEnd();
+        private void LoadSettingsSOProperties()
+        {
+            _settingsSerializedObject = new SerializedObject( _settingsSOProp.objectReferenceValue );
+            _showNoiseMeterProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.showNoiseMeter ) );
+            _showNoiseMeterProp.PrintSerializedPropertyInfo();
+            _localLogger.LogObjectAssignmentResult( nameof(_showNoiseMeterProp ), _showNoiseMeterProp == null, FormattedLogType.Standard );
+            
+            _noiseMapTopMarginProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapTopMargin ) );
+            _noiseMapRightMarginProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapRightMargin ) );
+            _noiseMapWidthProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapWidth ) );
+            _noiseMapLabelWidthProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelWidth ) );
+            _noiseMapLabelRightMarginProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelRightMargin ) );
         }
 
         protected override void OnDisableLast()
         {
             _localLogger.LogStart();
 
-            // DoEditorCleanup();
             _settingsEmbeddedSOEditor.OnDisable();
 
-            _onRecompile -= OnScriptsLoaded;
+            // _onRecompile -= OnScriptsLoaded;
 
             _localLogger.LogEnd();
         }
@@ -221,107 +243,24 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         protected void OnSceneGUI()
         {
             if( _objectStack == null ) return;
-
+        
             if( _objectStack.GetSettingsSO() == null ) return;
-
+        
             // Todo: Directly referencing the value is ugly. Should find a clean way with serialized properties. This works for now.
             if( !_objectStack.GetSettingsSO().showNoiseMeter ) return;
-
+        
             DrawSceneViewNoiseMapPreview();
         }
 
-        [DidReloadScripts]
-        private static void OnScriptsReloaded()
-        {
-            // RaiseOnRecompile();
-        }
-
-        private void OnScriptsLoaded()
-        {
-            // _objectStack.UpdateSettingsSoSubscriptions();
-            _objectStack.UpdateSubscriptions();
-        }
-
-#endregion
-
-
-#region EmbeddedEditor
-
-        // /// <summary>
-        // ///     Returns true if the editor variable holds a usable editor.
-        // /// </summary>
-        // private bool SettingsSOEditorIsValid()
+        // [DidReloadScripts]
+        // private static void OnScriptsReloaded()
         // {
-        //     // Case 1: settingsProp is null
-        //     //     - return false.
-        //     // Ensure the settings property was found.
-        //     if ( _settingsSOProp == null ) return false;
-        //
-        //     // Case 2: settingsProp.objectValue is null
-        //     //     - return false.
-        //     // Ensure that the object reference is not null.
-        //     if ( _settingsSOProp.objectReferenceValue == null ) return false;
-        //
-        //     // Case 3: editor and target exist.
-        //     //     When the target holds an object reference and the editor exists, nothing needs to be done.
-        //     //     - return true.
-        //     // Skip if we've already made an editor for this object.
-        //     if ( _settingsSOEditor != null && _settingsSOEditorTarget == _settingsSOProp.objectReferenceValue ) return true;
-        //
-        //     // Case 4:  either the editor or the target are null.
-        //     //     This means the a target change has occurred.
-        //     //     - Save the object reference in the target.
-        //     //     - Dispose of the old editor, if one exists.
-        //     //     - Create a new editor for this object.
-        //     //     - return true.
-        //     _settingsSOEditorTarget = _settingsSOProp.objectReferenceValue;
-        //
-        //     _localLogger.Log( $"Creating a new editor for {GetColoredStringGreenYellow( _settingsSOProp.objectReferenceValue.name )}." );
-        //     DoEditorCleanup();
-        //
-        //     // Create an editor for the so.
-        //     _settingsSOEditor = CreateEditor( _settingsSOProp.objectReferenceValue );
-        //     return true;
+        //     // RaiseOnRecompile();
         // }
-        //
-        // private void DoEditorCleanup()
+
+        // private void OnScriptsLoaded()
         // {
-        //     if ( _settingsSOEditor == null ) return;
-        //
-        //     _localLogger.Log( $"Destroying old editor for {GetColoredStringMaroon( _settingsSOProp.objectReferenceValue.name )}." );
-        //     DestroyImmediate( _settingsSOEditor );
-        // }
-        //
-        // private void DrawSettingsSoInspector()
-        // {
-        //     // Optimization to avoid creating a new editor unless it's actually needed.
-        //     if ( !SettingsSOEditorIsValid() ) return;
-        //
-        //     Space( VerticalSeparator );
-        //
-        //     // Draw Foldout with frame.
-        //     Rect labelRect = GetFramedControlRect( Color.gray, FoldoutFrameType, 0f, true );
-        //     _showObjectStackerSettings = EditorGUI.Foldout( labelRect, _showObjectStackerSettings, "Object Stacker Settings", true );
-        //     if ( !_showObjectStackerSettings ) return;
-        //
-        //     Rect startRect = GUILayoutUtility.GetLastRect();
-        //     _settingsSOEditor.OnInspectorGUI();
-        //     Rect endRect = GUILayoutUtility.GetLastRect();
-        //
-        //     DrawSOFrame( startRect, endRect );
-        //
-        //     Space( VerticalSeparator );
-        // }
-        //
-        // private static void DrawSOFrame( Rect startRect, Rect endRect )
-        // {
-        //     var finalRect = new Rect( startRect )
-        //     {
-        //         yMin = startRect.yMax,
-        //         yMax = endRect.yMax + EditorFrameBottomPadding
-        //     };
-        //     finalRect.xMin += ParentFrameWidth;
-        //     DrawRect( finalRect, EditorFrameType, Color.gray, Color.gray, ChildFrameWidth, false );
+        //     _objectStack.UpdateSubscriptions();
         // }
 
 #endregion
@@ -346,13 +285,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             var backgroundColor = new Color( value, value, value );
 
             var positionVector = new Vector2(
-                currentViewPortRect.width - NoiseMapRightMargin - NoiseMapWidth,
+                // currentViewPortRect.width - NoiseMapRightMargin - NoiseMapWidth,
+                currentViewPortRect.width - _noiseMapRightMarginProp.floatValue - _noiseMapWidthProp.floatValue,
 
-                // NoiseMapTopMargin + NoiseMapRightMargin + 35f
-                NoiseMapTopMargin
+                // NoiseMapTopMargin
+                _noiseMapTopMarginProp.floatValue
             );
             var sizeVector = new Vector2(
-                NoiseMapWidth,
+                // NoiseMapWidth,
+                _noiseMapWidthProp.floatValue,
                 previewImageHeight
             );
             var positionRect = new Rect( positionVector, sizeVector );
@@ -371,13 +312,16 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             );
 
             var labelPositionVector = new Vector2(
-                currentViewPortRect.width - NoiseMapLabelWidth + NoiseMapLabelRightMargin,
+                // currentViewPortRect.width - NoiseMapLabelWidth + NoiseMapLabelRightMargin,
+                currentViewPortRect.width - _noiseMapLabelWidthProp.floatValue + _noiseMapLabelRightMarginProp.floatValue,
 
                 // NoiseMapTopMargin + singleLineHeight + standardVerticalSpacing
-                NoiseMapTopMargin + previewImageHeight / 2f
+                // NoiseMapTopMargin + previewImageHeight / 2f
+                _noiseMapTopMarginProp.floatValue + previewImageHeight / 2f
             );
             var labelSizeRect = new Vector2(
-                NoiseMapLabelWidth,
+                // NoiseMapLabelWidth,
+                _noiseMapLabelWidthProp.floatValue,
                 EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing
             );
             var labelRect = new Rect( labelPositionVector, labelSizeRect );
