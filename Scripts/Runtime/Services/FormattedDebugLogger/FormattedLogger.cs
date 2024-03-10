@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger.Enums;
-
 using UnityEngine;
-
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System.SystemConstants;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.TextFormatting;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.MetaData.MetaDataGathering;
-
 using Object = UnityEngine.Object;
 
 namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger
@@ -17,41 +13,43 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
     [CreateAssetMenu( menuName = LoggerAssetMenuName )]
     public class FormattedLogger : ScriptableObject
     {
-        private readonly Object _sender;
-
-        private string _blockMethodHexColor;
-
-        private int _blockTabLevel;
-
-        private string _lastCallingClass;
-        private string _methodHexColor;
-
-        private Stack<MethodEntry> _methodStack = new Stack<MethodEntry>();
-        [SerializeField] private FormattedLoggerSymbol blockDivider;
-
-        [SerializeField] private Color blockMethodColor;
+        [SerializeField] private bool showLogs = true;
+        [SerializeField] private bool padBlocks = true;
+        [SerializeField] private bool useClassPrefix = true;
         [SerializeField] private bool boldBlockMethods = true;
         [SerializeField] private bool boldMethods = true;
-        [SerializeField] private bool fullPathName;
-        [SerializeField] private bool includeStackTrace;
+        [SerializeField] private bool nicifiedNames = true;
+
+        [SerializeField] private Color blockMethodColor;
+        [SerializeField] private Color methodColor;
+        [SerializeField] private Color unityEventsColor;
+        [SerializeField] private Color focusColor;
+
+        [SerializeField] private FormattedLoggerSymbol logPrefix;
+        [SerializeField] private FormattedLoggerSymbol blockDivider;
         [SerializeField] private FormattedLoggerSymbol indentMarker;
-        [SerializeField] private FormattedLoggerSymbol logBlockEnd;
+        [SerializeField] private FormattedLoggerSymbol methodDividers;
         [SerializeField] private FormattedLoggerSymbol logBlockStart;
+        [SerializeField] private FormattedLoggerSymbol logBlockEnd;
         [SerializeField] private FormattedLoggerSymbol logEventPrefix;
 
         // [SerializeField] [Range( 5, 20 )] private int maxPrefixCharacters = 10;
 
-        [SerializeField] private FormattedLoggerSymbol logPrefix;
-        [SerializeField] private Color methodColor;
-        [SerializeField] private FormattedLoggerSymbol methodDividers;
-        [SerializeField] private bool nicifiedNames = true;
-        [SerializeField] private bool showLogs = true;
         [SerializeField] private string targetClass = "";
         [SerializeField] private string targetMethod = "";
-        [SerializeField] private bool useClassPrefix = true;
 
-        // private int _lineNumber;
+        [SerializeField] private bool fullPathName;
+        [SerializeField] private bool includeStackTrace;
 
+        private readonly Object _sender;
+        private int _blockTabLevel;
+        private string _lastCallingClass;
+        private Stack<MethodEntry> _methodStack = new Stack<MethodEntry>();
+
+        private string _blockMethodHexColor;
+        private string _methodHexColor;
+        private string _unityEventsHexColor;
+        private string _focusHexColor;
 
         public FormattedLogger( Object sender )
         {
@@ -74,6 +72,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
 
             _blockMethodHexColor = $"#{ColorUtility.ToHtmlStringRGBA( blockMethodColor )}";
             _methodHexColor = $"#{ColorUtility.ToHtmlStringRGBA( methodColor )}";
+            _unityEventsHexColor = $"#{ColorUtility.ToHtmlStringRGBA( unityEventsColor )}";
+            _focusHexColor = $"#{ColorUtility.ToHtmlStringRGBA( focusColor )}";
         }
 
 #endregion
@@ -113,8 +113,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
         {
             showLogs = true;
             useClassPrefix = true;
-            boldMethods = true;
-            boldBlockMethods = true;
+            boldMethods = false;
+            boldBlockMethods = false;
             nicifiedNames = true;
 
             logPrefix = new FormattedLoggerSymbol(
@@ -125,17 +125,17 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
             blockDivider = new FormattedLoggerSymbol(
                 true,
                 "―――――",
-                new Color( 0f, 0f, 0f, 1f )
+                new Color( 0.142f, 0.142f, 0.142f, 1f )
             );
             indentMarker = new FormattedLoggerSymbol(
                 true,
                 "|",
-                new Color( 0f, 0f, 0f, 1f )
+                new Color( 0.142f, 0.142f, 0.142f, 1f )
             );
             methodDividers = new FormattedLoggerSymbol(
                 true,
                 ".",
-                new Color( 0f, 0f, 0f, 1f )
+                new Color( 0.142f, 0.142f, 0.142f, 1f )
             );
             logBlockStart = new FormattedLoggerSymbol(
                 true,
@@ -161,6 +161,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
 
             blockMethodColor = new Color( 1f, 1f, 0f, 1f );
             methodColor = new Color( 0.9019608f, 0.5019608f, 0.2f, 1f );
+            unityEventsColor = new Color( 0f, 0f, 0f, 1f );
+            focusColor = new Color( 0f, 1f, 1f, 1f );
         }
 
 #region LifeCycle
@@ -172,8 +174,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
                 _methodStack = new Stack<MethodEntry>();
             _methodStack.Clear();
             _blockTabLevel = 0;
-
-            // _lineNumber = 0;
         }
 
         private void OnValidate() => UpdatePrefixColor();
@@ -182,15 +182,22 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
 
 
 #region Log Methods
+        
+        public void LogStart( string introMessage ) => LogStart( false, false, introMessage, FormattedLogType.Standard );
+        public void LogStart( bool blockStart = false, string introMessage = "" ) => LogStart( blockStart, false, introMessage, FormattedLogType.Standard );
+        public void LogStart( bool blockStart, bool isFocused, string introMessage = "" ) => LogStart( blockStart, isFocused, introMessage, FormattedLogType.Standard );
+        public void LogStart( bool blockStart, string introMessage, FormattedLogType logType ) => LogStart( blockStart, false, introMessage, logType );
 
         /// <summary>
         ///     Print the starting line of a log sequence preceded by a Log Block Start symbol where subsequent logs will be<br/>
         ///     indented based on their depth in the call stack. If blockStart is true, log will be encapsulated in<br/>
         ///     Log Block Divider symbols - note that the matching LogEnd will automatically include such encapsulation as well.
         /// </summary>
-        public void LogStart( bool blockStart = false, string introMessage = "", FormattedLogType logType = FormattedLogType.Standard )
+        private void LogStart( bool blockStart, bool isFocused, string introMessage, FormattedLogType logType )
         {
             if( !LogAllowed() ) return;
+
+            if ( ( blockStart && padBlocks ) || isFocused ) PrintLog( "" );
 
             // [System.Runtime.CompilerServices.CallerMemberName] string memberName = "";
 
@@ -198,7 +205,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
             string indent = GetIndentString();
 
             // Add new method entry to the stack.
-            PushMethodEntry( blockStart, logType );
+            PushMethodEntry( blockStart, isFocused, logType );
+            // Debug.Log( $"Pushing Method Entry for {GetColoredStringYellow( _methodStack.Peek().MethodName )} with focus value of {GetColoredStringAqua( isFocused.ToString() )}" );
+
+            // if( isFocused )
+            // {
+            //     Debug.Log( $"{GetColoredStringYellow( _methodStack.Peek().MethodName )} focus was set to true!" );
+            // }
+
 
             // Print log using indent that does not include an indent for this new method entry.
             string message = GetLogEndCapMessage( GetCurrentMethodEntry(), logBlockStart, GetCurrentCallingClassName() );
@@ -209,9 +223,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
             if( introMessage.Equals( "" ) ) return;
 
             // Used GetIndentString here because we want the indent from this log start to be included.
-            string introMarker = ApplyTextColor( "<b>↳</b> ", blockStart ? _blockMethodHexColor : _methodHexColor );
+            // string color = isFocused ? _focusHexColor : ( blockStart ? _blockMethodHexColor : _methodHexColor );
+            string introMarker = ApplyTextColor( "<b>↳</b> ", GetColorString( isFocused, blockStart ) );
+            // string introMarker = ApplyTextColor( "<b>↳</b> ", blockStart ? _blockMethodHexColor : _methodHexColor );
+            
             PrintLog( $"{GetIndentString()}{introMarker} {introMessage}", logType );
         }
+
+
 
         /// <summary>
         ///     Print the ending line of a log sequence preceded by a Log Block End symbol. If and end message is provided,
@@ -233,10 +252,16 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
             // Pop method entry from the stack and cache it's calling class.
             MethodEntry methodEntry = PopMethodEntry();
             _lastCallingClass = methodEntry.CallingClassName;
+            
+            // if( methodEntry.IsFocused() )
+            // {
+            //     Debug.Log( $"{GetColoredStringYellow( methodEntry.MethodName )} focus is true!" );
+            // }
 
             if( !endMessage.Equals( "" ) )
             {
-                string introMarker = ApplyTextColor( "<b>↱</b> ", methodEntry.IsBlockStart() ? _blockMethodHexColor : _methodHexColor );
+                // string introMarker = ApplyTextColor( "<b>↱</b> ", methodEntry.IsBlockStart() ? _blockMethodHexColor : _methodHexColor );
+                string introMarker = ApplyTextColor( "<b>↱</b> ", GetColorString( methodEntry.IsFocused(), methodEntry.IsBlockStart() ) );
                 PrintLog( $"{indent}{introMarker} {endMessage}", logType );
             }
 
@@ -246,6 +271,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
             string message = GetLogEndCapMessage( methodEntry, logBlockEnd, _lastCallingClass );
 
             PrintLog( $"{indent}{message}", logType );
+            
+            if ( ( methodEntry.IsBlockStart() && padBlocks ) || methodEntry.IsFocused() ) PrintLog( "" );
 
             if( _methodStack.Count == 0 ) _blockTabLevel = 0;
         }
@@ -396,7 +423,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
             if( !methodEntry.IsBlockStart() && boldMethods )
                 methodName = $"<b>{methodName}</b>";
 
-            string message = $"{formattedBlockStart} {callingClassPrefix}{GetColoredString( methodName, _methodHexColor )}";
+            string message = $"{formattedBlockStart} {callingClassPrefix}{GetColoredString( methodName, GetMethodColor( methodEntry ) )}";
 
             // Below is for only when the message is part of a block start.
             if( !methodEntry.IsBlockStart() ) return message;
@@ -442,10 +469,20 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
 
 #region Method Entry Handling
 
-        private void PushMethodEntry( bool blockStart, FormattedLogType logType )
+        private void PushMethodEntry( bool blockStart, bool isFocused, FormattedLogType logType )
         {
-            _methodStack.Push( new MethodEntry( blockStart, nicifiedNames, logType,
-                includeStackTrace, fullPathName, targetClass, targetMethod ) );
+            _methodStack.Push( 
+                new MethodEntry( 
+                    blockStart, 
+                    nicifiedNames, 
+                    isFocused,
+                    logType, 
+                    includeStackTrace, 
+                    fullPathName, 
+                    targetClass, 
+                    targetMethod 
+                    ) 
+                );
 
             // PrintCurrentMethodEntryList();
         }
@@ -543,6 +580,18 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
 #region Text Formatting
 
         // public string ApplyNameFormatting( string variableName ) => nicifiedNames ? NicifyVariableName( variableName ) : variableName;
+        
+        private string GetColorString( bool isFocused, bool blockStart ) => 
+            isFocused 
+                ? _focusHexColor 
+                : ( blockStart 
+                    ? _blockMethodHexColor 
+                    : _methodHexColor );
+        
+        // private string GetColorString( bool isFocused, bool blockStart ) => blockStart ? _blockMethodHexColor : _methodHexColor;
+        
+        private Color GetMethodColor( MethodEntry methodEntry ) => ( methodEntry.IsFocused() && methodEntry.GetTabLevel() == 0 ) ? focusColor : methodColor;
+        // private Color GetMethodColor( MethodEntry methodEntry ) => methodColor;
 
         private string ApplyPrefix( string message ) => $"<color={logPrefix.GetHexColor()}>{logPrefix.GetSymbol()}</color> : {message}";
 

@@ -16,6 +16,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Graphics.Sce
     public static class SceneGUIMeshes
     {
         private static FormattedLogger _logger;
+        private static readonly int Color = Shader.PropertyToID( "_Color" );
 
         private static FormattedLogger Logger
         {
@@ -126,6 +127,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Graphics.Sce
 
             for ( int i = 0; i < mesh.subMeshCount && i < materials.Length; i++ )
             {
+                // var material = new Material( materials[i] );
+                // material.SetColor( Color, new Color( 0f, 1f, 1f, 1f ) );
+                // UnityEngine.Graphics.DrawMesh( mesh, localToWorldRelativeMtx, material, 0, sceneViewCamera, i );
                 UnityEngine.Graphics.DrawMesh( mesh, localToWorldRelativeMtx, materials[i], 0, sceneViewCamera, i );
             }
         }

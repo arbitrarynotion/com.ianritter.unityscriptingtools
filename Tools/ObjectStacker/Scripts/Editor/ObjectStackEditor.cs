@@ -15,6 +15,7 @@ using static UnityEditor.EditorGUILayout;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.UIRectGraphics;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System.SystemConstants;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.EditorUIFormatting;
+using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Graphics.UI.EditorDividerGraphics;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Editor
 {
@@ -28,33 +29,35 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         // Serialized Properties
         private SerializedProperty _totalObjectsProp;
+        
         private SerializedProperty _settingsSOProp;
-        private SerializedProperty _noiseSettingsSOProp;
+        // private SerializedProperty _noiseSettingsSOProp;
+        
         private SerializedProperty _sceneViewVisualsModeProp;
         private SerializedProperty _prefabProp;
         private SerializedProperty _loggerProp;
 
         // This is a setting from within the settingsProp.
-        private SerializedProperty _showNoiseMeterProp;
-        private SerializedProperty _noiseMapTopMarginProp;
-        private SerializedProperty _noiseMapRightMarginProp;
-        private SerializedProperty _noiseMapWidthProp;
-        private SerializedProperty _noiseMapLabelWidthProp;
-        private SerializedProperty _noiseMapLabelRightMarginProp;
+        // private SerializedProperty _showNoiseMeterProp;
+        // private SerializedProperty _noiseMapTopMarginProp;
+        // private SerializedProperty _noiseMapRightMarginProp;
+        // private SerializedProperty _noiseMapWidthProp;
+        // private SerializedProperty _noiseMapLabelWidthProp;
+        // private SerializedProperty _noiseMapLabelRightMarginProp;
         
         
         // Foldout bools
         private bool _showObjectStackerSettings = true;
-        private bool _showNoiseSettings = true;
+        // private bool _showNoiseSettings = true;
 
         // UI Formatting
         // private const float VerticalSeparator = 8f;
-        private const float ParentFrameWidth = 2f;
-        private const float ChildFrameWidth = 2f;
+        // private const float ParentFrameWidth = 2f;
+        // private const float ChildFrameWidth = 2f;
         // private const float FoldoutFramePadding = 2f;
-        private const float EditorFrameBottomPadding = 10f;
-        private const ElementFrameType FoldoutFrameType = ElementFrameType.LeftOnly;
-        private const ElementFrameType EditorFrameType = ElementFrameType.PartialLeftFullBottom;
+        // private const float EditorFrameBottomPadding = 10f;
+        // private const ElementFrameType FoldoutFrameType = ElementFrameType.LeftOnly;
+        // private const ElementFrameType EditorFrameType = ElementFrameType.PartialLeftFullBottom;
 
         // Debug
         private FormattedLogger _localLogger;
@@ -76,9 +79,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private Object _settingsSOEditorTarget;
         private EmbedSOEditor _settingsEmbeddedSOEditor;
 
-        private UnityEditor.Editor _noiseSettingsSOEditor;
-        private Object _noiseSettingsSOEditorTarget;
-        private EmbedSOEditor _noiseSettingsEmbeddedSOEditor;
+        // private UnityEditor.Editor _noiseSettingsSOEditor;
+        // private Object _noiseSettingsSOEditorTarget;
+        // private EmbedSOEditor _noiseSettingsEmbeddedSOEditor;
 
         private SerializedObject _settingsSerializedObject;
 
@@ -106,7 +109,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
             LoadObjectStackProperties();
             InitializeEmbeddedEditors();
-            LoadSettingsSOProperties();
+            // LoadSettingsSOProperties();
             
             // _onRecompile += OnScriptsLoaded;
 
@@ -116,37 +119,37 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private void InitializeEmbeddedEditors()
         {
             _settingsEmbeddedSOEditor.OnEnable();
-            _noiseSettingsEmbeddedSOEditor.OnEnable();
+            // _noiseSettingsEmbeddedSOEditor.OnEnable();
         }
 
         private void LoadObjectStackProperties()
         {
             _totalObjectsProp = serializedObject.FindProperty( "totalObjects" );
 
-            _settingsSOProp = serializedObject.FindProperty( "settingsSo" );
+            _settingsSOProp = serializedObject.FindProperty( "objectStackerSettingsSO" );
             _settingsEmbeddedSOEditor = new EmbedSOEditor( _settingsSOProp );
             
-            _noiseSettingsSOProp = serializedObject.FindProperty( "noiseSettingsSO" );
-            _noiseSettingsEmbeddedSOEditor = new EmbedSOEditor( _noiseSettingsSOProp );
+            // _noiseSettingsSOProp = serializedObject.FindProperty( "noiseSettingsSO" );
+            // _noiseSettingsEmbeddedSOEditor = new EmbedSOEditor( _noiseSettingsSOProp );
 
             _sceneViewVisualsModeProp = serializedObject.FindProperty( "sceneViewVisualsMode" );
             _prefabProp = serializedObject.FindProperty( "prefab" );
             _loggerProp = serializedObject.FindProperty( "logger" );
         }
 
-        private void LoadSettingsSOProperties()
-        {
-            _settingsSerializedObject = new SerializedObject( _settingsSOProp.objectReferenceValue );
-            _showNoiseMeterProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.showNoiseMeter ) );
-            _showNoiseMeterProp.PrintSerializedPropertyInfo();
-            _localLogger.LogObjectAssignmentResult( nameof(_showNoiseMeterProp ), _showNoiseMeterProp == null, FormattedLogType.Standard );
-            
-            _noiseMapTopMarginProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapTopMargin ) );
-            _noiseMapRightMarginProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapRightMargin ) );
-            _noiseMapWidthProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapWidth ) );
-            _noiseMapLabelWidthProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelWidth ) );
-            _noiseMapLabelRightMarginProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelRightMargin ) );
-        }
+        // private void LoadSettingsSOProperties()
+        // {
+        //     _settingsSerializedObject = new SerializedObject( _settingsSOProp.objectReferenceValue );
+        //     _showNoiseMeterProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.showNoiseMeter ) );
+        //     _showNoiseMeterProp.PrintSerializedPropertyInfo();
+        //     _localLogger.LogObjectAssignmentResult( nameof(_showNoiseMeterProp ), _showNoiseMeterProp == null, FormattedLogType.Standard );
+        //     
+        //     _noiseMapTopMarginProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapTopMargin ) );
+        //     _noiseMapRightMarginProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapRightMargin ) );
+        //     _noiseMapWidthProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapWidth ) );
+        //     _noiseMapLabelWidthProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelWidth ) );
+        //     _noiseMapLabelRightMarginProp = _settingsSerializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelRightMargin ) );
+        // }
 
         protected override void OnDisableLast()
         {
@@ -170,15 +173,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             {
                 PropertyField( _totalObjectsProp );
 
-                PropertyField( _noiseSettingsSOProp );
-                DrawSettingsSoInspector( ref _showNoiseSettings, "Noise Settings", _noiseSettingsEmbeddedSOEditor );
-                if ( _noiseSettingsSOProp.objectReferenceValue != null && _showNoiseSettings )
-                    Space( VerticalSeparator );
+                // PropertyField( _noiseSettingsSOProp );
+                // DrawSettingsSoInspector( ref _showNoiseSettings, "Noise Settings", _noiseSettingsEmbeddedSOEditor );
+                // if ( _noiseSettingsSOProp.objectReferenceValue != null && _showNoiseSettings )
+                //     Space( VerticalSeparator );
 
                 PropertyField( _settingsSOProp );
-                DrawSettingsSoInspector( ref _showObjectStackerSettings, "Object Stacker Settings", _settingsEmbeddedSOEditor );
-                if( _settingsSOProp.objectReferenceValue != null && _showObjectStackerSettings )
-                    Space( VerticalSeparator );
+
             }
             EditorGUI.indentLevel--;
 
@@ -196,7 +197,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
                 PropertyField( _loggerProp );
             }
             EditorGUI.indentLevel--;
-
+            
+            // Draw the embedded editor.
+            DrawSettingsSoInspector( ref _showObjectStackerSettings, "Object Stacker Settings SO", _settingsEmbeddedSOEditor );
+            if( _settingsSOProp.objectReferenceValue != null && _showObjectStackerSettings )
+                Space( VerticalSeparator );
+            
             if( !serializedObject.ApplyModifiedProperties() ) return;
 
             _localLogger.Log( "Change in Settings SO detected. Repainting Scene Views." );
@@ -211,24 +217,20 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
                 HelpBox( "Populate the object field to display the object's settings.", MessageType.Info );
                 return;
             }
+            
+            DrawDivider( Color.gray, 2f, 19f, 3f, 12f, 8f );
 
-            // Draw Foldout with frame.
-            // EditorGUI.indentLevel++;
-            // Rect labelRect = GetFramedControlRect( Color.gray, FoldoutFrameType, 0f, true );
-            // toggle = EditorGUI.Foldout( labelRect, toggle, title, true );
-            // if ( !toggle ) return;
             toggle = DrawFoldoutSection( title, FoldoutFrameType, toggle );
             if( !toggle ) return;
-
-            // EditorGUI.indentLevel--;
-
-
+            
             // Space( VerticalSeparator );
 
             Rect foldoutFrameRect = editor.DrawSettingsSoInspector();
+            
+            // Draw editor frame
             foldoutFrameRect.xMin += ParentFrameWidth;
             foldoutFrameRect.yMax += EditorFrameBottomPadding;
-            DrawRect( foldoutFrameRect, EditorFrameType, Color.gray, Color.gray, ChildFrameWidth, false );
+            DrawRect( foldoutFrameRect, EditorFrameType, Color.gray, Color.gray, ParentFrameWidth, false );
 
             Space( VerticalSeparator );
         }
@@ -240,101 +242,91 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             SceneView.RepaintAll();
         }
 
-        protected void OnSceneGUI()
-        {
-            if( _objectStack == null ) return;
-        
-            if( _objectStack.GetSettingsSO() == null ) return;
-        
-            // Todo: Directly referencing the value is ugly. Should find a clean way with serialized properties. This works for now.
-            if( !_objectStack.GetSettingsSO().showNoiseMeter ) return;
-        
-            DrawSceneViewNoiseMapPreview();
-        }
-
-        // [DidReloadScripts]
-        // private static void OnScriptsReloaded()
+        // protected void OnSceneGUI()
         // {
-        //     // RaiseOnRecompile();
+        //     if( _objectStack == null ) return;
+        //
+        //     if( _objectStack.GetSettingsSO() == null ) return;
+        //
+        //     // Todo: Directly referencing the value is ugly. Should find a clean way with serialized properties. This works for now.
+        //     if( !_objectStack.GetSettingsSO().showNoiseMeter ) return;
+        //
+        //     DrawSceneViewNoiseMapPreview();
         // }
 
-        // private void OnScriptsLoaded()
-        // {
-        //     _objectStack.UpdateSubscriptions();
-        // }
 
 #endregion
 
 
 #region SceneViewNoiseMapPreview
 
-        /// <summary>
-        ///     Draws a vertical bar that shows a preview of how the noise settings are being applied to the stack. Also includes ticks along the<br/>
-        ///     left side that indicate where the objects are sampling the noise.
-        /// </summary>
-        private void DrawSceneViewNoiseMapPreview()
-        {
-            if( _noiseSettingsSOProp.objectReferenceValue == null ) return;
-
-            Rect currentViewPortRect = Camera.current.pixelRect;
-            float previewImageHeight = currentViewPortRect.height / 2f;
-            float value = 0.25f;
-            var outlineColor = new Color( value, value, value );
-
-            value = 0.15f;
-            var backgroundColor = new Color( value, value, value );
-
-            var positionVector = new Vector2(
-                // currentViewPortRect.width - NoiseMapRightMargin - NoiseMapWidth,
-                currentViewPortRect.width - _noiseMapRightMarginProp.floatValue - _noiseMapWidthProp.floatValue,
-
-                // NoiseMapTopMargin
-                _noiseMapTopMarginProp.floatValue
-            );
-            var sizeVector = new Vector2(
-                // NoiseMapWidth,
-                _noiseMapWidthProp.floatValue,
-                previewImageHeight
-            );
-            var positionRect = new Rect( positionVector, sizeVector );
-
-            DrawRectOutline( positionRect, Color.black );
-
-            NoiseEditorUtilities.DrawSceneViewNoiseMapPreview(
-                positionRect,
-                _objectStack.GetNoiseMap2D(),
-                Color.black,
-                Color.white,
-                _totalObjectsProp.intValue,
-                outlineColor,
-                2f,
-                ScaleMode.StretchToFill
-            );
-
-            var labelPositionVector = new Vector2(
-                // currentViewPortRect.width - NoiseMapLabelWidth + NoiseMapLabelRightMargin,
-                currentViewPortRect.width - _noiseMapLabelWidthProp.floatValue + _noiseMapLabelRightMarginProp.floatValue,
-
-                // NoiseMapTopMargin + singleLineHeight + standardVerticalSpacing
-                // NoiseMapTopMargin + previewImageHeight / 2f
-                _noiseMapTopMarginProp.floatValue + previewImageHeight / 2f
-            );
-            var labelSizeRect = new Vector2(
-                // NoiseMapLabelWidth,
-                _noiseMapLabelWidthProp.floatValue,
-                EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing
-            );
-            var labelRect = new Rect( labelPositionVector, labelSizeRect );
-
-            Handles.BeginGUI();
-            {
-                GUIUtility.RotateAroundPivot( 90, labelRect.center );
-                DrawSolidRectWithOutline( labelRect, outlineColor, backgroundColor, 2f );
-                GUI.Label( labelRect, " Noise Meter" );
-                GUIUtility.RotateAroundPivot( -90, labelRect.center );
-            }
-            Handles.EndGUI();
-        }
+        // /// <summary>
+        // ///     Draws a vertical bar that shows a preview of how the noise settings are being applied to the stack. Also includes ticks along the<br/>
+        // ///     left side that indicate where the objects are sampling the noise.
+        // /// </summary>
+        // private void DrawSceneViewNoiseMapPreview()
+        // {
+        //     // if( _noiseSettingsSOProp.objectReferenceValue == null ) return;
+        //
+        //     Rect currentViewPortRect = Camera.current.pixelRect;
+        //     float previewImageHeight = currentViewPortRect.height / 2f;
+        //     float value = 0.25f;
+        //     var outlineColor = new Color( value, value, value );
+        //
+        //     value = 0.15f;
+        //     var backgroundColor = new Color( value, value, value );
+        //
+        //     var positionVector = new Vector2(
+        //         // currentViewPortRect.width - NoiseMapRightMargin - NoiseMapWidth,
+        //         currentViewPortRect.width - _noiseMapRightMarginProp.floatValue - _noiseMapWidthProp.floatValue,
+        //
+        //         // NoiseMapTopMargin
+        //         _noiseMapTopMarginProp.floatValue
+        //     );
+        //     var sizeVector = new Vector2(
+        //         // NoiseMapWidth,
+        //         _noiseMapWidthProp.floatValue,
+        //         previewImageHeight
+        //     );
+        //     var positionRect = new Rect( positionVector, sizeVector );
+        //
+        //     DrawRectOutline( positionRect, Color.black );
+        //
+        //     NoiseEditorUtilities.DrawSceneViewNoiseMapPreview(
+        //         positionRect,
+        //         _objectStack.GetNoiseMap2D(),
+        //         Color.black,
+        //         Color.white,
+        //         _totalObjectsProp.intValue,
+        //         outlineColor,
+        //         2f,
+        //         ScaleMode.StretchToFill
+        //     );
+        //
+        //     var labelPositionVector = new Vector2(
+        //         // currentViewPortRect.width - NoiseMapLabelWidth + NoiseMapLabelRightMargin,
+        //         currentViewPortRect.width - _noiseMapLabelWidthProp.floatValue + _noiseMapLabelRightMarginProp.floatValue,
+        //
+        //         // NoiseMapTopMargin + singleLineHeight + standardVerticalSpacing
+        //         // NoiseMapTopMargin + previewImageHeight / 2f
+        //         _noiseMapTopMarginProp.floatValue + previewImageHeight / 2f
+        //     );
+        //     var labelSizeRect = new Vector2(
+        //         // NoiseMapLabelWidth,
+        //         _noiseMapLabelWidthProp.floatValue,
+        //         EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing
+        //     );
+        //     var labelRect = new Rect( labelPositionVector, labelSizeRect );
+        //
+        //     Handles.BeginGUI();
+        //     {
+        //         GUIUtility.RotateAroundPivot( 90, labelRect.center );
+        //         DrawSolidRectWithOutline( labelRect, outlineColor, backgroundColor, 2f );
+        //         GUI.Label( labelRect, " Noise Meter" );
+        //         GUIUtility.RotateAroundPivot( -90, labelRect.center );
+        //     }
+        //     Handles.EndGUI();
+        // }
 
 #endregion
     }

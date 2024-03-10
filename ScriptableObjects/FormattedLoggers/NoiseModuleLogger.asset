@@ -12,49 +12,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 875e9ed44325b8642b2e6bb4646bbb9c, type: 3}
   m_Name: NoiseModuleLogger
   m_EditorClassIdentifier: 
+  showLogs: 1
+  padBlocks: 0
+  useClassPrefix: 1
+  boldBlockMethods: 0
+  boldMethods: 0
+  nicifiedNames: 1
+  blockMethodColor: {r: 1, g: 1, b: 0, a: 1}
+  methodColor: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
+  unityEventsColor: {r: 0, g: 0, b: 0, a: 1}
+  focusColor: {r: 0, g: 1, b: 1, a: 1}
+  logPrefix:
+    customColor:
+      color: {r: 0, g: 0.7490196, b: 1, a: 1}
+      name: NM
+    toggle: 1
   blockDivider:
     customColor:
-      color: {r: 0, g: 0, b: 0, a: 1}
+      color: {r: 0.142, g: 0.142, b: 0.142, a: 1}
       name: "\u2015\u2015\u2015\u2015\u2015"
     toggle: 1
-  blockMethodColor: {r: 1, g: 1, b: 0, a: 1}
-  boldBlockMethods: 1
-  boldMethods: 1
-  fullPathName: 0
-  includeStackTrace: 0
   indentMarker:
     customColor:
-      color: {r: 0, g: 0, b: 0, a: 1}
+      color: {r: 0.142, g: 0.142, b: 0.142, a: 1}
       name: '|'
     toggle: 1
-  logBlockEnd:
+  methodDividers:
     customColor:
-      color: {r: 0.29803923, g: 0.6, b: 0.9019608, a: 1}
-      name: "\u25C0"
+      color: {r: 0.142, g: 0.142, b: 0.142, a: 1}
+      name: .
     toggle: 1
   logBlockStart:
     customColor:
       color: {r: 0.29803923, g: 0.8, b: 0.29803923, a: 1}
       name: "\u25BA"
     toggle: 1
+  logBlockEnd:
+    customColor:
+      color: {r: 0.29803923, g: 0.6, b: 0.9019608, a: 1}
+      name: "\u25C0"
+    toggle: 1
   logEventPrefix:
     customColor:
       color: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
       name: '***'
     toggle: 1
-  logPrefix:
-    customColor:
-      color: {r: 0, g: 0.75, b: 1, a: 1}
-      name: NM
-    toggle: 1
-  methodColor: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
-  methodDividers:
-    customColor:
-      color: {r: 0, g: 0, b: 0, a: 1}
-      name: .
-    toggle: 1
-  nicifiedNames: 1
-  showLogs: 1
   targetClass: 
   targetMethod: 
-  useClassPrefix: 1
+  fullPathName: 0
+  includeStackTrace: 0

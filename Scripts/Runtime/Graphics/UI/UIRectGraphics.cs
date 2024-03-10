@@ -39,6 +39,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI
         {
             if( Event.current.type != EventType.Repaint )
                 return;
+            
             Color color1 = GUI.color;
             GUI.color *= color;
             GUI.DrawTexture( rect, Texture2D.whiteTexture );
@@ -55,75 +56,146 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI
         }
 
         public static void DrawRect
-        ( Rect frameRect, ElementFrameType frameType, Color frameOutlineColor, Color backgroundColor,
-            float outlineThickness, bool includeBackground
-        )
+            ( 
+                Rect frameRect, 
+                ElementFrameType frameType, 
+                Color frameOutlineColor, 
+                Color backgroundColor,
+                float outlineThickness, 
+                bool includeBackground
+            )
         {
             if( includeBackground )
                 DrawSolidRect( frameRect, backgroundColor );
-
-            // Partial edges.
+            
             switch (frameType)
             {
                 case ElementFrameType.None:
                     break;
+                
                 case ElementFrameType.FullOutline:
                     DrawRectOutline( frameRect, frameOutlineColor, outlineThickness );
                     return;
+                
+                case ElementFrameType.SkipTop:
+                    DrawFullLeftEdge( frameRect, frameOutlineColor, outlineThickness );
+                    DrawFullRightEdge( frameRect, frameOutlineColor, outlineThickness );
+                    DrawFullBottomEdge( frameRect, frameOutlineColor, outlineThickness );
+                    return;
+                
+                case ElementFrameType.SkipBottom:
+                    DrawFullTopEdge( frameRect, frameOutlineColor, outlineThickness );
+                    DrawFullLeftEdge( frameRect, frameOutlineColor, outlineThickness );
+                    DrawFullRightEdge( frameRect, frameOutlineColor, outlineThickness );
+                    return;
+                
+                case ElementFrameType.SkipRight:
+                    DrawFullTopEdge( frameRect, frameOutlineColor, outlineThickness );
+                    DrawFullLeftEdge( frameRect, frameOutlineColor, outlineThickness );
+                    DrawFullBottomEdge( frameRect, frameOutlineColor, outlineThickness );
+                    return;
+                
+                case ElementFrameType.LeftAndBottomOnly:
+                    DrawFullLeftEdge( frameRect, frameOutlineColor, outlineThickness );
+                    DrawFullBottomEdge( frameRect, frameOutlineColor, outlineThickness );
+                    return;
+                
+                case ElementFrameType.LeftAndTopOnly:
+                    DrawFullTopEdge( frameRect, frameOutlineColor, outlineThickness );
+                    DrawFullLeftEdge( frameRect, frameOutlineColor, outlineThickness );
+                    return;
+                
+                case ElementFrameType.TopAndBottomOnly:
+                    DrawFullTopEdge( frameRect, frameOutlineColor, outlineThickness );
+                    DrawFullBottomEdge( frameRect, frameOutlineColor, outlineThickness );
+                    return;
+                
+                case ElementFrameType.BottomOnly:
+                    DrawFullBottomEdge( frameRect, frameOutlineColor, outlineThickness );
+                    return;
+                
+                case ElementFrameType.LeftOnly:
+                    DrawFullLeftEdge( frameRect, frameOutlineColor, outlineThickness );
+                    return;
+                
                 case ElementFrameType.Corners:
                     DrawRectFromPartialCorners( frameRect, frameOutlineColor, outlineThickness );
                     return;
+                
                 case ElementFrameType.CornersSkipTopLines:
                     DrawRectFromPartialCorners( frameRect, frameOutlineColor, outlineThickness, true );
                     return;
+                
                 case ElementFrameType.CornersBottomOnly:
                     DrawRectFromPartialCornersBottomOnly( frameRect, frameOutlineColor, outlineThickness );
                     return;
+                
                 case ElementFrameType.CornersLeftBottomOnly:
                     DrawLeftBottomCornerPartialFrame( frameRect, frameOutlineColor, outlineThickness );
                     return;
-                case ElementFrameType.SkipBottom:
-                    DrawFullTopEdge( frameRect, frameOutlineColor, outlineThickness );
-                    break;
-                case ElementFrameType.SkipTop:
-                    break;
-                case ElementFrameType.LeftAndBottomOnly:
-                    break;
-                case ElementFrameType.BottomOnly:
-                    break;
-                case ElementFrameType.LeftOnly:
-                    break;
+                
                 case ElementFrameType.FullLeftPartialBottom:
                     DrawFullLeftPartialBottom( frameRect, frameOutlineColor, outlineThickness );
-                    break;
+                    return;
+                
                 case ElementFrameType.PartialLeftFullBottom:
                     DrawPartialLeftFullBottom( frameRect, frameOutlineColor, outlineThickness );
-                    break;
+                    return;
+                
                 default:
-                    throw new ArgumentOutOfRangeException( nameof( frameType ), frameType,
-                        "Type not handled. Was the enum updated with new values?" );
+                    throw new ArgumentOutOfRangeException( nameof( frameType ), frameType, null );
             }
+            
 
-            // Complete edges.
-            // Left
-            if( frameType == ElementFrameType.LeftAndBottomOnly ||
-                frameType == ElementFrameType.LeftOnly ||
-                frameType == ElementFrameType.SkipBottom ||
-                frameType == ElementFrameType.SkipTop ||
-                frameType == ElementFrameType.FullLeftPartialBottom )
-                DrawFullLeftEdge( frameRect, frameOutlineColor, outlineThickness );
-
-            // Right
-            if( frameType == ElementFrameType.SkipBottom ||
-                frameType == ElementFrameType.SkipTop )
-                DrawFullRightEdge( frameRect, frameOutlineColor, outlineThickness );
-
-            // Bottom
-            if( frameType == ElementFrameType.SkipTop ||
-                frameType == ElementFrameType.LeftAndBottomOnly ||
-                frameType == ElementFrameType.BottomOnly ||
-                frameType == ElementFrameType.PartialLeftFullBottom )
-                DrawFullBottomEdge( frameRect, frameOutlineColor, outlineThickness );
+            // // Partial edges
+            // switch (frameType)
+            // {
+            //     case ElementFrameType.Corners:
+            //         DrawRectFromPartialCorners( frameRect, frameOutlineColor, outlineThickness );
+            //         return;
+            //     case ElementFrameType.CornersSkipTopLines:
+            //         DrawRectFromPartialCorners( frameRect, frameOutlineColor, outlineThickness, true );
+            //         return;
+            //     case ElementFrameType.CornersBottomOnly:
+            //         DrawRectFromPartialCornersBottomOnly( frameRect, frameOutlineColor, outlineThickness );
+            //         return;
+            //     case ElementFrameType.CornersLeftBottomOnly:
+            //         DrawLeftBottomCornerPartialFrame( frameRect, frameOutlineColor, outlineThickness );
+            //         return;
+            //     case ElementFrameType.FullLeftPartialBottom:
+            //         DrawFullLeftPartialBottom( frameRect, frameOutlineColor, outlineThickness );
+            //         break;
+            //     case ElementFrameType.PartialLeftFullBottom:
+            //         DrawPartialLeftFullBottom( frameRect, frameOutlineColor, outlineThickness );
+            //         break;
+            // }
+            //
+            // // Complete edges
+            // // Top
+            // if( frameType == ElementFrameType.SkipBottom )
+            //     DrawFullTopEdge( frameRect, frameOutlineColor, outlineThickness );
+            //
+            // // Left
+            // if( frameType == ElementFrameType.LeftAndBottomOnly ||
+            //     frameType == ElementFrameType.LeftOnly ||
+            //     frameType == ElementFrameType.SkipTop ||
+            //     frameType == ElementFrameType.SkipBottom ||
+            //     frameType == ElementFrameType.SkipRight ||
+            //     frameType == ElementFrameType.FullLeftPartialBottom )
+            //     DrawFullLeftEdge( frameRect, frameOutlineColor, outlineThickness );
+            //
+            // // Right
+            // if( frameType == ElementFrameType.SkipBottom ||
+            //     frameType == ElementFrameType.SkipTop )
+            //     DrawFullRightEdge( frameRect, frameOutlineColor, outlineThickness );
+            //
+            // // Bottom
+            // if( frameType == ElementFrameType.SkipTop ||
+            //     frameType == ElementFrameType.SkipRight ||
+            //     frameType == ElementFrameType.LeftAndBottomOnly ||
+            //     frameType == ElementFrameType.BottomOnly ||
+            //     frameType == ElementFrameType.PartialLeftFullBottom )
+            //     DrawFullBottomEdge( frameRect, frameOutlineColor, outlineThickness );
         }
 
         /// <summary>

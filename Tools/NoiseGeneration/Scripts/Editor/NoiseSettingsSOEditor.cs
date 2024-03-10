@@ -63,7 +63,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         {
             serializedObject.Update();
 
-            serializedObject.DrawScriptField();
             DrawSettings();
 
             serializedObject.ApplyModifiedProperties();
@@ -87,8 +86,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         {
             EditorGUI.indentLevel++;
             {
+                serializedObject.DrawScriptField();
+
                 DrawNoiseSettings();
-                // DrawNoisePreviewSettingsSection();
+                DrawNoisePreviewSettingsSection();
             }
             EditorGUI.indentLevel--;
         }
@@ -96,37 +97,46 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
         private void DrawNoiseSettings()
         {
-            _noiseSettingsToggle = DrawFoldoutSection( "Noise Settings", Level0FrameType, _noiseSettingsToggle );
+            _noiseSettingsToggle = DrawFoldoutSection( "Noise Settings", SubFoldoutFrameType, _noiseSettingsToggle );
             if( !_noiseSettingsToggle ) return;
-
-            PropertyField( _seedProp );
-            PropertyField( _noiseOffsetHorizontalProp, new GUIContent( "X Offset" ) );
-            PropertyField( _noiseOffsetVerticalProp, new GUIContent( "Y Offset" ) );
-            PropertyField( _noiseScaleProp, new GUIContent( "Scale" ) );
-            PropertyField( _octavesProp );
-            using ( new EditorGUI.DisabledScope( _octavesProp.intValue <= 1 ) )
+            
+            EditorGUI.indentLevel++;
             {
-                EditorGUI.indentLevel++;
+                PropertyField( _seedProp );
+                PropertyField( _noiseOffsetHorizontalProp, new GUIContent( "X Offset" ) );
+                PropertyField( _noiseOffsetVerticalProp, new GUIContent( "Y Offset" ) );
+                PropertyField( _noiseScaleProp, new GUIContent( "Scale" ) );
+                PropertyField( _octavesProp );
+                using ( new EditorGUI.DisabledScope( _octavesProp.intValue <= 1 ) )
                 {
-                    PropertyField( _persistenceProp );
-                    PropertyField( _lacunarityProp );
+                    EditorGUI.indentLevel++;
+                    {
+                        PropertyField( _persistenceProp );
+                        PropertyField( _lacunarityProp );
+                    }
+                    EditorGUI.indentLevel--;
                 }
-                EditorGUI.indentLevel--;
             }
-
+            EditorGUI.indentLevel--;
+            
             Space( BetweenSectionPadding );
         }
         
         private void DrawNoisePreviewSettingsSection()
         {
-            _noisePreviewSettingsToggle = DrawFoldoutSection( "Noise Meter Settings", Level0FrameType, _noisePreviewSettingsToggle );
+            _noisePreviewSettingsToggle = DrawFoldoutSection( "Noise Meter Settings", SubFoldoutFrameType, _noisePreviewSettingsToggle );
             if( !_noisePreviewSettingsToggle ) return;
-            PropertyField( _showNoiseMeterProp, new GUIContent( "Noise Meter" ) );
-            PropertyField( _noiseMapTopMarginProp, new GUIContent( "Top Margin" ) );
-            PropertyField( _noiseMapRightMarginProp, new GUIContent( "Right Margin" ) );
-            PropertyField( _noiseMapWidthProp, new GUIContent( "Width" ) );
-            PropertyField( _noiseMapLabelWidthProp, new GUIContent( "Label Width" ) );
-            PropertyField( _noiseMapLabelRightMarginProp, new GUIContent( "Label Right Margin" ) );
+            
+            EditorGUI.indentLevel++;
+            {
+                PropertyField( _showNoiseMeterProp, new GUIContent( "Noise Meter" ) );
+                PropertyField( _noiseMapTopMarginProp, new GUIContent( "Top Margin" ) );
+                PropertyField( _noiseMapRightMarginProp, new GUIContent( "Right Margin" ) );
+                PropertyField( _noiseMapWidthProp, new GUIContent( "Width" ) );
+                PropertyField( _noiseMapLabelWidthProp, new GUIContent( "Label Width" ) );
+                PropertyField( _noiseMapLabelRightMarginProp, new GUIContent( "Label Right Margin" ) );
+            }
+            EditorGUI.indentLevel--;
 
             Space( BetweenSectionPadding );
         }

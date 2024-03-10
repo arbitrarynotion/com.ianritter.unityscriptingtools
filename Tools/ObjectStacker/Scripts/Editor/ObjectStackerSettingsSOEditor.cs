@@ -15,12 +15,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 #region DataMembers
 
         // Noise map visualization
-        private SerializedProperty _showNoiseMeterProp;
-        private SerializedProperty _noiseMapTopMarginProp;
-        private SerializedProperty _noiseMapRightMarginProp;
-        private SerializedProperty _noiseMapWidthProp;
-        private SerializedProperty _noiseMapLabelWidthProp;
-        private SerializedProperty _noiseMapLabelRightMarginProp;
+        // private SerializedProperty _showNoiseMeterProp;
+        // private SerializedProperty _noiseMapTopMarginProp;
+        // private SerializedProperty _noiseMapRightMarginProp;
+        // private SerializedProperty _noiseMapWidthProp;
+        // private SerializedProperty _noiseMapLabelWidthProp;
+        // private SerializedProperty _noiseMapLabelRightMarginProp;
 
 
         // Noise Driven Effects
@@ -59,12 +59,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         private void OnEnable()
         {
-            _showNoiseMeterProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.showNoiseMeter ) );
-            _noiseMapTopMarginProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapTopMargin ) );
-            _noiseMapRightMarginProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapRightMargin ) );
-            _noiseMapWidthProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapWidth ) );
-            _noiseMapLabelWidthProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelWidth ) );
-            _noiseMapLabelRightMarginProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelRightMargin ) );
+            // _showNoiseMeterProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.showNoiseMeter ) );
+            // _noiseMapTopMarginProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapTopMargin ) );
+            // _noiseMapRightMarginProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapRightMargin ) );
+            // _noiseMapWidthProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapWidth ) );
+            // _noiseMapLabelWidthProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelWidth ) );
+            // _noiseMapLabelRightMarginProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelRightMargin ) );
             
             
             _lockBottomObjectProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.lockBottomObject ) );
@@ -92,7 +92,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         {
             serializedObject.Update();
 
-            serializedObject.DrawScriptField();
             DrawSettings();
 
             serializedObject.ApplyModifiedProperties();
@@ -104,62 +103,29 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 #region DrawUI
 
         private static void DrawLabeledSection( string titleText, ElementFrameType frameType ) => 
-            DrawLabelSection( titleText, frameType, TitleLeftEdgePadding, TitleFrameBottomPadding );
+            DrawLabelSection( titleText, frameType );
 
         private void DrawSettings()
         {
             EditorGUI.indentLevel++;
             {
-                DrawNoisePreviewSettingsSection();
+                serializedObject.DrawScriptField();
                 DrawNoiseDrivenEffectsSection();
                 DrawManualAdjustmentsSection();
             }
             EditorGUI.indentLevel--;
         }
-
-        private void DrawNoisePreviewSettingsSection()
-        {
-            _noisePreviewSettingsToggle = DrawFoldoutSection( "Noise Meter Settings", Level0FrameType, _noisePreviewSettingsToggle );
-            if( !_noisePreviewSettingsToggle ) return;
-            PropertyField( _showNoiseMeterProp, new GUIContent( "Noise Meter" ) );
-            PropertyField( _noiseMapTopMarginProp, new GUIContent( "Top Margin" ) );
-            PropertyField( _noiseMapRightMarginProp, new GUIContent( "Right Margin" ) );
-            PropertyField( _noiseMapWidthProp, new GUIContent( "Width" ) );
-            PropertyField( _noiseMapLabelWidthProp, new GUIContent( "Label Width" ) );
-            PropertyField( _noiseMapLabelRightMarginProp, new GUIContent( "Label Right Margin" ) );
-
-            Space( BetweenSectionPadding );
-        }
-
+        
         private void DrawNoiseDrivenEffectsSection()
         {
-            _noiseDrivenEffectsToggle = DrawFoldoutSection( "Noise-Driven Effects", Level0FrameType, _noiseDrivenEffectsToggle );
+            _noiseDrivenEffectsToggle = DrawFoldoutSection( "Noise-Driven Effects", SubFoldoutFrameType, _noiseDrivenEffectsToggle );
             if( !_noiseDrivenEffectsToggle ) return;
 
-            DrawLabeledSection( "Y Axis Rotational", Level2FrameType );
-            PropertyField( _lockBottomObjectProp, new GUIContent( "Lock Bottom", "Forces the bottom object to remain in place. " +
-                                                                                 "This will cause all rotation and position shift to center their effect over the bottom object." ) );
-            PropertyField( _noiseMultiplierProp, new GUIContent( "Intensity" ) );
-            using ( new EditorGUI.DisabledScope( _noiseMultiplierProp.floatValue <= 0f ) )
-            {
-                PropertyField( _noiseDampeningCurveProp, new GUIContent( " " ) );
-            }
-
+            DrawYAxisRotationalSection();
             Space( BetweenSectionPadding );
+            DrawPositionShiftSection();
 
-            DrawLabeledSection( "Position Shift", Level2FrameType );
-            PropertyField( _xAxisNoiseProp, new GUIContent( "X Intensity" ) );
-            using ( new EditorGUI.DisabledScope( _xAxisNoiseProp.floatValue <= 0f ) )
-            {
-                PropertyField( _xAxisCurveProp, new GUIContent( " " ) );
-            }
-
-            PropertyField( _yAxisNoiseProp, new GUIContent( "Z Intensity" ) );
-            using ( new EditorGUI.DisabledScope( _yAxisNoiseProp.floatValue <= 0f ) )
-            {
-                PropertyField( _yAxisCurveProp, new GUIContent( " " ) );
-            }
-
+            // Display note when noise effects are all set to 0 so the use knows why nothing is happening when they change the noise settings.
             if( _noiseMultiplierProp.floatValue <= 0f &&
                 _xAxisNoiseProp.floatValue <= 0f &&
                 _yAxisNoiseProp.floatValue <= 0f )
@@ -170,39 +136,126 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         private void DrawManualAdjustmentsSection()
         {
-            _manualAdjustmentToggle = DrawFoldoutSection( "Manual Adjustments", Level0FrameType, _manualAdjustmentToggle );
+            _manualAdjustmentToggle = DrawFoldoutSection( "Manual Adjustments", SubFoldoutFrameType, _manualAdjustmentToggle );
             if( !_manualAdjustmentToggle ) return;
 
-            DrawLabeledSection( "Rotation", Level2FrameType );
-            PropertyField( _faceUpProp, new GUIContent( "Flip Over" ) );
-            PropertyField( _deckYRotSkewProp, new GUIContent( "Y Axis Twist" ) );
-            DrawLabeledSection( "Isolated Skew", Level2FrameType );
+            DrawManualRotationSection();
+            Space( BetweenSectionPadding );
+            DrawManualPositionSection();
+        }
+
+        private void DrawYAxisRotationalSection()
+        {
+            DrawLabeledSection( "Y Axis Rotationa", LabelHeadingFrameType );
+            
             EditorGUI.indentLevel++;
             {
-                PropertyField( _topSkewCardCountProp, new GUIContent( "Group Size" ) );
-                if( _topSkewCardCountProp.floatValue >= 1f )
+                PropertyField( _lockBottomObjectProp, new GUIContent( "Lock Bottom", "Forces the bottom object to remain in place. " +
+                                                                                     "This will cause all rotation and position shift to center their effect over the bottom object." ) );
+                PropertyField( _noiseMultiplierProp, new GUIContent( "Intensity" ) );
+                using ( new EditorGUI.DisabledScope( _noiseMultiplierProp.floatValue <= 0f ) )
                 {
-                    HelpBox( "Note: if all cards are included in skew group, the rotation lock one the first object will negate whole-stack rotations." +
-                             "You can still effect the upper cards using a dampening curve.", MessageType.Info );
-                }
-
-                using ( new EditorGUI.DisabledScope( _topSkewCardCountProp.floatValue <= 0f ) )
-                {
-                    PropertyField( _topCardsYRotSkewProp, new GUIContent( "Intensity" ) );
-                    using ( new EditorGUI.DisabledScope( Math.Abs( _topCardsYRotSkewProp.floatValue ) < 0.0001f ) )
+                    EditorGUI.indentLevel++;
                     {
-                        PropertyField( _rotationDampeningCurveProp, new GUIContent( " " ) );
+                        PropertyField( _noiseDampeningCurveProp, new GUIContent( "Dampener" ) );
                     }
+                    EditorGUI.indentLevel--;
                 }
             }
             EditorGUI.indentLevel--;
-
-            Space( BetweenSectionPadding );
-
-            DrawLabeledSection( "Position", Level2FrameType );
-            PropertyField( _modelHeightProp, new GUIContent( "Model Height" ) );
-            PropertyField( _verticalOffsetProp, new GUIContent( "Vertical Gap" ) );
         }
+
+        private void DrawPositionShiftSection()
+        {
+            DrawLabeledSection( "Position Shift", LabelHeadingFrameType );
+            
+            EditorGUI.indentLevel++;
+            {
+                PropertyField( _xAxisNoiseProp, new GUIContent( "X Intensity" ) );
+                using ( new EditorGUI.DisabledScope( _xAxisNoiseProp.floatValue <= 0f ) )
+                {
+                    EditorGUI.indentLevel++;
+                    {
+                        PropertyField( _xAxisCurveProp, new GUIContent( "Dampener" ) );
+                    }
+                    EditorGUI.indentLevel--;
+                }
+
+                PropertyField( _yAxisNoiseProp, new GUIContent( "Z Intensity" ) );
+                using ( new EditorGUI.DisabledScope( _yAxisNoiseProp.floatValue <= 0f ) )
+                {
+                    EditorGUI.indentLevel++;
+                    {
+                        PropertyField( _yAxisCurveProp, new GUIContent( "Dampener" ) );
+                    }
+                    EditorGUI.indentLevel--;
+
+                    // PropertyField( _yAxisCurveProp, new GUIContent( " " ) );
+                }
+            }
+            EditorGUI.indentLevel--;
+        }
+
+        private void DrawManualRotationSection()
+        {
+            DrawLabeledSection( "Rotation", LabelHeadingFrameType );
+            EditorGUI.indentLevel++;
+            {
+                PropertyField( _faceUpProp, new GUIContent( "Flip Over" ) );
+                PropertyField( _deckYRotSkewProp, new GUIContent( "Y Axis Twist" ) );
+                DrawLabeledSection( "Subgroup Skew (Top-down)", SubLabelHeadingFrameType );
+                EditorGUI.indentLevel++;
+                {
+                    PropertyField( _topSkewCardCountProp, new GUIContent( "Group Size" ) );
+                    if( _topSkewCardCountProp.floatValue >= 1f )
+                    {
+                        HelpBox( "Note: if all cards are included in skew group, the rotation lock one the first object will negate whole-stack rotations." +
+                                 "You can still effect the upper cards using a dampening curve.", MessageType.Info );
+                    }
+
+                    using ( new EditorGUI.DisabledScope( _topSkewCardCountProp.floatValue <= 0f ) )
+                    {
+                        PropertyField( _topCardsYRotSkewProp, new GUIContent( "Intensity" ) );
+                        using ( new EditorGUI.DisabledScope( Math.Abs( _topCardsYRotSkewProp.floatValue ) < 0.0001f ) )
+                        {
+                            EditorGUI.indentLevel++;
+                            {
+                                PropertyField( _rotationDampeningCurveProp, new GUIContent( "Dampener" ) );
+                            }
+                            EditorGUI.indentLevel--;
+                        }
+                    }
+                }
+                EditorGUI.indentLevel--;
+            }
+            EditorGUI.indentLevel--;
+        }
+
+        private void DrawManualPositionSection()
+        {
+            DrawLabeledSection( "Position", LabelHeadingFrameType );
+            EditorGUI.indentLevel++;
+            {
+                PropertyField( _modelHeightProp, new GUIContent( "Model Height" ) );
+                PropertyField( _verticalOffsetProp, new GUIContent( "Vertical Gap" ) );
+            }
+            EditorGUI.indentLevel--;
+        }
+        
+        
+        // private void DrawNoisePreviewSettingsSection()
+        // {
+        //     _noisePreviewSettingsToggle = DrawFoldoutSection( "Noise Meter Settings", SubFoldoutFrameType, _noisePreviewSettingsToggle );
+        //     if( !_noisePreviewSettingsToggle ) return;
+        //     PropertyField( _showNoiseMeterProp, new GUIContent( "Noise Meter" ) );
+        //     PropertyField( _noiseMapTopMarginProp, new GUIContent( "Top Margin" ) );
+        //     PropertyField( _noiseMapRightMarginProp, new GUIContent( "Right Margin" ) );
+        //     PropertyField( _noiseMapWidthProp, new GUIContent( "Width" ) );
+        //     PropertyField( _noiseMapLabelWidthProp, new GUIContent( "Label Width" ) );
+        //     PropertyField( _noiseMapLabelRightMarginProp, new GUIContent( "Label Right Margin" ) );
+        //
+        //     Space( BetweenSectionPadding );
+        // }
 
 #endregion
     }

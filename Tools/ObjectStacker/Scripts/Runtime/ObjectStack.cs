@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMethods;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.ExtensionMethods;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger;
@@ -14,6 +13,7 @@ using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics
 namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Runtime
 {
     [ExecuteInEditMode]
+    [RequireComponent( typeof( NoiseModule ) )]
     public class ObjectStack : PrefabSpawnerRoot, IObjectStack
     {
 #region DataMembers
@@ -23,13 +23,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         // The list that hold the noise transform effects for all positions in the stack.
         [HideInInspector] [SerializeField] private List<PseudoTransform> objectStack = new List<PseudoTransform>();
 
-        [SerializeField] private ObjectStackerSettingsSO settingsSo;
-        [SerializeField] private NoiseSettingsSO noiseSettingsSO;
+        [SerializeField] private ObjectStackerSettingsSO objectStackerSettingsSO;
+
+        // [SerializeField] private NoiseSettingsSO noiseSettingsSO;
 
         [SerializeField] private SceneViewDebugVisualsMode sceneViewVisualsMode = SceneViewDebugVisualsMode.Off;
         [SerializeField] private GameObject prefab;
         [SerializeField] private FormattedLogger logger;
-        
+
 
         /// <summary>
         ///     As changes in settings are handled by an event subscribed to the settings so, the only reason this class should<br/>
@@ -38,21 +39,23 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         /// </summary>
         private bool _updateRequired;
 
-        [SerializeField] [HideInInspector] private float[,] noiseMap2D;
+        // [SerializeField] [HideInInspector] private float[,] noiseMap2D;
         private const int NoiseMapWidth = 1;
-        
+
         private int _currentStackPosition;
 
         private const float NoisePosShiftIncreaseFactor = 100f;
-        
+
         // SOs and subscriptions
-        private ObjectStackerSettingsSO _previousSettingsSo;
-        private ObjectStackerSettingsSO _previousNoiseSettingsSo;
+        private ObjectStackerSettingsSO _previousObjectStackerSettingsSo;
+
+        // private NoiseSettingsSO _previousNoiseSettingsSo;
         private SubscriptionsHandler _subscriptionsHandler;
-        
+
         // Conversion to Noise Module
         private INoiseSource _noiseModule;
-        private NoiseSettingsSO _noiseSettingsSO;
+
+        // [SerializeField] [HideInInspector] private NoiseSettingsSO noiseSettingsSO;
 
 #endregion
 
@@ -77,7 +80,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         public int GetCurrentStackPosition() => _currentStackPosition;
         public void ResetStackCounter() => _currentStackPosition = 0;
-        public ObjectStackerSettingsSO GetSettingsSO() => settingsSo;
+        public ObjectStackerSettingsSO GetSettingsSO() => objectStackerSettingsSO;
 
 #endregion
 
@@ -120,27 +123,51 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 
 #region EventMethods
-        
+
         private void Initialize()
         {
             _subscriptionsHandler.Initialize( logger );
-            
+
             // Load the noise module attached to this object.
             _noiseModule = GetComponent<INoiseSource>();
-            logger.LogObjectAssignmentResult( nameof(_noiseModule), _noiseModule == null, FormattedLogType.Standard );
+            logger.LogObjectAssignmentResult( nameof( _noiseModule ), _noiseModule == null, FormattedLogType.Standard );
+
+            _noiseModule.Initialize( NoiseMapWidth, totalObjects, OnNoiseModuleUpdated, OnSettingsSOUpdated );
+        }
+
+        private void OnNoiseModuleUpdated()
+        {
+            logger.LogStart();
+
+            // Get the new settings SO.
+            // noiseSettingsSO = _noiseModule.GetNoiseSettingsSO();
+            logger.Log( $"Noise module noise settings SO was changed to {GetColoredStringGreenYellow( _noiseModule.GetNoiseSettingsSO().name )}" );
+
+            // Update the subscriptions.
+            UpdateSubscriptions();
+
+            UpdateStackTransforms();
+
+            logger.LogEnd();
         }
 
         private void UpdateSubscriptions()
         {
             // As this method is called during OnValidate, it is occasionally called before OnEnable so the subscription handler won't be initialized yet.
-            // if( _subscriptionsHandler == null ) return;
-            
-            _subscriptionsHandler.UpdateSubscriptions( _previousSettingsSo, settingsSo, OnSettingsSOUpdated );
-            _subscriptionsHandler.UpdateSubscriptions( _previousNoiseSettingsSo, noiseSettingsSO, OnSettingsSOUpdated );
+            if( _subscriptionsHandler == null ) return;
+
+            _previousObjectStackerSettingsSo = (ObjectStackerSettingsSO) _subscriptionsHandler.UpdateSubscriptions
+            (
+                _previousObjectStackerSettingsSo,
+                objectStackerSettingsSO,
+                OnSettingsSOUpdated
+            );
+
+            // _previousNoiseSettingsSo = (NoiseSettingsSO)_subscriptionsHandler.UpdateSubscriptions( _previousNoiseSettingsSo, noiseSettingsSO, OnSettingsSOUpdated );
         }
 
         /// <summary>
-        ///     This method should only be called in response to a change in the settingsSO's settings. That is triggered<br/>
+        ///     This method should only be called in response to a change in the objectStackerSettingsSO's settings. That is triggered<br/>
         ///     in the settingsSO class's OnValidate() method.
         /// </summary>
         private void OnSettingsSOUpdated()
@@ -148,12 +175,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             // logger.LogStart( true );
 
             // This is to show stack adjustments in realtime during play mode.
-            if( noiseSettingsSO == null )
-            {
-                // logger.LogEnd();
-                return;
-            }
-            
+            // if( noiseSettingsSO == null )
+            // {
+            //     // logger.LogEnd();
+            //     return;
+            // }
+
             UpdateStackTransforms();
 
             // logger.LogEnd();
@@ -192,7 +219,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         /// </summary>
         private void UpdateStackTransforms()
         {
-            GenerateNoiseMap();
+            // GenerateNoiseMap();
+            _noiseModule.UpdateNoiseMapSize( NoiseMapWidth, totalObjects );
             UpdatePseudoTransforms();
         }
 
@@ -206,8 +234,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         /// </summary>
         private void ReevaluateStack()
         {
-            logger.LogStart( false, $"stack.count: {GetColoredStringYellow( objectStack.Count.ToString() )}, " +
-                                    $"objectCount: {GetColoredStringYellow( totalObjects.ToString() )}." );
+            logger.LogStart( $"stack.count: {GetColoredStringYellow( objectStack.Count.ToString() )}, " +
+                             $"objectCount: {GetColoredStringYellow( totalObjects.ToString() )}." );
             if( objectStack.Count == totalObjects )
             {
                 logger.LogEnd( "Object stack is at the correct size." );
@@ -237,7 +265,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
             logger.LogEnd( $"Added {GetColoredStringGreenYellow( deficit.ToString() )} objects." );
         }
-        
+
         private void UpdatePseudoTransforms()
         {
             // logger.LogStart();
@@ -248,31 +276,31 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             float firstObjectXShift = 0;
             float firstObjectYShift = 0;
 
-            if( settingsSo.lockBottomObject )
+            if( objectStackerSettingsSO.lockBottomObject )
             {
                 firstObjectYRot = GetNoiseDrivenRotationValue( 0 );
-                firstObjectXShift = GetNoiseDrivePositionValue( 0, settingsSo.posXNoiseCurve, settingsSo.posXNoiseShift ) / NoisePosShiftIncreaseFactor;
-                firstObjectYShift = GetNoiseDrivePositionValue( 0, settingsSo.posZNoiseCurve, settingsSo.posZNoiseShift ) / NoisePosShiftIncreaseFactor;
+                firstObjectXShift = GetNoiseDrivePositionValue( 0, objectStackerSettingsSO.posXNoiseCurve, objectStackerSettingsSO.posXNoiseShift ) / NoisePosShiftIncreaseFactor;
+                firstObjectYShift = GetNoiseDrivePositionValue( 0, objectStackerSettingsSO.posZNoiseCurve, objectStackerSettingsSO.posZNoiseShift ) / NoisePosShiftIncreaseFactor;
             }
 
 
             // Flip the z axis if face up is checked.
-            float zAxisRot = settingsSo.faceUp ? 0f : 180f;
+            float zAxisRot = objectStackerSettingsSO.faceUp ? 0f : 180f;
 
             // logger.LogIndentStart( "Getting noise values:" );
             for ( int i = 0; i < totalObjects; i++ )
             {
                 PseudoTransform pseudoTransform = objectStack[i];
                 var noisePosShift = new Vector3(
-                    GetNoisePositionShiftValue( i, settingsSo.posXNoiseCurve, settingsSo.posXNoiseShift, firstObjectXShift ),
+                    GetNoisePositionShiftValue( i, objectStackerSettingsSO.posXNoiseCurve, objectStackerSettingsSO.posXNoiseShift, firstObjectXShift ),
                     currentOffset,
-                    GetNoisePositionShiftValue( i, settingsSo.posZNoiseCurve, settingsSo.posZNoiseShift, firstObjectYShift )
+                    GetNoisePositionShiftValue( i, objectStackerSettingsSO.posZNoiseCurve, objectStackerSettingsSO.posZNoiseShift, firstObjectYShift )
                 );
                 pseudoTransform.position = transform.position + noisePosShift;
                 pseudoTransform.rotation = Quaternion.Euler( 0, GetNoiseDrivenRotationValue( i ) - firstObjectYRot, zAxisRot );
                 pseudoTransform.scale = Vector3.one;
 
-                currentOffset += settingsSo.modelHeight + settingsSo.verticalOffset;
+                currentOffset += objectStackerSettingsSO.modelHeight + objectStackerSettingsSO.verticalOffset;
             }
 
             // logger.DecrementMethodIndent();
@@ -280,7 +308,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         }
 
 
-        private float GetDeckYRotSkew( int i ) => i * settingsSo.deckYRotSkew;
+        private float GetDeckYRotSkew( int i ) => i * objectStackerSettingsSO.deckYRotSkew;
 
         /// <summary>
         ///     Applies a relative rotation to the top object group. The group size is determined by the topDownSkewPercent<br/>
@@ -291,7 +319,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         {
             // The threshold index represents the point where the group starts. All objects above this index are in the group.
             // Note that the topDownSkewPercent is inverted to allow the UI slider to increase from left to right.
-            int thresholdIndex = Mathf.RoundToInt( ( 1 - settingsSo.topDownSkewPercent ) * totalObjects );
+            int thresholdIndex = Mathf.RoundToInt( ( 1 - objectStackerSettingsSO.topDownSkewPercent ) * totalObjects );
 
             // The clamp is just a failsafe to ensure the rounding doesn't result in one digit to high or low.
             thresholdIndex = Mathf.Clamp( thresholdIndex, 0, totalObjects );
@@ -309,30 +337,29 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             float percentOfTopObjectsTraversed = relativeIndex / (float) totalObjectsInTop;
 
             // Use the percent to get the value on the dampening curve and multiply it by the topObjectsYRotSkew setting.
-            return settingsSo.rotationDampeningCurve.Evaluate( percentOfTopObjectsTraversed ) * settingsSo.topObjectsYRotSkew;
+            return objectStackerSettingsSO.rotationDampeningCurve.Evaluate( percentOfTopObjectsTraversed ) * objectStackerSettingsSO.topObjectsYRotSkew;
         }
 
 #endregion
 
 
 #region Noise
-        
-        public float[,] GetNoiseMap2D() => noiseSettingsSO.GetNoiseMap2D( NoiseMapWidth, totalObjects );
 
-        private void GenerateNoiseMap()
-        {
-            // logger.LogStart();
+        // public float[,] GetNoiseMap2D() => noiseSettingsSO.GetNoiseMap2D( NoiseMapWidth, totalObjects );
+        public float[,] GetNoiseMap2D() => _noiseModule.Get2DNoiseMap();
 
-            noiseMap2D = GetNoiseMap2D();
+        // private void GenerateNoiseMap()
+        // {
+        //     // logger.LogStart();
+        //
+        //     noiseMap2D = GetNoiseMap2D();
+        //
+        //     // logger.LogEnd();
+        // }
 
-            // logger.LogEnd();
-        }
+        private float GetNoisePositionShiftValue( int i, AnimationCurve noiseCurve, float posShift, float firstObjectShiftValue ) => GetNoiseDrivePositionValue( i, noiseCurve, posShift ) / NoisePosShiftIncreaseFactor - firstObjectShiftValue;
 
-        private float GetNoisePositionShiftValue( int i, AnimationCurve noiseCurve, float posShift, float firstObjectShiftValue ) => 
-            GetNoiseDrivePositionValue( i, noiseCurve, posShift ) / NoisePosShiftIncreaseFactor - firstObjectShiftValue;
-
-        private float GetNoiseDrivePositionValue( int i, AnimationCurve curve, float axisNoise ) => 
-            GetCurveDampenedNoiseValueAtIndex( i, curve ) * axisNoise;
+        private float GetNoiseDrivePositionValue( int i, AnimationCurve curve, float axisNoise ) => GetCurveDampenedNoiseValueAtIndex( i, curve ) * axisNoise;
 
         private float GetNoiseDrivenRotationValue( int i )
         {
@@ -341,10 +368,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             float topObjectsYSkew = GetTopObjectsYRotSkew( i );
 
             // Get noise rotation skew.
-            float noiseValue = GetCurveDampenedNoiseValueAtIndex( i, settingsSo.noiseDampeningCurve ) * settingsSo.noiseMultiplier;
+            float noiseValue = GetCurveDampenedNoiseValueAtIndex( i, objectStackerSettingsSO.noiseDampeningCurve ) * objectStackerSettingsSO.noiseMultiplier;
 
             // Return combined y rotation adjustment.
-            return noiseValue + ySkew + topObjectsYSkew + settingsSo.yRotOffset;
+            return noiseValue + ySkew + topObjectsYSkew + objectStackerSettingsSO.yRotOffset;
         }
 
         private float GetCurveDampenedNoiseValueAtIndex( int i, AnimationCurve curve )
@@ -354,7 +381,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             float noiseCurveValue = curve.Evaluate( percentProgress );
 
             // Re-scope the noise sample from [0,1] to [-1,1] (This effectively centers the noise effect) then apply the curve value.
-            return noiseMap2D[0, i].Convert0ToMaxToNegMaxToPosMax() * noiseCurveValue;
+            // return noiseMap2D[0, i].Convert0ToMaxToNegMaxToPosMax() * noiseCurveValue;
+            return _noiseModule.GetNoiseAtIndex( 0, i ).Convert0ToMaxToNegMaxToPosMax() * noiseCurveValue;
         }
 
 #endregion
@@ -367,7 +395,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         {
             if( sceneViewVisualsMode != SceneViewDebugVisualsMode.WireFrames ) return;
 
-            if( noiseMap2D == null ) return;
+            if( _noiseModule?.Get2DNoiseMap() == null ) return;
 
             Matrix4x4 cachedMatrix = Gizmos.matrix;
             for ( int i = 0; i < objectStack.Count; i++ )
@@ -381,7 +409,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
                 Vector3 parentsPosition = transform.position;
                 Gizmos.DrawSphere( parentsPosition, 0.0002f );
 
-                float noiseSample = noiseMap2D[0, i];
+                // float noiseSample = noiseMap2D[0, i];
+                float noiseSample = _noiseModule.GetNoiseAtIndex( 0, i );
 
                 // Note that we don't need to use the PseudoTransform's position here because we've already transformed the Gizmos' space.
                 Gizmos.color = new Color( 1f, noiseSample, noiseSample );

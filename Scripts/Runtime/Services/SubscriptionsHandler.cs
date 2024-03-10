@@ -3,6 +3,7 @@ using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Format
 using UnityEngine;
 using UnityEngine.Events;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.TextFormatting;
+using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.EventAnalyzer;
 
 namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
 {
@@ -29,7 +30,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
             {
                 // Case 1: P is null and C is null.
                 //     This means settings have not been set so we do nothing.
-                logger.LogEnd( "Case 1: No valid objects, aborting." );
+                logger.LogEnd( $"{GetColoredStringViolet( "Case 1" )}: No valid objects, aborting." );
                 return previous;
             }
 
@@ -44,7 +45,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
                 previous = current;
                 SubscribeToEvents( current, subscribedAction );
 
-                logger.LogEnd( $"Case 2: New settings set, subscribing to {GetColoredStringYellow( current.name )}." );
+                logger.LogEnd( $"{GetColoredStringViolet( "Case 2" )}: New settings set, subscribing to {GetColoredStringYellow( current.name )}." );
                 return previous;
             }
 
@@ -57,7 +58,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
                 //         - set P to null
                 UnsubscribeToEvents( previous, subscribedAction );
 
-                logger.LogEnd( $"Case 2: Settings cleared. Unsubscribing from {GetColoredStringYellow( previous.name )}" );
+                logger.LogEnd( $"{GetColoredStringViolet( "Case 3" )}: Settings cleared. Unsubscribing from {GetColoredStringYellow( previous.name )}" );
                 // previous = null;
                 return null;
             }
@@ -73,33 +74,44 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
             //             - unsubscribe from P
             //             - set P equal to C
             //             - subscribedAction to C
-            logger.Log( $"Case 4: Settings changed. Unsubscribing from {GetColoredStringYellow( previous.name )} " +
-                            $"and subscribing to {GetColoredStringOrange( current.name )}." );
+            logger.Log( $"{GetColoredStringViolet( "Case 4" )}: Settings changed. Unsubscribing from {GetColoredStringOrange( previous.name )} " +
+                            $"and subscribing to {GetColoredStringGreenYellow( current.name )}." );
 
             UnsubscribeToEvents( previous, subscribedAction );
 
             previous = current;
             SubscribeToEvents( current, subscribedAction );
             
+            
             logger.LogEnd();
             return previous;
         }
 
-        private void SubscribeToEvents( SubscribableSO so, UnityAction subscribe )
+        private void UnsubscribeToEvents( SubscribableSO so, UnityAction subscribe )
         {
-            logger.LogStart( false,  $"Subscribing to {GetColoredStringBurlyWood( so.name )}" );
+            logger.LogStart( false, true, $"Unsubscribing from {GetColoredStringYellow( so.name )}" );
 
-            so.onSettingsUpdated += subscribe;
+            if( so.onSettingsUpdated == null )
+            {
+                logger.LogEnd( $"{GetColoredStringYellow( so.name )} had no subscribers." );
+                return;
+            }
+            so.onSettingsUpdated -= subscribe;
+            
+            PrintSubscribersForEvent( so.name, logger, so.onSettingsUpdated, nameof(so.onSettingsUpdated), "Readers" );
 
             logger.LogEnd();
         }
 
-        private void UnsubscribeToEvents( SubscribableSO so, UnityAction subscribe )
+        private void SubscribeToEvents( SubscribableSO so, UnityAction subscribe )
         {
-            logger.LogStart( false, $"Unsubscribing from {GetColoredStringYellow( so.name )}" );
+            logger.LogStart( false,  true, $"Subscribing to {GetColoredStringBurlyWood( so.name )}" );
 
-            if( so.onSettingsUpdated == null ) return;
-            so.onSettingsUpdated -= subscribe;
+            so.onSettingsUpdated += subscribe;
+
+            // string result = IsSubscribed( so.onSettingsUpdated, subscribe );
+            
+            PrintSubscribersForEvent( so.name, logger, so.onSettingsUpdated, nameof(so.onSettingsUpdated), "Readers" );
 
             logger.LogEnd();
         }

@@ -10,17 +10,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
 {
     [CustomEditor( typeof( FormattedLogger ) )]
     [CanEditMultipleObjects]
-    public class CustomLoggerEditor : UnityEditor.Editor
+    public class FormattedLoggerEditor : UnityEditor.Editor
     {
         private const string ShowLogsVarName = "showLogs";
+        private const string PadBlocksName = "padBlocks";
         private const string UseClassPrefixVarName = "useClassPrefix";
         private const string BoldMethodsVarName = "boldMethods";
         private const string BoldBlockMethodsVarName = "boldBlockMethods";
         private const string NicifiedNamesVarName = "nicifiedNames";
-        private const string IncludeStackTraceVarName = "includeStackTrace";
-        private const string FullPathNameVarName = "fullPathName";
-        private const string TargetClassVarName = "targetClass";
-        private const string TargetMethodVarName = "targetMethod";
+        
 
         private const string LogPrefixVarName = "logPrefix";
         private const string BlockDividerVarName = "blockDivider";
@@ -32,66 +30,51 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
 
         private const string BlockMethodColorVarName = "blockMethodColor";
         private const string MethodColorVarName = "methodColor";
-        private SerializedProperty _blockDividerProperty;
+        private const string UnityEventsColorVarName = "unityEventsColor";
+        private const string FocusColorVarName = "focusColor";
 
-        private SerializedProperty _blockMethodColorProperty;
+        private const string IncludeStackTraceVarName = "includeStackTrace";
+        private const string FullPathNameVarName = "fullPathName";
+        private const string TargetClassVarName = "targetClass";
+        private const string TargetMethodVarName = "targetMethod";
+        
+        private SerializedProperty _showLogsProperty;
+        private SerializedProperty _padBlocksProperty;
+        private SerializedProperty _useClassPrefixProperty;
         private SerializedProperty _boldBlockMethodsProperty;
         private SerializedProperty _boldMethodsProperty;
+        private SerializedProperty _nicifiedNamesProperty;
+        
+        private SerializedProperty _logPrefixProperty;
+        private SerializedProperty _blockDividerProperty;
+        private SerializedProperty _indentMarkerProperty;
+        private SerializedProperty _methodDividersProperty;
+        private SerializedProperty _logBlockStartProperty;
+        private SerializedProperty _logBlockEndProperty;
+        private SerializedProperty _logEventPrefixProperty;
+        
+        private SerializedProperty _blockMethodColorProperty;
+        private SerializedProperty _methodColorProperty;
+        private SerializedProperty _unityEventsColorProperty;
+        private SerializedProperty _focusColorProperty;
 
-        private bool _debugFoldoutToggle;
         private SerializedProperty _fullPathNameProperty;
         private SerializedProperty _includeStackTraceProperty;
-        private SerializedProperty _indentMarkerProperty;
-        private SerializedProperty _logBlockEndProperty;
-        private SerializedProperty _logBlockStartProperty;
-        private SerializedProperty _logEventPrefixProperty;
-
-        private SerializedProperty _logPrefixProperty;
-        private SerializedProperty _methodColorProperty;
-        private SerializedProperty _methodDividersProperty;
-        private SerializedProperty _nicifiedNamesProperty;
-
-        private SerializedProperty _showLogsProperty;
         private SerializedProperty _targetClassProperty;
         private SerializedProperty _targetMethodProperty;
 
         private FormattedLogger _targetScript;
-        private SerializedProperty _useClassPrefixProperty;
-        public Texture buttonTexture;
+        
+        // public Texture buttonTexture;
+        private bool _debugFoldoutToggle;
 
+#region LifeCycle
 
         private void OnEnable()
         {
             _targetScript = (FormattedLogger) target;
 
-            _showLogsProperty = serializedObject.FindProperty( ShowLogsVarName );
-            _useClassPrefixProperty = serializedObject.FindProperty( UseClassPrefixVarName );
-            _boldMethodsProperty = serializedObject.FindProperty( BoldMethodsVarName );
-            _boldBlockMethodsProperty = serializedObject.FindProperty( BoldBlockMethodsVarName );
-            _nicifiedNamesProperty = serializedObject.FindProperty( NicifiedNamesVarName );
-            _includeStackTraceProperty = serializedObject.FindProperty( IncludeStackTraceVarName );
-            _fullPathNameProperty = serializedObject.FindProperty( FullPathNameVarName );
-            _targetClassProperty = serializedObject.FindProperty( TargetClassVarName );
-            _targetMethodProperty = serializedObject.FindProperty( TargetMethodVarName );
-
-            _logPrefixProperty = serializedObject.FindProperty( LogPrefixVarName );
-            _blockDividerProperty = serializedObject.FindProperty( BlockDividerVarName );
-            _indentMarkerProperty = serializedObject.FindProperty( IndentMarkerVarName );
-            _methodDividersProperty = serializedObject.FindProperty( MethodDividersVarName );
-            _logBlockStartProperty = serializedObject.FindProperty( LogBlockStartVarName );
-            _logBlockEndProperty = serializedObject.FindProperty( LogBlockEndVarName );
-            _logEventPrefixProperty = serializedObject.FindProperty( LogEventPrefixVarName );
-
-            _blockMethodColorProperty = serializedObject.FindProperty( BlockMethodColorVarName );
-            _methodColorProperty = serializedObject.FindProperty( MethodColorVarName );
-
-            // _buttonTextureProperty = serializedObject.FindProperty( ButtonTextureVarName );
-
-            // _colorPickerHandler = new ColorPickerHandler( 
-            //     new Vector2( 10f, 10f ), 
-            //     350f, 400f, 
-            //     5
-            // );
+            LoadProperties();
 
             // Subscribe to the color picker handler to be notified when the color button returns a color.
             ColorPickerHandler.OnColorSelected += OnColorSelection;
@@ -101,6 +84,58 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
         {
             ColorPickerHandler.OnColorSelected -= OnColorSelection;
         }
+
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
+
+            DrawClassMembers();
+            EditorGUILayout.Space();
+            DrawDefaultsButton();
+            EditorGUILayout.Space();
+            DrawDebugSection();
+
+            serializedObject.ApplyModifiedProperties();
+        }
+
+#endregion
+
+        
+#region Initialization
+
+        private void LoadProperties()
+        {
+            _showLogsProperty = serializedObject.FindProperty( ShowLogsVarName );
+            _padBlocksProperty = serializedObject.FindProperty( PadBlocksName );
+            _useClassPrefixProperty = serializedObject.FindProperty( UseClassPrefixVarName );
+            _boldMethodsProperty = serializedObject.FindProperty( BoldMethodsVarName );
+            _boldBlockMethodsProperty = serializedObject.FindProperty( BoldBlockMethodsVarName );
+            _nicifiedNamesProperty = serializedObject.FindProperty( NicifiedNamesVarName );
+
+            _blockMethodColorProperty = serializedObject.FindProperty( BlockMethodColorVarName );
+            _methodColorProperty = serializedObject.FindProperty( MethodColorVarName );
+            _unityEventsColorProperty = serializedObject.FindProperty( UnityEventsColorVarName );
+            _focusColorProperty = serializedObject.FindProperty( FocusColorVarName );
+
+            _logPrefixProperty = serializedObject.FindProperty( LogPrefixVarName );
+            _blockDividerProperty = serializedObject.FindProperty( BlockDividerVarName );
+            _indentMarkerProperty = serializedObject.FindProperty( IndentMarkerVarName );
+            _methodDividersProperty = serializedObject.FindProperty( MethodDividersVarName );
+            _logBlockStartProperty = serializedObject.FindProperty( LogBlockStartVarName );
+            _logBlockEndProperty = serializedObject.FindProperty( LogBlockEndVarName );
+            _logEventPrefixProperty = serializedObject.FindProperty( LogEventPrefixVarName );
+
+            
+            _includeStackTraceProperty = serializedObject.FindProperty( IncludeStackTraceVarName );
+            _fullPathNameProperty = serializedObject.FindProperty( FullPathNameVarName );
+            _targetClassProperty = serializedObject.FindProperty( TargetClassVarName );
+            _targetMethodProperty = serializedObject.FindProperty( TargetMethodVarName );
+        }
+
+#endregion
+
+
+#region EventMethods
 
         /// <summary>
         ///     This method will be called when the color picker handler has received a color from the popup window, which it passes as a parameter in case it's needed elsewhere.
@@ -115,18 +150,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
             Repaint();
         }
 
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
+#endregion
 
-            DrawClassMembers();
-            EditorGUILayout.Space();
-            DrawResetButton();
-            EditorGUILayout.Space();
-            DrawDebugSection();
 
-            serializedObject.ApplyModifiedProperties();
-        }
+#region InspectorDrawing
 
         private void DrawClassMembers()
         {
@@ -136,6 +163,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
             EditorGUI.indentLevel++;
             {
                 EditorGUILayout.PropertyField( _showLogsProperty );
+                EditorGUILayout.PropertyField( _padBlocksProperty );
                 EditorGUILayout.PropertyField( _useClassPrefixProperty );
                 EditorGUILayout.PropertyField( _boldMethodsProperty );
                 EditorGUILayout.PropertyField( _boldBlockMethodsProperty );
@@ -150,6 +178,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
             {
                 ColorPickerHandler.DrawPropertyWithColorPicker( _blockMethodColorProperty, new GUIContent( "Block Methods" ) );
                 ColorPickerHandler.DrawPropertyWithColorPicker( _methodColorProperty, new GUIContent( "Basic Methods" ) );
+                ColorPickerHandler.DrawPropertyWithColorPicker( _unityEventsColorProperty, new GUIContent( "Unity Event Methods" ) );
+                ColorPickerHandler.DrawPropertyWithColorPicker( _focusColorProperty, new GUIContent( "Focused Methods" ) );
             }
             EditorGUI.indentLevel--;
 
@@ -194,11 +224,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
             EditorGUI.indentLevel--;
         }
 
-        private void DrawResetButton()
+        private void DrawDefaultsButton()
         {
             Rect buttonRect = EditorGUILayout.GetControlRect();
             buttonRect.xMin += EditorGUIUtility.labelWidth;
             if( GUI.Button( buttonRect, "Defaults" ) ) _targetScript.SetValuesToDefault();
         }
+
+#endregion
     }
 }

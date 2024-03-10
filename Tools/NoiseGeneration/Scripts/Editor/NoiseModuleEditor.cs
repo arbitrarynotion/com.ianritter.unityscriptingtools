@@ -9,6 +9,7 @@ using static UnityEditor.EditorGUILayout;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.EditorUIFormatting;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System.SystemConstants;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.UIRectGraphics;
+using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Graphics.UI.EditorDividerGraphics;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Editor
 {
@@ -16,6 +17,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
     public class NoiseModuleEditor : UnityEditor.Editor
     {
         private SerializedProperty _noiseSettingsSOProp;
+        private SerializedProperty _loggerProp;
+        private NoiseModule _noiseModule;
         
         private UnityEditor.Editor _noiseSettingsSOEditor;
         private Object _noiseSettingsSOEditorTarget;
@@ -24,14 +27,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
         private bool _showNoiseSettings = true;
 
-        // UI Formatting
-        // private const float VerticalSeparator = 8f;
-        private const float ParentFrameWidth = 2f;
-        private const float ChildFrameWidth = 2f;
-        // private const float FoldoutFramePadding = 2f;
-        private const float EditorFrameBottomPadding = 10f;
-        private const ElementFrameType FoldoutFrameType = ElementFrameType.LeftOnly;
-        private const ElementFrameType EditorFrameType = ElementFrameType.PartialLeftFullBottom;
+        // // UI Formatting
+        // // private const float VerticalSeparator = 8f;
+        // private const float ParentFrameWidth = 2f;
+        // private const float ChildFrameWidth = 2f;
+        // // private const float FoldoutFramePadding = 2f;
+        // private const float EditorFrameBottomPadding = 10f;
+        // private const ElementFrameType FoldoutFrameType = ElementFrameType.LeftOnly;
+        // private const ElementFrameType EditorFrameType = ElementFrameType.PartialLeftFullBottom;
 
         private void OnEnable()
         {
@@ -40,10 +43,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
             _logger.LogStart();
             
-            _noiseSettingsSOProp = serializedObject.FindProperty( "settingsSo" );
+            _noiseModule = target as NoiseModule;
+
+            _noiseSettingsSOProp = serializedObject.FindProperty( "noiseSettingsSo" );
+            _loggerProp = serializedObject.FindProperty( "logger" );
             _noiseSettingsEmbeddedSOEditor = new EmbedSOEditor( _noiseSettingsSOProp );
             
             InitializeEmbeddedEditors();
+
+            _logger.LogEnd();
         }
         
         private void InitializeEmbeddedEditors()
@@ -58,11 +66,22 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
             serializedObject.DrawScriptField();
             
             PropertyField( _noiseSettingsSOProp );
-            DrawSettingsSoInspector( ref _showNoiseSettings, "Noise Settings", _noiseSettingsEmbeddedSOEditor );
+
+            LabelField( "Debug", EditorStyles.boldLabel );
+            EditorGUI.indentLevel++;
+            {
+                PropertyField( _loggerProp );
+            }
+            EditorGUI.indentLevel--;
+            
+            DrawSettingsSoInspector( ref _showNoiseSettings, "Noise Settings SO", _noiseSettingsEmbeddedSOEditor );
             if ( _noiseSettingsSOProp.objectReferenceValue != null && _showNoiseSettings )
                 Space( VerticalSeparator );
             
+            
             if( !serializedObject.ApplyModifiedProperties() ) return;
+            
+            // _noiseModule.OnDataChanged();
 
             _logger.Log( "Change in Settings SO detected. Repainting Scene Views." );
             SceneView.RepaintAll();
@@ -76,17 +95,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
                 HelpBox( "Populate the object field to display the object's settings.", MessageType.Info );
                 return;
             }
-
-            // Draw Foldout with frame.
-            // EditorGUI.indentLevel++;
-            // Rect labelRect = GetFramedControlRect( Color.gray, FoldoutFrameType, 0f, true );
-            // toggle = EditorGUI.Foldout( labelRect, toggle, title, true );
-            // if ( !toggle ) return;
+            
+            DrawDivider( Color.gray, 2f, 19f, 3f, 12f, 8f );
+            
             toggle = DrawFoldoutSection( title, FoldoutFrameType, toggle );
             if( !toggle ) return;
-
-            // EditorGUI.indentLevel--;
-
 
             // Space( VerticalSeparator );
 

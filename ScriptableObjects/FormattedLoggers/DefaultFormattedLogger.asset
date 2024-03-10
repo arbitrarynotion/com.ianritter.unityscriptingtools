@@ -13,48 +13,51 @@ MonoBehaviour:
   m_Name: DefaultFormattedLogger
   m_EditorClassIdentifier: 
   showLogs: 1
+  padBlocks: 0
   useClassPrefix: 1
-  boldMethods: 1
   boldBlockMethods: 1
+  boldMethods: 1
   nicifiedNames: 1
-  includeStackTrace: 0
-  fullPathName: 0
-  targetClass: 
-  targetMethod: 
-  logPrefix:
-    toggle: 1
-    customColor:
-      name: Default
-      color: {r: 0.21226415, g: 0.8490566, b: 0.75683147, a: 1}
-  blockDivider:
-    toggle: 1
-    customColor:
-      name: "\u2015\u2015\u2015\u2015\u2015"
-      color: {r: 0, g: 0, b: 0, a: 1}
-  indentMarker:
-    toggle: 1
-    customColor:
-      name: '|'
-      color: {r: 0, g: 0, b: 0, a: 1}
-  methodDividers:
-    toggle: 1
-    customColor:
-      name: .
-      color: {r: 0, g: 0, b: 0, a: 1}
-  logBlockStart:
-    toggle: 1
-    customColor:
-      name: "\u25BA"
-      color: {r: 0.29803923, g: 0.8, b: 0.29803923, a: 1}
-  logBlockEnd:
-    toggle: 1
-    customColor:
-      name: "\u25C0"
-      color: {r: 0.29803923, g: 0.6, b: 0.9019608, a: 1}
-  logEventPrefix:
-    toggle: 1
-    customColor:
-      name: '***'
-      color: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
   blockMethodColor: {r: 1, g: 1, b: 0, a: 1}
   methodColor: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
+  unityEventsColor: {r: 0, g: 0, b: 0, a: 0}
+  focusColor: {r: 0, g: 0, b: 0, a: 0}
+  logPrefix:
+    customColor:
+      color: {r: 0.21226415, g: 0.8490566, b: 0.75683147, a: 1}
+      name: Default
+    toggle: 1
+  blockDivider:
+    customColor:
+      color: {r: 0, g: 0, b: 0, a: 1}
+      name: "\u2015\u2015\u2015\u2015\u2015"
+    toggle: 1
+  indentMarker:
+    customColor:
+      color: {r: 0, g: 0, b: 0, a: 1}
+      name: '|'
+    toggle: 1
+  methodDividers:
+    customColor:
+      color: {r: 0, g: 0, b: 0, a: 1}
+      name: .
+    toggle: 1
+  logBlockStart:
+    customColor:
+      color: {r: 0.29803923, g: 0.8, b: 0.29803923, a: 1}
+      name: "\u25BA"
+    toggle: 1
+  logBlockEnd:
+    customColor:
+      color: {r: 0.29803923, g: 0.6, b: 0.9019608, a: 1}
+      name: "\u25C0"
+    toggle: 1
+  logEventPrefix:
+    customColor:
+      color: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
+      name: '***'
+    toggle: 1
+  targetClass: 
+  targetMethod: 
+  fullPathName: 0
+  includeStackTrace: 0

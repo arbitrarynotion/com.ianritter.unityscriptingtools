@@ -9,7 +9,10 @@
         // Incomplete Rects
         SkipTop,
         SkipBottom,
+        SkipRight,
         LeftAndBottomOnly,
+        LeftAndTopOnly,
+        TopAndBottomOnly,
 
         // Single Edge Rects
         BottomOnly,

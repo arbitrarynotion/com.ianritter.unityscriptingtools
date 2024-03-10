@@ -84,11 +84,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Graphics.UI
 
             // Set the frame rect to have an indent, with foldouts needing one less to fit their arrow.
             var frameRect = new Rect( controlRect );
-            frameRect.xMin += ( isFoldout ? EditorGUI.indentLevel - 1 : EditorGUI.indentLevel ) * 15f;
+            // frameRect.xMin += ( isFoldout ? EditorGUI.indentLevel - 1 : EditorGUI.indentLevel ) * 15f;
+            frameRect.xMin += EditorGUI.indentLevel * 15f;
             DrawRect( frameRect, frameType, frameColor, backgroundColor, frameWidth, showBackground );
 
             // Prep the return rect to have padding on the left side to move the text away from the frame.
             controlRect.xMin += padding + leftPadding;
+            if( isFoldout )
+                controlRect.xMin += 15f;
             return controlRect;
         }
     }
