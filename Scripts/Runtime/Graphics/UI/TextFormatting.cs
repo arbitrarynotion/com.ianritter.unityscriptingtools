@@ -1,3 +1,4 @@
+using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger;
 using UnityEngine;
 
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.CustomColors.PresetColors;

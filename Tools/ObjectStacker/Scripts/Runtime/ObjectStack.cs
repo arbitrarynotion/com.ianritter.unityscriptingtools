@@ -17,45 +17,34 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
     public class ObjectStack : PrefabSpawnerRoot, IObjectStack
     {
 #region DataMembers
+        private const float NoisePosShiftIncreaseFactor = 100f;
+        private const int NoiseMapWidth = 1;
 
-        [SerializeField] [Delayed] private int totalObjects = 3;
-
+        
+        [SerializeField] [Delayed] private int totalObjects = 52;
         // The list that hold the noise transform effects for all positions in the stack.
         [HideInInspector] [SerializeField] private List<PseudoTransform> objectStack = new List<PseudoTransform>();
-
         [SerializeField] private ObjectStackerSettingsSO objectStackerSettingsSO;
-
-        // [SerializeField] private NoiseSettingsSO noiseSettingsSO;
-
         [SerializeField] private SceneViewDebugVisualsMode sceneViewVisualsMode = SceneViewDebugVisualsMode.Off;
         [SerializeField] private GameObject prefab;
         [SerializeField] private FormattedLogger logger;
-
-
+        
         /// <summary>
         ///     As changes in settings are handled by an event subscribed to the settings so, the only reason this class should<br/>
         ///     update the stack is when the object total is changed. The var should be set to true when that occurs and set to<br/>
         ///     false after the update is performed. This is an optimization to avoid recreating the stack every frame.
         /// </summary>
         private bool _updateRequired;
-
-        // [SerializeField] [HideInInspector] private float[,] noiseMap2D;
-        private const int NoiseMapWidth = 1;
-
+        
         private int _currentStackPosition;
-
-        private const float NoisePosShiftIncreaseFactor = 100f;
-
+        
         // SOs and subscriptions
         private ObjectStackerSettingsSO _previousObjectStackerSettingsSo;
 
-        // private NoiseSettingsSO _previousNoiseSettingsSo;
         private SubscriptionsHandler _subscriptionsHandler;
 
         // Conversion to Noise Module
         private INoiseSource _noiseModule;
-
-        // [SerializeField] [HideInInspector] private NoiseSettingsSO noiseSettingsSO;
 
 #endregion
 
@@ -114,6 +103,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         private void OnValidate()
         {
+            if( _subscriptionsHandler == null ) return;
+
             _updateRequired = true;
             UpdateSubscriptions();
             UpdateStack();
@@ -133,6 +124,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             logger.LogObjectAssignmentResult( nameof( _noiseModule ), _noiseModule == null, FormattedLogType.Standard );
 
             _noiseModule.Initialize( NoiseMapWidth, totalObjects, OnNoiseModuleUpdated, OnSettingsSOUpdated );
+            // _noiseModule.Initialize( totalObjects, totalObjects, OnNoiseModuleUpdated, OnSettingsSOUpdated );
         }
 
         private void OnNoiseModuleUpdated()
@@ -141,7 +133,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
             // Get the new settings SO.
             // noiseSettingsSO = _noiseModule.GetNoiseSettingsSO();
-            logger.Log( $"Noise module noise settings SO was changed to {GetColoredStringGreenYellow( _noiseModule.GetNoiseSettingsSO().name )}" );
+            // logger.Log( $"Noise module noise settings SO was changed to {GetColoredStringGreenYellow( _noiseModule.GetNoiseSettingsSO().name )}" );
 
             // Update the subscriptions.
             UpdateSubscriptions();
@@ -221,6 +213,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         {
             // GenerateNoiseMap();
             _noiseModule.UpdateNoiseMapSize( NoiseMapWidth, totalObjects );
+            // _noiseModule.UpdateNoiseMapSize( totalObjects, totalObjects );
             UpdatePseudoTransforms();
         }
 
@@ -268,6 +261,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         private void UpdatePseudoTransforms()
         {
+            // This is required when a noise module update is triggered when no object stacker settings SO is set.
+            if( objectStackerSettingsSO == null ) return;
+            
             // logger.LogStart();
 
             float currentOffset = 0f;
@@ -344,19 +340,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 
 #region Noise
-
-        // public float[,] GetNoiseMap2D() => noiseSettingsSO.GetNoiseMap2D( NoiseMapWidth, totalObjects );
-        public float[,] GetNoiseMap2D() => _noiseModule.Get2DNoiseMap();
-
-        // private void GenerateNoiseMap()
-        // {
-        //     // logger.LogStart();
-        //
-        //     noiseMap2D = GetNoiseMap2D();
-        //
-        //     // logger.LogEnd();
-        // }
-
+        
         private float GetNoisePositionShiftValue( int i, AnimationCurve noiseCurve, float posShift, float firstObjectShiftValue ) => GetNoiseDrivePositionValue( i, noiseCurve, posShift ) / NoisePosShiftIncreaseFactor - firstObjectShiftValue;
 
         private float GetNoiseDrivePositionValue( int i, AnimationCurve curve, float axisNoise ) => GetCurveDampenedNoiseValueAtIndex( i, curve ) * axisNoise;
@@ -381,7 +365,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             float noiseCurveValue = curve.Evaluate( percentProgress );
 
             // Re-scope the noise sample from [0,1] to [-1,1] (This effectively centers the noise effect) then apply the curve value.
-            // return noiseMap2D[0, i].Convert0ToMaxToNegMaxToPosMax() * noiseCurveValue;
             return _noiseModule.GetNoiseAtIndex( 0, i ).Convert0ToMaxToNegMaxToPosMax() * noiseCurveValue;
         }
 

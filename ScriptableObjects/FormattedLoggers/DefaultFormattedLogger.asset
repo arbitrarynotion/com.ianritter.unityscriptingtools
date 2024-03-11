@@ -57,6 +57,11 @@ MonoBehaviour:
       color: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
       name: '***'
     toggle: 1
+  focusAccent:
+    customColor:
+      color: {r: 1, g: 1, b: 1, a: 1}
+      name: "\u2022\u2022\u2022\u2022"
+    toggle: 1
   targetClass: 
   targetMethod: 
   fullPathName: 0

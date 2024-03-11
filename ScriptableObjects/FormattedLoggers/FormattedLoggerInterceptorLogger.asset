@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 875e9ed44325b8642b2e6bb4646bbb9c, type: 3}
-  m_Name: ObjectStackerLogger
+  m_Name: FormattedLoggerInterceptorLogger
   m_EditorClassIdentifier: 
   showLogs: 1
   padBlocks: 0
   useClassPrefix: 1
-  boldBlockMethods: 1
-  boldMethods: 1
+  boldBlockMethods: 0
+  boldMethods: 0
   nicifiedNames: 1
   blockMethodColor: {r: 1, g: 1, b: 0, a: 1}
   methodColor: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
@@ -24,8 +24,8 @@ MonoBehaviour:
   focusColor: {r: 0, g: 1, b: 1, a: 1}
   logPrefix:
     customColor:
-      color: {r: 0.21226415, g: 0.8490566, b: 0.75683147, a: 1}
-      name: OS
+      color: {r: 0.49, g: 0.99, b: 0, a: 1}
+      name: FL
     toggle: 1
   blockDivider:
     customColor:

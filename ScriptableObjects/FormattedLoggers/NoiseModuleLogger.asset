@@ -15,8 +15,8 @@ MonoBehaviour:
   showLogs: 1
   padBlocks: 0
   useClassPrefix: 1
-  boldBlockMethods: 0
-  boldMethods: 0
+  boldBlockMethods: 1
+  boldMethods: 1
   nicifiedNames: 1
   blockMethodColor: {r: 1, g: 1, b: 0, a: 1}
   methodColor: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
@@ -56,6 +56,11 @@ MonoBehaviour:
     customColor:
       color: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
       name: '***'
+    toggle: 1
+  focusAccent:
+    customColor:
+      color: {r: 1, g: 1, b: 1, a: 1}
+      name: "\u2022\u2022\u2022\u2022"
     toggle: 1
   targetClass: 
   targetMethod: 

@@ -1,4 +1,5 @@
 using System;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditors;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMethods;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.Enums;
 using Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Runtime;
@@ -9,20 +10,11 @@ using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Editor
 {
-    [CustomEditor( typeof( ObjectStackerSettingsSO ) )]
-    public class ObjectStackerSettingsSOEditor : UnityEditor.Editor
+    [CustomEditor( typeof( ObjectStackerSettingsSO ) ), CanEditMultipleObjects]
+    public class ObjectStackerSettingsSOEditor : SubscribableSOEditor
     {
 #region DataMembers
-
-        // Noise map visualization
-        // private SerializedProperty _showNoiseMeterProp;
-        // private SerializedProperty _noiseMapTopMarginProp;
-        // private SerializedProperty _noiseMapRightMarginProp;
-        // private SerializedProperty _noiseMapWidthProp;
-        // private SerializedProperty _noiseMapLabelWidthProp;
-        // private SerializedProperty _noiseMapLabelRightMarginProp;
-
-
+        
         // Noise Driven Effects
         // Y Axis Rotation
         private SerializedProperty _lockBottomObjectProp;
@@ -49,7 +41,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private SerializedProperty _verticalOffsetProp;
 
         // Foldout Toggles
-        private bool _noisePreviewSettingsToggle = true;
+        // private bool _noisePreviewSettingsToggle = true;
         private bool _noiseDrivenEffectsToggle = true;
         private bool _manualAdjustmentToggle = true;
 
@@ -57,27 +49,17 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 #region LifeCycle
 
-        private void OnEnable()
+        protected override void OnEnableLast()
         {
-            // _showNoiseMeterProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.showNoiseMeter ) );
-            // _noiseMapTopMarginProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapTopMargin ) );
-            // _noiseMapRightMarginProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapRightMargin ) );
-            // _noiseMapWidthProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapWidth ) );
-            // _noiseMapLabelWidthProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelWidth ) );
-            // _noiseMapLabelRightMarginProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMapLabelRightMargin ) );
-            
-            
             _lockBottomObjectProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.lockBottomObject ) );
             _noiseMultiplierProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMultiplier ) );
             _noiseDampeningCurveProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseDampeningCurve ) );
-
-
+            
             _xAxisNoiseProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.posXNoiseShift ) );
             _yAxisNoiseProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.posZNoiseShift ) );
             _xAxisCurveProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.posXNoiseCurve ) );
             _yAxisCurveProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.posZNoiseCurve ) );
-
-
+            
             _faceUpProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.faceUp ) );
             _deckYRotSkewProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.deckYRotSkew ) );
             _topSkewCardCountProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.topDownSkewPercent ) );
@@ -88,7 +70,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             _verticalOffsetProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.verticalOffset ) );
         }
 
-        public override void OnInspectorGUI()
+        protected override void OnInspectorGUIFirst()
         {
             serializedObject.Update();
 
@@ -111,6 +93,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             {
                 serializedObject.DrawScriptField();
                 DrawNoiseDrivenEffectsSection();
+                Space( BetweenSectionPadding );
                 DrawManualAdjustmentsSection();
             }
             EditorGUI.indentLevel--;
@@ -142,6 +125,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             DrawManualRotationSection();
             Space( BetweenSectionPadding );
             DrawManualPositionSection();
+            Space( BetweenSectionPadding );
         }
 
         private void DrawYAxisRotationalSection()
@@ -241,21 +225,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             }
             EditorGUI.indentLevel--;
         }
-        
-        
-        // private void DrawNoisePreviewSettingsSection()
-        // {
-        //     _noisePreviewSettingsToggle = DrawFoldoutSection( "Noise Meter Settings", SubFoldoutFrameType, _noisePreviewSettingsToggle );
-        //     if( !_noisePreviewSettingsToggle ) return;
-        //     PropertyField( _showNoiseMeterProp, new GUIContent( "Noise Meter" ) );
-        //     PropertyField( _noiseMapTopMarginProp, new GUIContent( "Top Margin" ) );
-        //     PropertyField( _noiseMapRightMarginProp, new GUIContent( "Right Margin" ) );
-        //     PropertyField( _noiseMapWidthProp, new GUIContent( "Width" ) );
-        //     PropertyField( _noiseMapLabelWidthProp, new GUIContent( "Label Width" ) );
-        //     PropertyField( _noiseMapLabelRightMarginProp, new GUIContent( "Label Right Margin" ) );
-        //
-        //     Space( BetweenSectionPadding );
-        // }
 
 #endregion
     }

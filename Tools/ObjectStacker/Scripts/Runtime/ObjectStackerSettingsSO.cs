@@ -8,18 +8,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
     {
 
 #region DataMembers
-        
-#region NoiseSettings
-
-        public bool showNoiseMeter = true;
-        // Scene GUI Formatting
-        public float noiseMapTopMargin = 125f;
-        public float noiseMapRightMargin = 43f;
-        public float noiseMapWidth = 25f;
-        public float noiseMapLabelWidth = 80f;
-        public float noiseMapLabelRightMargin = 0f;
-
-#endregion
 
 #region NoiseDrivenEffects
         public bool lockBottomObject = false;

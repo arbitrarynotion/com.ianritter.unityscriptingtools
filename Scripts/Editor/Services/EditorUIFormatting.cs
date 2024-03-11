@@ -17,7 +17,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
         public const ElementFrameType SubLabelHeadingFrameType = ElementFrameType.None;
         public const ElementFrameType EditorFrameType = ElementFrameType.PartialLeftFullBottom;
         
-        public const float ParentFrameWidth = 1f;
+        public const float ParentFrameWidth = 2f;
         public const float ChildFrameWidth = 2f;
         
         public const float TitleFrameBottomPadding = 2f;

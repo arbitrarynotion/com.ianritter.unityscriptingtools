@@ -30,11 +30,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
             bool blockStart,
             bool nicifyName,
             bool isFocused,
-            FormattedLogType logType = FormattedLogType.Standard,
-            bool printStackTrace = false,
-            bool fullPathName = false,
-            string targetClassName = "",
-            string targetMethodName = ""
+            FormattedLogType logType,
+            bool printStackTrace,
+            bool fullPathName,
+            string targetClassName,
+            string targetMethodName
         )
         {
             _blockStart = blockStart;
@@ -45,7 +45,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
             string methodName = MetaDataGathering.GetMethodName( StackTraceIndex, printStackTrace, fullPathName, targetMethodName );
             MethodNameRaw = methodName;
             MethodName = nicifyName ? NicifyVariableName( methodName ) : methodName;
-            if( isFocused ) MethodName = $"<b>!!!! {MethodName} !!!!</b>";
+            // if( isFocused ) MethodName = $"<b>!!!! {MethodName} !!!!</b>";
             CallingClassName = MetaDataGathering.GetCallingClassName( StackTraceIndex, printStackTrace, fullPathName, targetClassName );
 
             // if ( isFocused ) Debug.LogWarning( $"{GetColoredStringMagenta( MethodName )}'s focus was set to true in Method Entry!" );
@@ -59,20 +59,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
         public bool IsBlockStart() => _blockStart;
         public bool IsFocused() => _isFocused;
 
-        public void IncrementTabLevel()
-        {
-            // Debug.Log( $"{MethodName}: Incrementing tab level." );
-            ++_tabLevel;
-        }
-
-        // public void IncrementLogCount() => _logCount++;
-        //
-        // public int GetLogCount() => _logCount;
-
+        public void IncrementTabLevel() => ++_tabLevel;
         public void DecrementTabLevel() => _tabLevel = Mathf.Max( 0, _tabLevel - 1 );
-
         public int GetTabLevel() => _tabLevel;
-
         public void ResetTabLevel() => _tabLevel = 0;
 
         public FormattedLogType GetLogType() => _logType;

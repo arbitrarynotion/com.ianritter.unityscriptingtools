@@ -21,6 +21,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public SubscribableSO UpdateSubscriptions( SubscribableSO previous, SubscribableSO current, UnityAction subscribedAction )
         {
+            if( logger == null )
+            {
+                Debug.LogWarning( "Warning! SubscriptionHandler UpdateSubscriptions is being called before Initialize so the logger isn't defined!" );
+                return null;
+            }
+            
             logger.LogStart( true );
 
             // Let: previous = P, and current = C
@@ -79,6 +85,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
 
             UnsubscribeToEvents( previous, subscribedAction );
 
+            logger.Log( $"Unsubscribed from {GetColoredStringGoldenrod( previous.name )}, now subscribing to {GetColoredStringGreenYellow( current.name )}." );
+            
             previous = current;
             SubscribeToEvents( current, subscribedAction );
             
@@ -111,7 +119,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
 
             // string result = IsSubscribed( so.onSettingsUpdated, subscribe );
             
-            PrintSubscribersForEvent( so.name, logger, so.onSettingsUpdated, nameof(so.onSettingsUpdated), "Readers" );
+            // PrintSubscribersForEvent( so.name, logger, so.onSettingsUpdated, nameof(so.onSettingsUpdated), "Readers" );
 
             logger.LogEnd();
         }

@@ -1,9 +1,10 @@
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services;
+using UnityEditor;
 using UnityEngine;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Runtime
 {
-    [CreateAssetMenu(menuName = "Utilities/Noise Settings")]
+    [CreateAssetMenu(menuName = "Utilities/Noise Settings"), CanEditMultipleObjects]
     public class NoiseSettingsSO : SubscribableSO
     {
         public int seed = 31;
@@ -14,29 +15,5 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         [Range( 1.0f, 8.0f )] public int octaves = 7;
         [Range( 0.5f, 1.0f )] public float persistence = 1f;
         [Range( 0.5f, 1.5f )] public float lacunarity = 1.433f;
-        
-        public bool showNoiseMeter = true;
-        // Scene GUI Formatting
-        public float noiseMapTopMargin = 125f;
-        public float noiseMapRightMargin = 43f;
-        public float noiseMapWidth = 25f;
-        public float noiseMapLabelWidth = 80f;
-        public float noiseMapLabelRightMargin = 0f;
-        
-        public float[,] GetNoiseMap2D( int mapWidth, int mapHeight ) =>
-            NoiseGenerator.GetNoiseMap(
-                mapWidth,
-                mapHeight,
-                seed,
-                noiseScale,
-                octaves,
-                persistence,
-                lacunarity,
-                new Vector2
-                ( 
-                    noiseOffsetHorizontal, 
-                    noiseOffsetVertical 
-                )
-            );
     }
 }

@@ -15,16 +15,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         ///     left side that indicate where the objects are sampling the noise.
         /// </summary>
         public static void DrawSceneViewNoiseMapPreview
-        (
-            Rect positionRect,
-            float[,] noiseMap,
-            Color lowColor,
-            Color highColor,
-            int totalSamples,
-            Color frameColor,
-            float frameThickness = 2f,
-            ScaleMode scaleMode = ScaleMode.ScaleAndCrop
-        )
+            (
+                Rect positionRect,
+                float[,] noiseMap,
+                Color lowColor,
+                Color highColor,
+                Color frameColor,
+                float frameThickness = 2f,
+                ScaleMode scaleMode = ScaleMode.ScaleAndCrop
+            )
         {
             Handles.BeginGUI();
             {
@@ -33,30 +32,36 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
                 EditorGUI.DrawPreviewTexture( positionRect, noiseMap2D, null, scaleMode, 0.0f, -1 );
                 DrawRectOutline( positionRect, frameColor, frameThickness );
 
-                var nodeRect = new Rect( positionRect )
-                {
-                    width = 5,
-                    height = 2
-                };
-                nodeRect.x -= 3f;
-
-                // Make the height half of the current view port height.
-                float variableHeight = Camera.current.pixelRect.height / 2f;
-
-                // Evenly space the ticks out.
-                float spacing = variableHeight / noiseMap2D.height;
-
-                // Nudge the starting point down half the height of a separator to center the ticks.
-                nodeRect.y += spacing / 2f;
-
-                // Place ticks evenly spaced along the left edge of the preview border.
-                for ( int x = 0; x < totalSamples; x++ )
-                {
-                    DrawRectOutline( nodeRect, frameColor );
-                    nodeRect.y += spacing;
-                }
+                DrawBorderTicks( positionRect, noiseMap2D, frameColor );
             }
             Handles.EndGUI();
+        }
+
+        private static void DrawBorderTicks( Rect positionRect, Texture noiseMap2D, Color frameColor )
+        {
+            var tickMarkRect = new Rect( positionRect )
+            {
+                width = 5,
+                height = 2
+            };
+            tickMarkRect.x -= 3f;
+
+            // Make the height half of the current view port height.
+            // float variableHeight = Camera.current.pixelRect.height / 2f;
+            float variableHeight = positionRect.height;
+
+            // Evenly space the ticks out.
+            float spacing = variableHeight / noiseMap2D.height;
+
+            // Nudge the starting point down half the height of a separator to center the ticks.
+            tickMarkRect.y += ( spacing / 2f ) - 1f;
+
+            // Place ticks evenly spaced along the left edge of the preview border.
+            for ( int x = 0; x < noiseMap2D.height; x++ )
+            {
+                DrawRectOutline( tickMarkRect, frameColor );
+                tickMarkRect.y += spacing;
+            }
         }
     }
 }
