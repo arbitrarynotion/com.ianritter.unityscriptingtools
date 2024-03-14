@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Runtime
 {
-    [CreateAssetMenu(menuName = "Utilities/Noise Settings"), CanEditMultipleObjects]
-    public class NoiseSettingsSO : SubscribableSO
+    [CreateAssetMenu(menuName = "Utilities/Noise Settings/Perlin Noise Settings"), CanEditMultipleObjects]
+    public class PerlinNoiseSettingsSO : SubscribableSO
     {
         public int seed = 31;
         [Range( -5.0f, 5.0f )] public float noiseOffsetHorizontal = 0f;

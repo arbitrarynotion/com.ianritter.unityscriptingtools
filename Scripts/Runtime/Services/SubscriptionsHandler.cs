@@ -8,18 +8,13 @@ using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
 namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
 {
     [Serializable]
-    public class SubscriptionsHandler
+    public static class SubscriptionsHandler
     {
-        [SerializeField] private FormattedLogger logger;
-
-        public void Initialize( FormattedLogger newLogger ) => logger = newLogger;
-
         /// <summary>
         ///     This class handles when to subscribedAction and unsubscribe from objects that can be swapped out like a settings SO. It should be called during any Unity<br/>
         ///     event in which the swappable object reference could be changed (either to null or to another subscribable object).
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public SubscribableSO UpdateSubscriptions( SubscribableSO previous, SubscribableSO current, UnityAction subscribedAction )
+        public static SubscribableSO UpdateSubscriptions( SubscribableSO previous, SubscribableSO current, UnityAction subscribedAction, FormattedLogger logger )
         {
             if( logger == null )
             {
@@ -49,7 +44,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
                 //         - subscribedAction to C
 
                 previous = current;
-                SubscribeToEvents( current, subscribedAction );
+                SubscribeToEvents( current, subscribedAction, logger );
 
                 logger.LogEnd( $"{GetColoredStringViolet( "Case 2" )}: New settings set, subscribing to {GetColoredStringYellow( current.name )}." );
                 return previous;
@@ -62,7 +57,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
                 //     This means that C has been set to null in the editor so we need to:
                 //         - unsubscribe from P
                 //         - set P to null
-                UnsubscribeToEvents( previous, subscribedAction );
+                UnsubscribeToEvents( previous, subscribedAction, logger );
 
                 logger.LogEnd( $"{GetColoredStringViolet( "Case 3" )}: Settings cleared. Unsubscribing from {GetColoredStringYellow( previous.name )}" );
                 // previous = null;
@@ -83,19 +78,18 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
             logger.Log( $"{GetColoredStringViolet( "Case 4" )}: Settings changed. Unsubscribing from {GetColoredStringOrange( previous.name )} " +
                             $"and subscribing to {GetColoredStringGreenYellow( current.name )}." );
 
-            UnsubscribeToEvents( previous, subscribedAction );
+            UnsubscribeToEvents( previous, subscribedAction, logger );
 
             logger.Log( $"Unsubscribed from {GetColoredStringGoldenrod( previous.name )}, now subscribing to {GetColoredStringGreenYellow( current.name )}." );
             
             previous = current;
-            SubscribeToEvents( current, subscribedAction );
-            
+            SubscribeToEvents( current, subscribedAction, logger );
             
             logger.LogEnd();
             return previous;
         }
 
-        private void UnsubscribeToEvents( SubscribableSO so, UnityAction subscribe )
+        private static void UnsubscribeToEvents( SubscribableSO so, UnityAction subscribe, FormattedLogger logger )
         {
             logger.LogStart( false, true, $"Unsubscribing from {GetColoredStringYellow( so.name )}" );
 
@@ -111,7 +105,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services
             logger.LogEnd();
         }
 
-        private void SubscribeToEvents( SubscribableSO so, UnityAction subscribe )
+        private static void SubscribeToEvents( SubscribableSO so, UnityAction subscribe, FormattedLogger logger )
         {
             logger.LogStart( false,  true, $"Subscribing to {GetColoredStringBurlyWood( so.name )}" );
 

@@ -6,6 +6,10 @@ using static UnityEditor.Editor;
 using static UnityEngine.Object;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.TextFormatting;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System.SystemConstants;
+using static UnityEditor.EditorGUILayout;
+using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Graphics.UI.EditorDividerGraphics;
+using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.UIRectGraphics;
+using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.EditorUIFormatting;
 using Object = UnityEngine.Object;
 
 namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
@@ -13,6 +17,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
     [Serializable]
     public class EmbedSOEditor
     {
+        private const float DividerColorValue = 0.15f;
+        private static readonly Color DividerColor = new Color( DividerColorValue, DividerColorValue, DividerColorValue );
+        private const float DividerThickness = 2f;
+        private const float DividerTopMargin = 12f;
+        private const float DividerBottomMargin = 8f;
+        private const float DividerLeftMargin = 19f;
+        private const float DividerRightMargin = 3f;
+        
         private readonly SerializedProperty _settingsSOProp;
 
         private string _cachedEditorName;
@@ -20,10 +32,37 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
         [SerializeField] private FormattedLogger logger;
         [SerializeField] private UnityEditor.Editor settingsSOEditor;
         [SerializeField] private Object settingsSOEditorTarget;
+        [SerializeField] private bool foldoutToggle = true;
 
         public EmbedSOEditor( SerializedProperty settingsSOProp )
         {
             _settingsSOProp = settingsSOProp;
+        }
+        
+        public void DrawSettingsSoInspector( string title, bool drawFrame = true )
+        {
+            // Optimization to avoid creating a new editor unless it's actually needed.
+            if( !SettingsSOEditorIsValid() )
+            {
+                HelpBox( "Populate the object field to display the object's settings.", MessageType.Info );
+                return;
+            }
+
+            DrawDivider( DividerColor, DividerThickness, DividerLeftMargin, DividerRightMargin, DividerTopMargin, DividerBottomMargin );
+
+            foldoutToggle = DrawFoldoutSection( title, FoldoutFrameType, foldoutToggle );
+            if( !foldoutToggle ) return;
+
+
+            Rect foldoutFrameRect = DrawSettingsSoInspector();
+            
+            if( !drawFrame ) return;
+            
+            foldoutFrameRect.xMin += ParentFrameWidth;
+            foldoutFrameRect.yMax += EditorFrameBottomPadding;
+            DrawRect( foldoutFrameRect, EditorFrameType, Color.gray, Color.gray, ChildFrameWidth, false );
+
+            Space( VerticalSeparator );
         }
 
         public Rect DrawSettingsSoInspector()

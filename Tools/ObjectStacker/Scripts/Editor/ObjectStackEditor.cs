@@ -6,10 +6,8 @@ using Packages.com.ianritter.unityscriptingtools.Tools.PrefabSpawner.Scripts.Edi
 using UnityEditor;
 using UnityEngine;
 using static UnityEditor.EditorGUILayout;
-using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.UIRectGraphics;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System.SystemConstants;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.EditorUIFormatting;
-using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Graphics.UI.EditorDividerGraphics;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Editor
 {
@@ -18,20 +16,21 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
     {
 #region DataMembers
 
-        // Target
-        private ObjectStack _objectStack;
-
         // Serialized Properties
         private SerializedProperty _totalObjectsProp;
 
         private SerializedProperty _settingsSOProp;
 
         private SerializedProperty _sceneViewVisualsModeProp;
+        private SerializedProperty _mapGenerationModeProp;
         private SerializedProperty _prefabProp;
         private SerializedProperty _loggerProp;
 
         // Foldout bools
-        private bool _showObjectStackerSettings = true;
+        // private bool _stackerSettingsFoldoutToggle = true;
+        // private bool _visualisationsFoldoutToggle = true;
+        // private bool _objectStackerSettingsFoldoutToggle = true;
+        // private bool _debugFoldoutToggle = true;
 
         // Debug
         private FormattedLogger _localLogger;
@@ -48,6 +47,45 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private SerializedObject _settingsSerializedObject;
 
 #endregion
+        
+#region FoldoutToggles
+
+        private bool StackerSettingsFoldoutToggle
+        {
+            get => EditorPrefs.GetBool( $"{name}_{nameof( StackerSettingsFoldoutToggle )}", true );
+            set => EditorPrefs.SetBool( $"{name}_{nameof( StackerSettingsFoldoutToggle )}", value );
+        }
+
+        private bool VisualisationsFoldoutToggle
+        {
+            get => EditorPrefs.GetBool( $"{name}_{nameof( VisualisationsFoldoutToggle )}", true );
+            set => EditorPrefs.SetBool( $"{name}_{nameof( VisualisationsFoldoutToggle )}", value );
+        }
+
+        private bool ObjectStackerSettingsFoldoutToggle
+        {
+            get => EditorPrefs.GetBool( $"{name}_{nameof( ObjectStackerSettingsFoldoutToggle )}", true );
+            set => EditorPrefs.SetBool( $"{name}_{nameof( ObjectStackerSettingsFoldoutToggle )}", value );
+        }
+
+        private bool DebugFoldoutToggle
+        {
+            get => EditorPrefs.GetBool( $"{name}_{nameof( DebugFoldoutToggle )}", false );
+            set => EditorPrefs.SetBool( $"{name}_{nameof( DebugFoldoutToggle )}", value );
+        }
+
+#endregion
+
+#region EventMethods
+
+        protected override void DuringSceneGUILast()
+        {
+            // Todo: This solved the problem of the scene view not repainting until the next frame but it means the scene is nearly constantly being repainted.
+            // _localLogger.Log( "DuringSceneGUILast was called. Repainting scene views." );
+            SceneView.RepaintAll();
+        }
+
+#endregion
 
 
 #region LifeCycle
@@ -59,29 +97,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
             _localLogger.LogStart();
 
-            _objectStack = target as ObjectStack;
-
             LoadObjectStackProperties();
             InitializeEmbeddedEditors();
 
             _localLogger.LogEnd();
-        }
-
-        private void InitializeEmbeddedEditors()
-        {
-            _settingsEmbeddedSOEditor.OnEnable();
-        }
-
-        private void LoadObjectStackProperties()
-        {
-            _totalObjectsProp = serializedObject.FindProperty( "totalObjects" );
-
-            _settingsSOProp = serializedObject.FindProperty( "objectStackerSettingsSO" );
-            _settingsEmbeddedSOEditor = new EmbedSOEditor( _settingsSOProp );
-
-            _sceneViewVisualsModeProp = serializedObject.FindProperty( "sceneViewVisualsMode" );
-            _prefabProp = serializedObject.FindProperty( "prefab" );
-            _loggerProp = serializedObject.FindProperty( "logger" );
         }
 
         protected override void OnDisableLast()
@@ -100,18 +119,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             serializedObject.DrawScriptField();
 
             DrawStackerSection();
-
-            // Draw the embedded editor.
-            DrawSettingsSoInspector( ref _showObjectStackerSettings, "Object Stacker Settings SO", _settingsEmbeddedSOEditor );
-            if( _settingsSOProp.objectReferenceValue != null && _showObjectStackerSettings )
-                Space( VerticalSeparator );
-
-            Space( BetweenSectionPadding );
-
+            DrawSettingsSOSection();
             DrawVisualizationSection();
-
-            Space( BetweenSectionPadding );
-
             DrawDebugSection();
 
             if( !serializedObject.ApplyModifiedProperties() ) return;
@@ -120,69 +129,101 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             SceneView.RepaintAll();
         }
 
+#endregion
+
+        private void DrawSettingsSOSection()
+        {
+            // Draw the embedded editor.
+            _settingsEmbeddedSOEditor.DrawSettingsSoInspector( "Object Stacker Settings SO" );
+            if( ( _settingsSOProp.objectReferenceValue != null ) && ObjectStackerSettingsFoldoutToggle )
+                Space( VerticalSeparator );
+        }
+
+
+#region Initialization
+
+        // private void SaveFoldoutToggles()
+        // {
+        //     // Save the foldout states to EditorPrefs to preserve their state.
+        //     EditorPrefs.SetBool( nameof( _objectStackerSettingsFoldoutToggle ), _objectStackerSettingsFoldoutToggle );
+        //     EditorPrefs.SetBool( nameof( _stackerSettingsFoldoutToggle ), _stackerSettingsFoldoutToggle );
+        //     EditorPrefs.SetBool( nameof( _visualisationsFoldoutToggle ), _visualisationsFoldoutToggle );
+        //     EditorPrefs.SetBool( nameof( _debugFoldoutToggle ), _debugFoldoutToggle );
+        // }
+        //
+        // private void LoadFoldoutToggles()
+        // {
+        //     // Load the foldout states from EditorPrefs.
+        //     _objectStackerSettingsFoldoutToggle = EditorPrefs.GetBool( nameof( _objectStackerSettingsFoldoutToggle ), true );
+        //     _stackerSettingsFoldoutToggle = EditorPrefs.GetBool( nameof( _stackerSettingsFoldoutToggle ), true );
+        //     _visualisationsFoldoutToggle = EditorPrefs.GetBool( nameof( _visualisationsFoldoutToggle ), true );
+        //     _debugFoldoutToggle = EditorPrefs.GetBool( nameof( _debugFoldoutToggle ), true );
+        // }
+
+        private void InitializeEmbeddedEditors()
+        {
+            _settingsEmbeddedSOEditor.OnEnable();
+        }
+
+        private void LoadObjectStackProperties()
+        {
+            _totalObjectsProp = serializedObject.FindProperty( "totalObjects" );
+
+            _settingsSOProp = serializedObject.FindProperty( "objectStackerSettingsSO" );
+            _settingsEmbeddedSOEditor = new EmbedSOEditor( _settingsSOProp );
+
+            _sceneViewVisualsModeProp = serializedObject.FindProperty( "sceneViewVisualsMode" );
+            _mapGenerationModeProp = serializedObject.FindProperty( "mapGenerationMode" );
+            _prefabProp = serializedObject.FindProperty( "prefab" );
+            _loggerProp = serializedObject.FindProperty( "logger" );
+        }
+
+#endregion
+
+
+#region DrawInspectorGUI
+
         private void DrawStackerSection()
         {
-            DrawLabelSection( "Stacker Settings", LabelHeadingFrameType );
+            StackerSettingsFoldoutToggle = DrawFoldoutSection( "Stacker Settings", FoldoutFrameType, StackerSettingsFoldoutToggle );
+            if( !StackerSettingsFoldoutToggle ) return;
+
             EditorGUI.indentLevel++;
             {
                 PropertyField( _totalObjectsProp );
                 PropertyField( _settingsSOProp );
             }
             EditorGUI.indentLevel--;
+            
+            Space( BetweenSectionPadding );
         }
 
         private void DrawVisualizationSection()
         {
-            DrawLabelSection( "Visualizations", LabelHeadingFrameType );
+            VisualisationsFoldoutToggle = DrawFoldoutSection( "Visualizations", FoldoutFrameType, VisualisationsFoldoutToggle );
+            if( !VisualisationsFoldoutToggle ) return;
+
             EditorGUI.indentLevel++;
             {
                 PropertyField( _sceneViewVisualsModeProp, new GUIContent( "Visualization Mode" ) );
+                PropertyField( _mapGenerationModeProp, new GUIContent( "Map Dimension Mode" ) );
                 PropertyField( _prefabProp, new GUIContent( "Model Mode Prefab" ) );
             }
             EditorGUI.indentLevel--;
+            
+            Space( BetweenSectionPadding );
         }
 
         private void DrawDebugSection()
         {
-            DrawLabelSection( "Debug", LabelHeadingFrameType );
+            DebugFoldoutToggle = DrawFoldoutSection( "Debug", FoldoutFrameType, DebugFoldoutToggle );
+            if( !DebugFoldoutToggle ) return;
+
             EditorGUI.indentLevel++;
             {
                 PropertyField( _loggerProp );
             }
             EditorGUI.indentLevel--;
-        }
-
-        private static void DrawSettingsSoInspector( ref bool toggle, string title, EmbedSOEditor editor )
-        {
-            // Optimization to avoid creating a new editor unless it's actually needed.
-            if( !editor.SettingsSOEditorIsValid() )
-            {
-                HelpBox( "Populate the object field to display the object's settings.", MessageType.Info );
-                return;
-            }
-
-            DrawDivider( Color.gray, 2f, 19f, 3f, 12f, 8f );
-
-            toggle = DrawFoldoutSection( title, FoldoutFrameType, toggle );
-            if( !toggle ) return;
-
-            // Space( VerticalSeparator );
-
-            Rect foldoutFrameRect = editor.DrawSettingsSoInspector();
-
-            // Draw editor frame
-            foldoutFrameRect.xMin += ParentFrameWidth;
-            foldoutFrameRect.yMax += EditorFrameBottomPadding;
-            DrawRect( foldoutFrameRect, EditorFrameType, Color.gray, Color.gray, ParentFrameWidth, false );
-
-            Space( VerticalSeparator );
-        }
-
-        protected override void DuringSceneGUILast()
-        {
-            // This solved the problem of the scene view not repainting until the next frame.
-            // _localLogger.Log( "DuringSceneGUILast was called. Repainting scene views." );
-            SceneView.RepaintAll();
         }
 
 #endregion

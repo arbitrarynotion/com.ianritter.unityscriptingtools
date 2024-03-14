@@ -19,13 +19,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 #region DataMembers
         private const float NoisePosShiftIncreaseFactor = 100f;
         private const int NoiseMapWidth = 1;
-
         
         [SerializeField] [Delayed] private int totalObjects = 52;
         // The list that hold the noise transform effects for all positions in the stack.
         [HideInInspector] [SerializeField] private List<PseudoTransform> objectStack = new List<PseudoTransform>();
         [SerializeField] private ObjectStackerSettingsSO objectStackerSettingsSO;
         [SerializeField] private SceneViewDebugVisualsMode sceneViewVisualsMode = SceneViewDebugVisualsMode.Off;
+        [SerializeField] private NoiseMapDimensions mapGenerationMode = NoiseMapDimensions.OneDimensional;
         [SerializeField] private GameObject prefab;
         [SerializeField] private FormattedLogger logger;
         
@@ -35,13 +35,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         ///     false after the update is performed. This is an optimization to avoid recreating the stack every frame.
         /// </summary>
         private bool _updateRequired;
+
+        private NoiseMapDimensions _previousNoiseMapDimensions;
         
         private int _currentStackPosition;
         
         // SOs and subscriptions
         private ObjectStackerSettingsSO _previousObjectStackerSettingsSo;
-
-        private SubscriptionsHandler _subscriptionsHandler;
 
         // Conversion to Noise Module
         private INoiseSource _noiseModule;
@@ -69,7 +69,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         public int GetCurrentStackPosition() => _currentStackPosition;
         public void ResetStackCounter() => _currentStackPosition = 0;
-        public ObjectStackerSettingsSO GetSettingsSO() => objectStackerSettingsSO;
 
 #endregion
 
@@ -103,8 +102,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         private void OnValidate()
         {
-            if( _subscriptionsHandler == null ) return;
-
             _updateRequired = true;
             UpdateSubscriptions();
             UpdateStack();
@@ -117,13 +114,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         private void Initialize()
         {
-            _subscriptionsHandler.Initialize( logger );
-
             // Load the noise module attached to this object.
             _noiseModule = GetComponent<INoiseSource>();
             logger.LogObjectAssignmentResult( nameof( _noiseModule ), _noiseModule == null, FormattedLogType.Standard );
 
-            _noiseModule.Initialize( NoiseMapWidth, totalObjects, OnNoiseModuleUpdated, OnSettingsSOUpdated );
+            int mapWidth = mapGenerationMode == NoiseMapDimensions.TwoDimensional ? totalObjects : NoiseMapWidth;
+            _noiseModule.Initialize( mapWidth, totalObjects, OnNoiseModuleUpdated, OnSettingsSOUpdated );
+            // _noiseModule.Initialize( NoiseMapWidth, totalObjects, OnNoiseModuleUpdated, OnSettingsSOUpdated );
             // _noiseModule.Initialize( totalObjects, totalObjects, OnNoiseModuleUpdated, OnSettingsSOUpdated );
         }
 
@@ -131,13 +128,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         {
             logger.LogStart();
 
-            // Get the new settings SO.
-            // noiseSettingsSO = _noiseModule.GetNoiseSettingsSO();
-            // logger.Log( $"Noise module noise settings SO was changed to {GetColoredStringGreenYellow( _noiseModule.GetNoiseSettingsSO().name )}" );
-
             // Update the subscriptions.
             UpdateSubscriptions();
-
             UpdateStackTransforms();
 
             logger.LogEnd();
@@ -145,17 +137,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         private void UpdateSubscriptions()
         {
-            // As this method is called during OnValidate, it is occasionally called before OnEnable so the subscription handler won't be initialized yet.
-            if( _subscriptionsHandler == null ) return;
-
-            _previousObjectStackerSettingsSo = (ObjectStackerSettingsSO) _subscriptionsHandler.UpdateSubscriptions
+            _previousObjectStackerSettingsSo = (ObjectStackerSettingsSO) SubscriptionsHandler.UpdateSubscriptions
             (
                 _previousObjectStackerSettingsSo,
                 objectStackerSettingsSO,
-                OnSettingsSOUpdated
+                OnSettingsSOUpdated,
+                logger
             );
-
-            // _previousNoiseSettingsSo = (NoiseSettingsSO)_subscriptionsHandler.UpdateSubscriptions( _previousNoiseSettingsSo, noiseSettingsSO, OnSettingsSOUpdated );
         }
 
         /// <summary>
@@ -165,13 +153,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private void OnSettingsSOUpdated()
         {
             // logger.LogStart( true );
-
-            // This is to show stack adjustments in realtime during play mode.
-            // if( noiseSettingsSO == null )
-            // {
-            //     // logger.LogEnd();
-            //     return;
-            // }
 
             UpdateStackTransforms();
 
@@ -192,7 +173,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             logger.LogStart();
 
             ReevaluateStack();
-            if( !_updateRequired )
+            if( !_updateRequired && !NoiseMapDimensionsHaveChanged() )
             {
                 logger.LogEnd( "No update required." );
                 return;
@@ -211,9 +192,16 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         /// </summary>
         private void UpdateStackTransforms()
         {
+            if( _noiseModule == null )
+            {
+                logger.Log( "Warning! Noise module was null!", FormattedLogType.Warning );
+                return;
+            }
+            
             // GenerateNoiseMap();
-            _noiseModule.UpdateNoiseMapSize( NoiseMapWidth, totalObjects );
-            // _noiseModule.UpdateNoiseMapSize( totalObjects, totalObjects );
+            int mapWidth = mapGenerationMode == NoiseMapDimensions.TwoDimensional ? totalObjects : NoiseMapWidth;
+            _noiseModule.UpdateNoiseMapSize( mapWidth, totalObjects );
+            // _noiseModule.UpdateNoiseMapSize( NoiseMapWidth, totalObjects );
             UpdatePseudoTransforms();
         }
 
@@ -221,6 +209,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 
 #region StackGeneration
+
+        private bool NoiseMapDimensionsHaveChanged()
+        {
+            if( _previousNoiseMapDimensions == mapGenerationMode ) return false;
+            
+            _previousNoiseMapDimensions = mapGenerationMode;
+            return true;
+        }
 
         /// <summary>
         ///     Ensure stack size is correct, otherwise shrink or expand to appropriate size.
@@ -392,7 +388,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
                 Vector3 parentsPosition = transform.position;
                 Gizmos.DrawSphere( parentsPosition, 0.0002f );
 
-                // float noiseSample = noiseMap2D[0, i];
                 float noiseSample = _noiseModule.GetNoiseAtIndex( 0, i );
 
                 // Note that we don't need to use the PseudoTransform's position here because we've already transformed the Gizmos' space.

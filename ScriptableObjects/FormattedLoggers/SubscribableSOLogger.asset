@@ -59,7 +59,7 @@ MonoBehaviour:
     toggle: 1
   focusAccent:
     customColor:
-      color: {r: 1, g: 1, b: 0, a: 1}
+      color: {r: 1, g: 0.27, b: 0, a: 1}
       name: "\u2022\u2022\u2022\u2022"
     toggle: 1
   targetClass: 

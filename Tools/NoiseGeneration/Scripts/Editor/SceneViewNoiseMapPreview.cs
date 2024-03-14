@@ -18,21 +18,21 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         private SerializedProperty _persistenceProp;
         private SerializedProperty _lacunarityProp;
 
-        private NoiseSettingsSO _noiseSettingsSO;
+        private PerlinNoiseSettingsSO _noiseSettingsSO;
 
         private void Initialize( SerializedProperty noiseSettingsSO )
         {
             _noiseSettingsSOProp = noiseSettingsSO;
             SerializedObject so = _noiseSettingsSOProp.serializedObject;
-            _noiseSettingsSO = (NoiseSettingsSO) so.targetObject;
+            _noiseSettingsSO = (PerlinNoiseSettingsSO) so.targetObject;
             
-            _seedProp = so.FindProperty( nameof( NoiseSettingsSO.seed ) );
-            _noiseOffsetHorizontalProp = so.FindProperty( nameof( NoiseSettingsSO.noiseOffsetHorizontal ) );
-            _noiseOffsetVerticalProp = so.FindProperty( nameof( NoiseSettingsSO.noiseOffsetVertical ) );
-            _noiseScaleProp = so.FindProperty( nameof( NoiseSettingsSO.noiseScale ) );
-            _octavesProp = so.FindProperty( nameof( NoiseSettingsSO.octaves ) );
-            _persistenceProp = so.FindProperty( nameof( NoiseSettingsSO.persistence ) );
-            _lacunarityProp = so.FindProperty( nameof( NoiseSettingsSO.lacunarity ) );
+            _seedProp = so.FindProperty( nameof( PerlinNoiseSettingsSO.seed ) );
+            _noiseOffsetHorizontalProp = so.FindProperty( nameof( PerlinNoiseSettingsSO.noiseOffsetHorizontal ) );
+            _noiseOffsetVerticalProp = so.FindProperty( nameof( PerlinNoiseSettingsSO.noiseOffsetVertical ) );
+            _noiseScaleProp = so.FindProperty( nameof( PerlinNoiseSettingsSO.noiseScale ) );
+            _octavesProp = so.FindProperty( nameof( PerlinNoiseSettingsSO.octaves ) );
+            _persistenceProp = so.FindProperty( nameof( PerlinNoiseSettingsSO.persistence ) );
+            _lacunarityProp = so.FindProperty( nameof( PerlinNoiseSettingsSO.lacunarity ) );
         }
         
 #region SceneViewNoiseMapPreview

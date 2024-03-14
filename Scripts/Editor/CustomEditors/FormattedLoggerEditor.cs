@@ -12,13 +12,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
     [CanEditMultipleObjects]
     public class FormattedLoggerEditor : UnityEditor.Editor
     {
+        private const float SpaceBeforeButton = 10f;
+        
         private const string ShowLogsVarName = "showLogs";
         private const string PadBlocksName = "padBlocks";
         private const string UseClassPrefixVarName = "useClassPrefix";
         private const string BoldMethodsVarName = "boldMethods";
         private const string BoldBlockMethodsVarName = "boldBlockMethods";
         private const string NicifiedNamesVarName = "nicifiedNames";
-
 
         private const string LogPrefixVarName = "logPrefix";
         private const string BlockDividerVarName = "blockDivider";
@@ -28,12 +29,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
         private const string LogBlockEndVarName = "logBlockEnd";
         private const string LogEventPrefixVarName = "logEventPrefix";
         private const string FocusAccentVarName = "focusAccent";
-        // private const string FocusedPrefixVarName = "focusedPrefix";
-        // private const string FocusedPostfixVarName = "focusedPostfix";
 
         private const string BlockMethodColorVarName = "blockMethodColor";
         private const string MethodColorVarName = "methodColor";
-        private const string UnityEventsColorVarName = "unityEventsColor";
 
         private const string IncludeStackTraceVarName = "includeStackTrace";
         private const string FullPathNameVarName = "fullPathName";
@@ -59,7 +57,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
 
         private SerializedProperty _blockMethodColorProperty;
         private SerializedProperty _methodColorProperty;
-        // private SerializedProperty _unityEventsColorProperty;
         private SerializedProperty _focusAccentProperty;
 
         private SerializedProperty _fullPathNameProperty;
@@ -93,7 +90,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
             serializedObject.Update();
 
             DrawClassMembers();
-            Space( 10f );
+            Space( SpaceBeforeButton );
             DrawDefaultsButton();
             Space();
             DrawDebugSection();
@@ -117,7 +114,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
 
             _blockMethodColorProperty = serializedObject.FindProperty( BlockMethodColorVarName );
             _methodColorProperty = serializedObject.FindProperty( MethodColorVarName );
-            // _unityEventsColorProperty = serializedObject.FindProperty( UnityEventsColorVarName );
 
             _logPrefixProperty = serializedObject.FindProperty( LogPrefixVarName );
             _blockDividerProperty = serializedObject.FindProperty( BlockDividerVarName );
@@ -127,9 +123,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
             _logBlockEndProperty = serializedObject.FindProperty( LogBlockEndVarName );
             _logEventPrefixProperty = serializedObject.FindProperty( LogEventPrefixVarName );
             _focusAccentProperty = serializedObject.FindProperty( FocusAccentVarName );
-            // _focusedPrefixProperty = serializedObject.FindProperty( FocusedPrefixVarName );
-            // _focusedPostfixProperty = serializedObject.FindProperty( FocusedPostfixVarName );
-
 
             _includeStackTraceProperty = serializedObject.FindProperty( IncludeStackTraceVarName );
             _fullPathNameProperty = serializedObject.FindProperty( FullPathNameVarName );
@@ -194,8 +187,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
             {
                 ColorPickerHandler.DrawPropertyWithColorPicker( _blockMethodColorProperty, new GUIContent( "Block Methods" ) );
                 ColorPickerHandler.DrawPropertyWithColorPicker( _methodColorProperty, new GUIContent( "Basic Methods" ) );
-                // ColorPickerHandler.DrawPropertyWithColorPicker( _unityEventsColorProperty, new GUIContent( "Unity Event Methods" ) );
-                // ColorPickerHandler.DrawPropertyWithColorPicker( _focusAccentProperty, new GUIContent( "Focused Methods" ) );
             }
             EditorGUI.indentLevel--;
         }

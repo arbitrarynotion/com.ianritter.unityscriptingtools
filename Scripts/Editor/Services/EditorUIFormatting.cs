@@ -12,7 +12,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
         public const ElementFrameType Level1FrameType = ElementFrameType.BottomOnly;
         
         public const ElementFrameType FoldoutFrameType = ElementFrameType.LeftAndTopOnly;
-        public const ElementFrameType SubFoldoutFrameType = ElementFrameType.LeftAndTopOnly;
+        public const ElementFrameType SubFoldoutFrameType = ElementFrameType.LeftOnly;
         public const ElementFrameType LabelHeadingFrameType = ElementFrameType.LeftOnly;
         public const ElementFrameType SubLabelHeadingFrameType = ElementFrameType.None;
         public const ElementFrameType EditorFrameType = ElementFrameType.PartialLeftFullBottom;
@@ -30,7 +30,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
 
         public static bool DrawFoldoutSection( string titleText, ElementFrameType frameType, bool toggle )
         {
-            Space( TitleFrameBottomPadding );
+            // Space( TitleFrameBottomPadding );
 
             const float value = 0.19f;
             bool result = Foldout
@@ -48,7 +48,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
                 true
             );
             
-            Space( TitleFrameBottomPadding );
+            // Space( TitleFrameBottomPadding );
 
             return result;
         }

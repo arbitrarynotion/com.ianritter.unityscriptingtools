@@ -41,7 +41,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private SerializedProperty _verticalOffsetProp;
 
         // Foldout Toggles
-        // private bool _noisePreviewSettingsToggle = true;
         private bool _noiseDrivenEffectsToggle = true;
         private bool _manualAdjustmentToggle = true;
 
@@ -50,6 +49,45 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 #region LifeCycle
 
         protected override void OnEnableLast()
+        {
+            LoadFoldoutToggles();
+            LoadProperties();
+        }
+
+        protected override void OnDisableLast()
+        {
+            SaveFoldoutToggles();
+        }
+
+        protected override void OnInspectorGUIFirst()
+        {
+            serializedObject.Update();
+
+            DrawSettings();
+
+            serializedObject.ApplyModifiedProperties();
+        }
+
+#endregion
+
+
+#region Initilization
+
+        private void SaveFoldoutToggles()
+        {
+            // Save the foldout states to EditorPrefs to preserve their state.
+            EditorPrefs.SetBool( nameof( _noiseDrivenEffectsToggle ), _noiseDrivenEffectsToggle );
+            EditorPrefs.SetBool( nameof( _manualAdjustmentToggle ), _manualAdjustmentToggle );
+        }
+        
+        private void LoadFoldoutToggles()
+        {
+            // Load the foldout states from EditorPrefs.
+            _noiseDrivenEffectsToggle = EditorPrefs.GetBool( nameof( _noiseDrivenEffectsToggle ), false );
+            _manualAdjustmentToggle = EditorPrefs.GetBool( nameof( _manualAdjustmentToggle ), false );
+        }
+
+        private void LoadProperties()
         {
             _lockBottomObjectProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.lockBottomObject ) );
             _noiseMultiplierProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.noiseMultiplier ) );
@@ -70,19 +108,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             _verticalOffsetProp = serializedObject.FindProperty( nameof( ObjectStackerSettingsSO.verticalOffset ) );
         }
 
-        protected override void OnInspectorGUIFirst()
-        {
-            serializedObject.Update();
-
-            DrawSettings();
-
-            serializedObject.ApplyModifiedProperties();
-        }
-
 #endregion
 
 
-#region DrawUI
+#region DrawInspectorUI
 
         private static void DrawLabeledSection( string titleText, ElementFrameType frameType ) => 
             DrawLabelSection( titleText, frameType );
@@ -93,7 +122,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             {
                 serializedObject.DrawScriptField();
                 DrawNoiseDrivenEffectsSection();
-                Space( BetweenSectionPadding );
+                // Space( BetweenSectionPadding );
                 DrawManualAdjustmentsSection();
             }
             EditorGUI.indentLevel--;
@@ -104,28 +133,35 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             _noiseDrivenEffectsToggle = DrawFoldoutSection( "Noise-Driven Effects", SubFoldoutFrameType, _noiseDrivenEffectsToggle );
             if( !_noiseDrivenEffectsToggle ) return;
 
-            DrawYAxisRotationalSection();
-            Space( BetweenSectionPadding );
-            DrawPositionShiftSection();
+            EditorGUI.indentLevel++;
+            {
+                DrawYAxisRotationalSection();
+                Space( BetweenSectionPadding );
+                DrawPositionShiftSection();
 
-            // Display note when noise effects are all set to 0 so the use knows why nothing is happening when they change the noise settings.
-            if( _noiseMultiplierProp.floatValue <= 0f &&
-                _xAxisNoiseProp.floatValue <= 0f &&
-                _yAxisNoiseProp.floatValue <= 0f )
-                HelpBox( "Note: Noise has no effect when all intensities are set to 0.", MessageType.Info );
+                // Display note when noise effects are all set to 0 so the use knows why nothing is happening when they change the noise settings.
+                if( _noiseMultiplierProp.floatValue <= 0f &&
+                    _xAxisNoiseProp.floatValue <= 0f &&
+                    _yAxisNoiseProp.floatValue <= 0f )
+                    HelpBox( "Note: Noise has no effect when all intensities are set to 0.", MessageType.Info );
 
-            Space( BetweenSectionPadding );
+                Space( BetweenSectionPadding );
+            }
+            EditorGUI.indentLevel--;
         }
 
         private void DrawManualAdjustmentsSection()
         {
             _manualAdjustmentToggle = DrawFoldoutSection( "Manual Adjustments", SubFoldoutFrameType, _manualAdjustmentToggle );
             if( !_manualAdjustmentToggle ) return;
-
-            DrawManualRotationSection();
-            Space( BetweenSectionPadding );
-            DrawManualPositionSection();
-            Space( BetweenSectionPadding );
+            EditorGUI.indentLevel++;
+            {
+                DrawManualRotationSection();
+                Space( BetweenSectionPadding );
+                DrawManualPositionSection();
+                Space( BetweenSectionPadding );
+            }
+            EditorGUI.indentLevel--;
         }
 
         private void DrawYAxisRotationalSection()
@@ -174,7 +210,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
                     }
                     EditorGUI.indentLevel--;
 
-                    // PropertyField( _yAxisCurveProp, new GUIContent( " " ) );
                 }
             }
             EditorGUI.indentLevel--;
@@ -221,9 +256,16 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             EditorGUI.indentLevel++;
             {
                 PropertyField( _modelHeightProp, new GUIContent( "Model Height" ) );
-                PropertyField( _verticalOffsetProp, new GUIContent( "Vertical Gap" ) );
+                DrawVerticalGapSlider();
             }
             EditorGUI.indentLevel--;
+        }
+
+        private void DrawVerticalGapSlider()
+        {
+            // PropertyField( _verticalOffsetProp, new GUIContent( "Vertical Gap" ) );
+            Rect sliderRect = GetControlRect();
+            _verticalOffsetProp.floatValue = EditorGUI.Slider( sliderRect, "Vertical Gap", _verticalOffsetProp.floatValue, 0f, _modelHeightProp.floatValue * 10f );
         }
 
 #endregion

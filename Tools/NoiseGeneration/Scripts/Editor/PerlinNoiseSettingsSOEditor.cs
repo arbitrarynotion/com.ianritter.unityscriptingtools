@@ -1,3 +1,4 @@
+using System;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditors;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMethods;
 using Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Runtime;
@@ -8,8 +9,8 @@ using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Editor
 {
-    [CustomEditor( typeof( NoiseSettingsSO ) )]
-    public class NoiseSettingsSOEditor : SubscribableSOEditor
+    [CustomEditor( typeof( PerlinNoiseSettingsSO ) )]
+    public class PerlinNoiseSettingsSOEditor : SubscribableSOEditor
     {
 #region DataMembers
 
@@ -21,26 +22,34 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         private SerializedProperty _octavesProp;
         private SerializedProperty _persistenceProp;
         private SerializedProperty _lacunarityProp;
+        
+        private PerlinNoiseSettingsSO _noiseSettingsSO;
 
-        private bool _noiseSettingsToggle = true;
+#endregion
+        
+#region FoldoutToggles
 
-        private NoiseSettingsSO _noiseSettingsSO;
-
+        private bool NoiseSettingsFoldoutToggle
+        {
+            get => EditorPrefs.GetBool( $"{name}_{nameof( NoiseSettingsFoldoutToggle )}", true );
+            set => EditorPrefs.SetBool( $"{name}_{nameof( NoiseSettingsFoldoutToggle )}", value );
+        }
+        
 #endregion
 
 #region LifeCycle
 
         protected override void OnEnableLast()
         {
-            _noiseSettingsSO = target as NoiseSettingsSO;
+            _noiseSettingsSO = target as PerlinNoiseSettingsSO;
 
-            _seedProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.seed ) );
-            _noiseOffsetHorizontalProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.noiseOffsetHorizontal ) );
-            _noiseOffsetVerticalProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.noiseOffsetVertical ) );
-            _noiseScaleProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.noiseScale ) );
-            _octavesProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.octaves ) );
-            _persistenceProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.persistence ) );
-            _lacunarityProp = serializedObject.FindProperty( nameof( NoiseSettingsSO.lacunarity ) );
+            // LoadFoldoutToggles();
+            LoadProperties();
+        }
+
+        protected override void OnDisableLast()
+        {
+            // SaveFoldoutToggles();
         }
 
         protected override void OnInspectorGUIFirst()
@@ -55,6 +64,34 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 #endregion
 
 
+#region Initialization
+
+        // private void LoadFoldoutToggles()
+        // {
+        //     // Load the foldout states from EditorPrefs.
+        //     _noiseSettingsToggle = EditorPrefs.GetBool( nameof( _noiseSettingsToggle ), true );
+        // }
+        //
+        // private void SaveFoldoutToggles()
+        // {
+        //     // Save the foldout states to EditorPrefs to preserve their state.
+        //     EditorPrefs.SetBool( nameof( _noiseSettingsToggle ), _noiseSettingsToggle );
+        // }
+        
+        private void LoadProperties()
+        {
+            _seedProp = serializedObject.FindProperty( nameof( PerlinNoiseSettingsSO.seed ) );
+            _noiseOffsetHorizontalProp = serializedObject.FindProperty( nameof( PerlinNoiseSettingsSO.noiseOffsetHorizontal ) );
+            _noiseOffsetVerticalProp = serializedObject.FindProperty( nameof( PerlinNoiseSettingsSO.noiseOffsetVertical ) );
+            _noiseScaleProp = serializedObject.FindProperty( nameof( PerlinNoiseSettingsSO.noiseScale ) );
+            _octavesProp = serializedObject.FindProperty( nameof( PerlinNoiseSettingsSO.octaves ) );
+            _persistenceProp = serializedObject.FindProperty( nameof( PerlinNoiseSettingsSO.persistence ) );
+            _lacunarityProp = serializedObject.FindProperty( nameof( PerlinNoiseSettingsSO.lacunarity ) );
+        }
+
+#endregion
+
+
 #region DrawInspectorUI
 
         private void DrawSettings()
@@ -64,8 +101,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
                 serializedObject.DrawScriptField();
 
                 DrawNoiseSettings();
-
-                // DrawNoisePreviewSettingsSection();
             }
             EditorGUI.indentLevel--;
         }
@@ -73,8 +108,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
         private void DrawNoiseSettings()
         {
-            _noiseSettingsToggle = DrawFoldoutSection( "Noise Settings", SubFoldoutFrameType, _noiseSettingsToggle );
-            if( !_noiseSettingsToggle ) return;
+            NoiseSettingsFoldoutToggle = DrawFoldoutSection( "Noise Settings", SubFoldoutFrameType, NoiseSettingsFoldoutToggle );
+            if( !NoiseSettingsFoldoutToggle ) return;
 
             EditorGUI.indentLevel++;
             {
