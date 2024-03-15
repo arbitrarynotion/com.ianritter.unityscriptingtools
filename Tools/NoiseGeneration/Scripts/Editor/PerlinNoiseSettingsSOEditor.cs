@@ -22,8 +22,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         private SerializedProperty _octavesProp;
         private SerializedProperty _persistenceProp;
         private SerializedProperty _lacunarityProp;
-        
-        private PerlinNoiseSettingsSO _noiseSettingsSO;
 
 #endregion
         
@@ -41,15 +39,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
         protected override void OnEnableLast()
         {
-            _noiseSettingsSO = target as PerlinNoiseSettingsSO;
-
-            // LoadFoldoutToggles();
             LoadProperties();
-        }
-
-        protected override void OnDisableLast()
-        {
-            // SaveFoldoutToggles();
         }
 
         protected override void OnInspectorGUIFirst()
@@ -66,18 +56,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
 #region Initialization
 
-        // private void LoadFoldoutToggles()
-        // {
-        //     // Load the foldout states from EditorPrefs.
-        //     _noiseSettingsToggle = EditorPrefs.GetBool( nameof( _noiseSettingsToggle ), true );
-        // }
-        //
-        // private void SaveFoldoutToggles()
-        // {
-        //     // Save the foldout states to EditorPrefs to preserve their state.
-        //     EditorPrefs.SetBool( nameof( _noiseSettingsToggle ), _noiseSettingsToggle );
-        // }
-        
         private void LoadProperties()
         {
             _seedProp = serializedObject.FindProperty( nameof( PerlinNoiseSettingsSO.seed ) );

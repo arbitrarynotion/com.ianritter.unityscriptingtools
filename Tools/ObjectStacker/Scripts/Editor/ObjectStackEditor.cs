@@ -26,12 +26,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private SerializedProperty _prefabProp;
         private SerializedProperty _loggerProp;
 
-        // Foldout bools
-        // private bool _stackerSettingsFoldoutToggle = true;
-        // private bool _visualisationsFoldoutToggle = true;
-        // private bool _objectStackerSettingsFoldoutToggle = true;
-        // private bool _debugFoldoutToggle = true;
-
         // Debug
         private FormattedLogger _localLogger;
 
@@ -141,24 +135,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 
 #region Initialization
-
-        // private void SaveFoldoutToggles()
-        // {
-        //     // Save the foldout states to EditorPrefs to preserve their state.
-        //     EditorPrefs.SetBool( nameof( _objectStackerSettingsFoldoutToggle ), _objectStackerSettingsFoldoutToggle );
-        //     EditorPrefs.SetBool( nameof( _stackerSettingsFoldoutToggle ), _stackerSettingsFoldoutToggle );
-        //     EditorPrefs.SetBool( nameof( _visualisationsFoldoutToggle ), _visualisationsFoldoutToggle );
-        //     EditorPrefs.SetBool( nameof( _debugFoldoutToggle ), _debugFoldoutToggle );
-        // }
-        //
-        // private void LoadFoldoutToggles()
-        // {
-        //     // Load the foldout states from EditorPrefs.
-        //     _objectStackerSettingsFoldoutToggle = EditorPrefs.GetBool( nameof( _objectStackerSettingsFoldoutToggle ), true );
-        //     _stackerSettingsFoldoutToggle = EditorPrefs.GetBool( nameof( _stackerSettingsFoldoutToggle ), true );
-        //     _visualisationsFoldoutToggle = EditorPrefs.GetBool( nameof( _visualisationsFoldoutToggle ), true );
-        //     _debugFoldoutToggle = EditorPrefs.GetBool( nameof( _debugFoldoutToggle ), true );
-        // }
 
         private void InitializeEmbeddedEditors()
         {

@@ -103,7 +103,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
             _noiseModule = target as NoiseModule;
 
-            // LoadFoldoutToggles();
             LoadProperties();
 
             _settingsEmbeddedSOEditor = new EmbedSOEditor( _noiseSettingsSOProp );
@@ -111,11 +110,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
             InitializeEmbeddedEditors();
 
             _logger.LogEnd();
-        }
-
-        private void OnDisable()
-        {
-            // SaveFoldoutToggles();
         }
 
         public override void OnInspectorGUI()
@@ -167,24 +161,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
 
 #region Initialization
-
-        // private void LoadFoldoutToggles()
-        // {
-        //     // Load the foldout states from EditorPrefs.
-        //     _showNoiseSettings = EditorPrefs.GetBool( nameof( _showNoiseSettings ), true );
-        //     _noisePreviewSettingsToggle = EditorPrefs.GetBool( nameof( _noisePreviewSettingsToggle ), true );
-        //     _debugToggle = EditorPrefs.GetBool( nameof( _debugToggle ), false );
-        //     _advancedSettingsToggle = EditorPrefs.GetBool( nameof( _advancedSettingsToggle ), false );
-        // }
-        //
-        // private void SaveFoldoutToggles()
-        // {
-        //     // Save the foldout states to EditorPrefs to preserve their state.
-        //     EditorPrefs.SetBool( nameof( _showNoiseSettings ), _showNoiseSettings );
-        //     EditorPrefs.SetBool( nameof( _noisePreviewSettingsToggle ), _noisePreviewSettingsToggle );
-        //     EditorPrefs.SetBool( nameof( _debugToggle ), _debugToggle );
-        //     EditorPrefs.SetBool( nameof( _advancedSettingsToggle ), _advancedSettingsToggle );
-        // }
 
         private void LoadProperties()
         {

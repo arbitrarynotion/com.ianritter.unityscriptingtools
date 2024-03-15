@@ -13,19 +13,19 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
     ///     A good analogy of this is that the first layer is the mountains, the second is the boulders, and the third the<br/>
     ///     small rocks, etc.
     /// </summary>
-    public static class NoiseGenerator
+    public static class PerlinNoiseGenerator
     {
         public static float[,] GetNoiseMap
-        (
-            int mapWidth,
-            int mapHeight,
-            int seed,
-            float scale,
-            int octaves,
-            float persistence,
-            float lacunarity,
-            Vector2 offset
-        )
+            (
+                int mapWidth,
+                int mapHeight,
+                int seed,
+                float scale,
+                int octaves,
+                float persistence,
+                float lacunarity,
+                Vector2 offset
+            )
         {
             float[,] noiseMap = new float[mapWidth, mapHeight];
 

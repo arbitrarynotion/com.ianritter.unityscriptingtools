@@ -45,11 +45,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Fo
             string methodName = MetaDataGathering.GetMethodName( StackTraceIndex, printStackTrace, fullPathName, targetMethodName );
             MethodNameRaw = methodName;
             MethodName = nicifyName ? NicifyVariableName( methodName ) : methodName;
-            // if( isFocused ) MethodName = $"<b>!!!! {MethodName} !!!!</b>";
             CallingClassName = MetaDataGathering.GetCallingClassName( StackTraceIndex, printStackTrace, fullPathName, targetClassName );
-
-            // if ( isFocused ) Debug.LogWarning( $"{GetColoredStringMagenta( MethodName )}'s focus was set to true in Method Entry!" );
-
+            
             if( !MethodName.Equals( "ctor" ) ) return;
 
             // Replace constructor name for readability.

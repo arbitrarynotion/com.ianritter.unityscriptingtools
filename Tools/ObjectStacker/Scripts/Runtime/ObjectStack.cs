@@ -17,10 +17,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
     public class ObjectStack : PrefabSpawnerRoot, IObjectStack
     {
 #region DataMembers
+
         private const float NoisePosShiftIncreaseFactor = 100f;
         private const int NoiseMapWidth = 1;
-        
+
         [SerializeField] [Delayed] private int totalObjects = 52;
+
         // The list that hold the noise transform effects for all positions in the stack.
         [HideInInspector] [SerializeField] private List<PseudoTransform> objectStack = new List<PseudoTransform>();
         [SerializeField] private ObjectStackerSettingsSO objectStackerSettingsSO;
@@ -28,7 +30,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         [SerializeField] private NoiseMapDimensions mapGenerationMode = NoiseMapDimensions.OneDimensional;
         [SerializeField] private GameObject prefab;
         [SerializeField] private FormattedLogger logger;
-        
+
         /// <summary>
         ///     As changes in settings are handled by an event subscribed to the settings so, the only reason this class should<br/>
         ///     update the stack is when the object total is changed. The var should be set to true when that occurs and set to<br/>
@@ -37,9 +39,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private bool _updateRequired;
 
         private NoiseMapDimensions _previousNoiseMapDimensions;
-        
+
         private int _currentStackPosition;
-        
+
         // SOs and subscriptions
         private ObjectStackerSettingsSO _previousObjectStackerSettingsSo;
 
@@ -120,8 +122,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
             int mapWidth = mapGenerationMode == NoiseMapDimensions.TwoDimensional ? totalObjects : NoiseMapWidth;
             _noiseModule.Initialize( mapWidth, totalObjects, OnNoiseModuleUpdated, OnSettingsSOUpdated );
-            // _noiseModule.Initialize( NoiseMapWidth, totalObjects, OnNoiseModuleUpdated, OnSettingsSOUpdated );
-            // _noiseModule.Initialize( totalObjects, totalObjects, OnNoiseModuleUpdated, OnSettingsSOUpdated );
         }
 
         private void OnNoiseModuleUpdated()
@@ -173,7 +173,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             logger.LogStart();
 
             ReevaluateStack();
-            if( !_updateRequired && !NoiseMapDimensionsHaveChanged() )
+            if( !_updateRequired &&
+                !NoiseMapDimensionsHaveChanged() )
             {
                 logger.LogEnd( "No update required." );
                 return;
@@ -197,11 +198,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
                 logger.Log( "Warning! Noise module was null!", FormattedLogType.Warning );
                 return;
             }
-            
+
             // GenerateNoiseMap();
             int mapWidth = mapGenerationMode == NoiseMapDimensions.TwoDimensional ? totalObjects : NoiseMapWidth;
             _noiseModule.UpdateNoiseMapSize( mapWidth, totalObjects );
-            // _noiseModule.UpdateNoiseMapSize( NoiseMapWidth, totalObjects );
             UpdatePseudoTransforms();
         }
 
@@ -213,7 +213,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private bool NoiseMapDimensionsHaveChanged()
         {
             if( _previousNoiseMapDimensions == mapGenerationMode ) return false;
-            
+
             _previousNoiseMapDimensions = mapGenerationMode;
             return true;
         }
@@ -259,7 +259,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         {
             // This is required when a noise module update is triggered when no object stacker settings SO is set.
             if( objectStackerSettingsSO == null ) return;
-            
+
             // logger.LogStart();
 
             float currentOffset = 0f;
@@ -336,8 +336,10 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 
 #region Noise
-        
-        private float GetNoisePositionShiftValue( int i, AnimationCurve noiseCurve, float posShift, float firstObjectShiftValue ) => GetNoiseDrivePositionValue( i, noiseCurve, posShift ) / NoisePosShiftIncreaseFactor - firstObjectShiftValue;
+
+        private float GetNoisePositionShiftValue
+            ( int i, AnimationCurve noiseCurve, float posShift, float firstObjectShiftValue ) =>
+            ( GetNoiseDrivePositionValue( i, noiseCurve, posShift ) / NoisePosShiftIncreaseFactor ) - firstObjectShiftValue;
 
         private float GetNoiseDrivePositionValue( int i, AnimationCurve curve, float axisNoise ) => GetCurveDampenedNoiseValueAtIndex( i, curve ) * axisNoise;
 

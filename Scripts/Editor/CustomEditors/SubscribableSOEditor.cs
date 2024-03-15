@@ -1,4 +1,3 @@
-using System;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services;
 using UnityEditor;
 using UnityEngine;
@@ -42,15 +41,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
 
             _formattedLoggerProp = serializedObject.FindProperty( "logger" );
             
-            // LoadFoldoutToggles();
-
             OnEnableLast();
         }
 
         private void OnDisable()
         {
             OnDisableFirst();
-            // SaveFoldoutToggles();
             OnDisableLast();
         }
 
@@ -70,19 +66,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditor
 
             serializedObject.ApplyModifiedProperties();
         }
-        
-        // private void SaveFoldoutToggles()
-        // {
-        //     // Save the foldout states to EditorPrefs to preserve their state.
-        //     EditorPrefs.SetBool( nameof( _debugToggle ), _debugToggle );
-        // }
-        //
-        // private void LoadFoldoutToggles()
-        // {
-        //     // Load the foldout states from EditorPrefs.
-        //     _debugToggle = EditorPrefs.GetBool( nameof( _debugToggle ), true );
-        // }
-        
+
         private void DrawDebugSection()
         {
             DebugFoldoutToggle = DrawFoldoutSection( "Debug", SubFoldoutFrameType, DebugFoldoutToggle );

@@ -17,7 +17,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         private const float BackgroundColorDefault = 0.15f;
         
         // Holds a NoiseSettingsSO
-        [SerializeField] private PerlinNoiseSettingsSO noiseSettingsSo;
+        // [SerializeField] private PerlinNoiseSettingsSO noiseSettingsSo;
+        [SerializeField] private SubscribableNoiseSettingsSO noiseSettingsSo;
         [SerializeField] private FormattedLogger logger;
 
         // Scene GUI Formatting
@@ -36,7 +37,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         [SerializeField] [Range( 0f, 250f )] private float mapPreviewLabelWidth = 80f;
         [SerializeField] [Range( 0f, 250f )] private float mapPreviewLabelRightMargin;
 
-        private PerlinNoiseSettingsSO _previousNoiseSettingsSo;
+        private SubscribableNoiseSettingsSO _previousNoiseSettingsSo;
 
         [SerializeField] [HideInInspector] private int noiseMapHeight;
         [SerializeField] [HideInInspector] private ScaleMode mapScaleMode = ScaleMode.StretchToFill;
@@ -64,7 +65,17 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
 
 #region LifeCycle
+        // Note: As this class works as a service, it initializes on the call to Initialize instead of during OnEnable.
 
+        private void OnDisable()
+        {
+            logger.LogStart( true );
+
+            UpdateSubscriptions();
+
+            logger.LogEnd();
+        }
+        
         public void OnValidate()
         {
             // Only call for an update if the settings so was actually changed.
@@ -98,12 +109,12 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
             
             SetMapScale();
 
-            noiseSettingsSo.GenerateNoiseMap( newNoiseMapWidth, newNoiseMapHeight );
+            GenerateNoiseMap();
         }
 
         public float GetNoiseAtIndex( int x, int y ) => NoiseMap2D[x, y];
 
-        [FormattedAutoLogger]
+        // [FormattedAutoLogger]
         public float[,] Get2DNoiseMap() => NoiseMap2D;
 
 #endregion
@@ -115,7 +126,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         
         private void UpdateSubscriptions()
         {
-            _previousNoiseSettingsSo = (PerlinNoiseSettingsSO) SubscriptionsHandler.UpdateSubscriptions
+            _previousNoiseSettingsSo = (SubscribableNoiseSettingsSO) SubscriptionsHandler.UpdateSubscriptions
             (
                 _previousNoiseSettingsSo,
                 noiseSettingsSo,
@@ -143,26 +154,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
             mapScaleMode = ( NoiseMapWidth == 1 ) || ( noiseMapHeight == 1 ) ? ScaleMode.StretchToFill : ScaleMode.ScaleAndCrop;
         }
 
-        private void GenerateNoiseMap()
-        {
-            NoiseMap2D = noiseSettingsSo.GenerateNoiseMap( NoiseMapWidth, NoiseMapHeight );
-        }
-
-        // private void GenerateNoiseMap()
-        // {
-        //     if( noiseSettingsSo == null ) return;
-        //
-        //     NoiseMap2D = NoiseGenerator.GetNoiseMap(
-        //         noiseMapWidth,
-        //         noiseMapHeight,
-        //         noiseSettingsSo.seed,
-        //         noiseSettingsSo.noiseScale,
-        //         noiseSettingsSo.octaves,
-        //         noiseSettingsSo.persistence,
-        //         noiseSettingsSo.lacunarity,
-        //         new Vector2( noiseSettingsSo.noiseOffsetHorizontal, noiseSettingsSo.noiseOffsetVertical )
-        //     );
-        // }
+        private void GenerateNoiseMap() => NoiseMap2D = noiseSettingsSo.GenerateNoiseMap( NoiseMapWidth, NoiseMapHeight );
 
 #endregion
 
