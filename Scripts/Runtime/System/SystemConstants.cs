@@ -20,6 +20,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System
         public const string DefaultLoggerName = "DefaultFormattedLogger";
         public const string ObjectStackerELoggerName = "ObjectStackerEditorLogger";
         public const string NoiseModuleELoggerName = "NoiseModuleEditorLogger";
+        public const string NoiseMapSVPELoggerName = "NoiseMapSVPEditorLogger";
         public const string PrefabSpawnerELoggerName = "PrefabSpawnerELogger";
 
         public const string EmbeddedSOEditorLoggerName = "EmbeddedSOEditorLogger";

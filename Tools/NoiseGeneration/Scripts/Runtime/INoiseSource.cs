@@ -39,5 +39,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         // /// </summary>
         // /// <returns></returns>
         // NoiseSettingsSO GetNoiseSettingsSO();
+
+        /// <summary>
+        ///     Subscribes the callback method to the onNoiseMapSizeUpdated event.
+        /// </summary>
+        /// <param name="callback"></param>
+        void SubscribeToNoiseMapChanges( UnityAction<int, int> callback );
     }
 }

@@ -45,7 +45,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         // SOs and subscriptions
         private ObjectStackerSettingsSO _previousObjectStackerSettingsSo;
 
-        // Conversion to Noise Module
         private INoiseSource _noiseModule;
 
 #endregion

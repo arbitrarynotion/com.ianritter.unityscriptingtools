@@ -24,7 +24,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
         private const float DividerBottomMargin = 8f;
         private const float DividerLeftMargin = 19f;
         private const float DividerRightMargin = 3f;
-        
+
         private readonly SerializedProperty _settingsSOProp;
 
         private string _cachedEditorName;
@@ -38,7 +38,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
         {
             _settingsSOProp = settingsSOProp;
         }
-        
+
         public void DrawSettingsSoInspector( string title, bool drawFrame = true )
         {
             // Optimization to avoid creating a new editor unless it's actually needed.
@@ -55,9 +55,9 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
 
 
             Rect foldoutFrameRect = DrawSettingsSoInspector();
-            
+
             if( !drawFrame ) return;
-            
+
             foldoutFrameRect.xMin += ParentFrameWidth;
             foldoutFrameRect.yMax += EditorFrameBottomPadding;
             DrawRect( foldoutFrameRect, EditorFrameType, Color.gray, Color.gray, ChildFrameWidth, false );
@@ -68,10 +68,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
         public Rect DrawSettingsSoInspector()
         {
             // Optimization to avoid creating a new editor unless it's actually needed.
-            if( !SettingsSOEditorIsValid() )
-            {
-                return new Rect();
-            }
+            if( !SettingsSOEditorIsValid() ) return new Rect();
 
             Rect startRect = GUILayoutUtility.GetLastRect();
             settingsSOEditor.OnInspectorGUI();
@@ -120,8 +117,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services
             //     When the target holds an object reference and the editor exists, nothing needs to be done.
             //     - return true.
             // Skip if we've already made an editor for this object.
-            if( settingsSOEditor != null &&
-                settingsSOEditorTarget == _settingsSOProp.objectReferenceValue ) return true;
+            if( ( settingsSOEditor != null ) &&
+                ( settingsSOEditorTarget == _settingsSOProp.objectReferenceValue ) ) return true;
 
             // Case 4:  either the editor or the target are null.
             //     This means the a target change has occurred.

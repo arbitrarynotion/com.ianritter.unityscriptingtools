@@ -22,31 +22,34 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         [SerializeField] private FormattedLogger logger;
 
         // Scene GUI Formatting
-        [SerializeField] private bool showNoiseMeter = true;
-        [SerializeField] private Color highColor = new Color( 1f, 1f, 1f, 1f );
-        [SerializeField] private Color lowColor = new Color( 0f, 0f, 0f, 1f );
-        [SerializeField] private Color textColor = new Color( TextColorDefault, TextColorDefault, TextColorDefault, 1f );
-        [SerializeField] private Color frameColor = new Color( FrameColorDefault, FrameColorDefault, FrameColorDefault, 1f );
-        [SerializeField] private Color backgroundColor = new Color( FrameColorDefault, FrameColorDefault, FrameColorDefault, 1f );
-        [SerializeField] [Range( 1f, 10f )] private float frameWidth = 2f;
-        [SerializeField] [Range( 0f, 250f )] private float mapPreviewTopMargin = 125f;
-        [SerializeField] [Range( 0f, 250f )] private float mapPreviewBottomMargin = 125f;
-        [SerializeField] [Range( 40f, 250f )] private float mapPreviewRightMargin = 43f;
-        [SerializeField] [Range( 0.025f, 1f )] private float mapPreviewWidth = 0.15f;
-        [SerializeField] [Range( 0.5f, 1f )] private float mapPreviewHeight = 0.5f;
-        [SerializeField] [Range( 0f, 250f )] private float mapPreviewLabelWidth = 80f;
-        [SerializeField] [Range( 0f, 250f )] private float mapPreviewLabelRightMargin;
+        // [SerializeField] private bool showNoiseMeter = true;
+        // [SerializeField] private Color highColor = new Color( 1f, 1f, 1f, 1f );
+        // [SerializeField] private Color lowColor = new Color( 0f, 0f, 0f, 1f );
+        // [SerializeField] private Color textColor = new Color( TextColorDefault, TextColorDefault, TextColorDefault, 1f );
+        // [SerializeField] private Color frameColor = new Color( FrameColorDefault, FrameColorDefault, FrameColorDefault, 1f );
+        // [SerializeField] private Color backgroundColor = new Color( FrameColorDefault, FrameColorDefault, FrameColorDefault, 1f );
+        // [SerializeField] [Range( 1f, 10f )] private float frameWidth = 2f;
+        // [SerializeField] [Range( 0f, 250f )] private float mapPreviewTopMargin = 125f;
+        // [SerializeField] [Range( 0f, 250f )] private float mapPreviewBottomMargin = 125f;
+        // [SerializeField] [Range( 40f, 250f )] private float mapPreviewRightMargin = 43f;
+        // [SerializeField] [Range( 0.025f, 1f )] private float mapPreviewWidth = 0.15f;
+        // [SerializeField] [Range( 0.5f, 1f )] private float mapPreviewHeight = 0.5f;
+        // [SerializeField] [Range( 0f, 250f )] private float mapPreviewLabelWidth = 80f;
+        // [SerializeField] [Range( 0f, 250f )] private float mapPreviewLabelRightMargin;
+        // [SerializeField] [HideInInspector] private int noiseMapHeight;
+        // [SerializeField] [HideInInspector] private ScaleMode mapScaleMode = ScaleMode.StretchToFill;
 
         private SubscribableNoiseSettingsSO _previousNoiseSettingsSo;
 
-        [SerializeField] [HideInInspector] private int noiseMapHeight;
-        [SerializeField] [HideInInspector] private ScaleMode mapScaleMode = ScaleMode.StretchToFill;
         
         [SerializeField] private UnityAction settingsSOChangedCallback;
         [SerializeField] private UnityAction noiseSettingsChangedCallback;
         
         private int NoiseMapWidth { get; set; }
         private int NoiseMapHeight { get; set; }
+
+        public UnityAction<int, int> onNoiseMapSizeUpdated;
+        private void RaiseOnNoiseMapSizeUpdated() => onNoiseMapSizeUpdated?.Invoke( NoiseMapWidth, NoiseMapHeight );
 
         // Holds a 2D noise map.
         private float[,] NoiseMap2D
@@ -107,7 +110,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
             NoiseMapWidth = newNoiseMapWidth;
             NoiseMapHeight = newNoiseMapHeight;
             
-            SetMapScale();
+            // SetMapScale();
+            RaiseOnNoiseMapSizeUpdated();
 
             GenerateNoiseMap();
         }
@@ -116,6 +120,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
         // [FormattedAutoLogger]
         public float[,] Get2DNoiseMap() => NoiseMap2D;
+        
+        public void SubscribeToNoiseMapChanges( UnityAction<int, int> callback ) => onNoiseMapSizeUpdated += callback;
 
 #endregion
 
@@ -148,11 +154,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
             UpdateSubscriptions();
         }
 
-        private void SetMapScale()
-        {
-            // If one of the dimensions is 1, the map is one dimensional.
-            mapScaleMode = ( NoiseMapWidth == 1 ) || ( noiseMapHeight == 1 ) ? ScaleMode.StretchToFill : ScaleMode.ScaleAndCrop;
-        }
+        // private void SetMapScale()
+        // {
+        //     // If one of the dimensions is 1, the map is one dimensional.
+        //     mapScaleMode = ( NoiseMapWidth == 1 ) || ( noiseMapHeight == 1 ) ? ScaleMode.StretchToFill : ScaleMode.ScaleAndCrop;
+        // }
 
         private void GenerateNoiseMap() => NoiseMap2D = noiseSettingsSo.GenerateNoiseMap( NoiseMapWidth, NoiseMapHeight );
 
