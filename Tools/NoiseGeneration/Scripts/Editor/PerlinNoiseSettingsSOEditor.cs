@@ -1,6 +1,6 @@
 using System;
-using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditors;
-using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMethods;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.ExtensionMethods;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.SubscribableScriptableObject;
 using Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Runtime;
 using UnityEditor;
 using UnityEngine;

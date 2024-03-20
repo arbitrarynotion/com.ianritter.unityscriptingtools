@@ -1,6 +1,7 @@
 using System;
-using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.CustomEditors;
-using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMethods;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.EditorUtilities;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.ExtensionMethods;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.SubscribableScriptableObject;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.Enums;
 using Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Runtime;
 using UnityEditor;
@@ -13,6 +14,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
     [CustomEditor( typeof( ObjectStackerSettingsSO ) ), CanEditMultipleObjects]
     public class ObjectStackerSettingsSOEditor : SubscribableSOEditor
     {
+        private const float SliderScaleMultiplier = 10f;
+        
 #region DataMembers
         
         // Noise Driven Effects
@@ -41,22 +44,41 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
         private SerializedProperty _verticalOffsetProp;
 
         // Foldout Toggles
-        private bool _noiseDrivenEffectsToggle = true;
-        private bool _manualAdjustmentToggle = true;
-
+        private bool _stackHeightAndOffsetFoldoutToggle = true;
+        private bool _noiseDrivenEffectsFoldoutToggle = false;
+        private bool _manualAdjustmentFoldoutToggle = false;
+        
 #endregion
+        
+        
+#region FoldoutToggles
 
-#region LifeCycle
-
-        protected override void OnEnableLast()
+        private bool StackHeightAndOffsetFoldoutToggle
         {
-            LoadFoldoutToggles();
-            LoadProperties();
+            get => EditorPrefs.GetBool( $"{GetInstanceID()}_{nameof( _stackHeightAndOffsetFoldoutToggle )}", true );
+            set => EditorPrefs.SetBool( $"{GetInstanceID()}_{nameof( _stackHeightAndOffsetFoldoutToggle )}", value );
         }
 
-        protected override void OnDisableLast()
+        private bool NoiseDrivenEffectsFoldoutToggle
         {
-            SaveFoldoutToggles();
+            get => EditorPrefs.GetBool( $"{GetInstanceID()}_{nameof( _noiseDrivenEffectsFoldoutToggle )}", false );
+            set => EditorPrefs.SetBool( $"{GetInstanceID()}_{nameof( _noiseDrivenEffectsFoldoutToggle )}", value );
+        }
+        
+        private bool ManualAdjustmentFoldoutToggle
+        {
+            get => EditorPrefs.GetBool( $"{GetInstanceID()}_{nameof( _manualAdjustmentFoldoutToggle )}", false );
+            set => EditorPrefs.SetBool( $"{GetInstanceID()}_{nameof( _manualAdjustmentFoldoutToggle )}", value );
+        }
+
+#endregion
+        
+
+#region LifeCycle
+        
+        protected override void OnEnableLast()
+        {
+            LoadProperties();
         }
 
         protected override void OnInspectorGUIFirst()
@@ -72,20 +94,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 
 #region Initilization
-
-        private void SaveFoldoutToggles()
-        {
-            // Save the foldout states to EditorPrefs to preserve their state.
-            EditorPrefs.SetBool( nameof( _noiseDrivenEffectsToggle ), _noiseDrivenEffectsToggle );
-            EditorPrefs.SetBool( nameof( _manualAdjustmentToggle ), _manualAdjustmentToggle );
-        }
-        
-        private void LoadFoldoutToggles()
-        {
-            // Load the foldout states from EditorPrefs.
-            _noiseDrivenEffectsToggle = EditorPrefs.GetBool( nameof( _noiseDrivenEffectsToggle ), false );
-            _manualAdjustmentToggle = EditorPrefs.GetBool( nameof( _manualAdjustmentToggle ), false );
-        }
 
         private void LoadProperties()
         {
@@ -121,17 +129,32 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             EditorGUI.indentLevel++;
             {
                 serializedObject.DrawScriptField();
+                DrawManualPositionSection();
                 DrawNoiseDrivenEffectsSection();
-                // Space( BetweenSectionPadding );
                 DrawManualAdjustmentsSection();
             }
             EditorGUI.indentLevel--;
         }
-        
+
+        private void DrawManualPositionSection()
+        {
+            StackHeightAndOffsetFoldoutToggle = DrawFoldoutSection( "Stack Height & Offset", SubFoldoutFrameType, StackHeightAndOffsetFoldoutToggle );
+            if( !StackHeightAndOffsetFoldoutToggle ) return;
+            
+            EditorGUI.indentLevel++;
+            {
+                PropertyField( _modelHeightProp, new GUIContent( "Model Height" ) );
+                DrawVariableMinMaxFloatSlider( _verticalOffsetProp, _modelHeightProp );
+            }
+            EditorGUI.indentLevel--;
+        }
+
+#region NoiseDrivenEffects
+
         private void DrawNoiseDrivenEffectsSection()
         {
-            _noiseDrivenEffectsToggle = DrawFoldoutSection( "Noise-Driven Effects", SubFoldoutFrameType, _noiseDrivenEffectsToggle );
-            if( !_noiseDrivenEffectsToggle ) return;
+            NoiseDrivenEffectsFoldoutToggle = DrawFoldoutSection( "Noise-Driven Effects", SubFoldoutFrameType, NoiseDrivenEffectsFoldoutToggle );
+            if( !NoiseDrivenEffectsFoldoutToggle ) return;
 
             EditorGUI.indentLevel++;
             {
@@ -145,20 +168,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
                     _yAxisNoiseProp.floatValue <= 0f )
                     HelpBox( "Note: Noise has no effect when all intensities are set to 0.", MessageType.Info );
 
-                Space( BetweenSectionPadding );
-            }
-            EditorGUI.indentLevel--;
-        }
-
-        private void DrawManualAdjustmentsSection()
-        {
-            _manualAdjustmentToggle = DrawFoldoutSection( "Manual Adjustments", SubFoldoutFrameType, _manualAdjustmentToggle );
-            if( !_manualAdjustmentToggle ) return;
-            EditorGUI.indentLevel++;
-            {
-                DrawManualRotationSection();
-                Space( BetweenSectionPadding );
-                DrawManualPositionSection();
                 Space( BetweenSectionPadding );
             }
             EditorGUI.indentLevel--;
@@ -215,6 +224,23 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             EditorGUI.indentLevel--;
         }
 
+#endregion
+
+
+#region ManualAdjustments
+
+        private void DrawManualAdjustmentsSection()
+        {
+            ManualAdjustmentFoldoutToggle = DrawFoldoutSection( "Manual Adjustments", SubFoldoutFrameType, ManualAdjustmentFoldoutToggle );
+            if( !ManualAdjustmentFoldoutToggle ) return;
+            EditorGUI.indentLevel++;
+            {
+                DrawManualRotationSection();
+                Space( BetweenSectionPadding );
+            }
+            EditorGUI.indentLevel--;
+        }
+
         private void DrawManualRotationSection()
         {
             DrawLabeledSection( "Rotation", LabelHeadingFrameType );
@@ -250,22 +276,33 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
             EditorGUI.indentLevel--;
         }
 
-        private void DrawManualPositionSection()
-        {
-            DrawLabeledSection( "Position", LabelHeadingFrameType );
-            EditorGUI.indentLevel++;
-            {
-                PropertyField( _modelHeightProp, new GUIContent( "Model Height" ) );
-                DrawVerticalGapSlider();
-            }
-            EditorGUI.indentLevel--;
-        }
+#endregion
+        
 
-        private void DrawVerticalGapSlider()
+        private void DrawVariableMinMaxFloatSlider( SerializedProperty valueProperty, SerializedProperty maxProperty )
         {
             // PropertyField( _verticalOffsetProp, new GUIContent( "Vertical Gap" ) );
             Rect sliderRect = GetControlRect();
-            _verticalOffsetProp.floatValue = EditorGUI.Slider( sliderRect, "Vertical Gap", _verticalOffsetProp.floatValue, 0f, _modelHeightProp.floatValue * 10f );
+            valueProperty.floatValue = EditorGUI.Slider(
+                sliderRect,
+                "Vertical Gap",
+                valueProperty.floatValue,
+                0f,
+                maxProperty.floatValue * SliderScaleMultiplier
+            );
+        }
+
+        private void DrawVariableMinMaxFloatSlider( SerializedProperty valueProperty, SerializedProperty minProperty, SerializedProperty maxProperty )
+        {
+            // PropertyField( _verticalOffsetProp, new GUIContent( "Vertical Gap" ) );
+            Rect sliderRect = GetControlRect();
+            valueProperty.floatValue = EditorGUI.Slider(
+                sliderRect,
+                "Vertical Gap",
+                valueProperty.floatValue,
+                minProperty.floatValue * SliderScaleMultiplier,
+                maxProperty.floatValue * SliderScaleMultiplier
+            );
         }
 
 #endregion

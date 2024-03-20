@@ -1,4 +1,4 @@
-using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.ExtensionMethods;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.ExtensionMethods;
 using UnityEngine;
 using Random = System.Random;
 

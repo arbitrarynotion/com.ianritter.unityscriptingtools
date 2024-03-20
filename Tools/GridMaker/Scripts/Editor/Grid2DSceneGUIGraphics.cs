@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Graphics.Scene.SceneGUIHandles;
+using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.Graphics.Scene.SceneGUIHandles;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.GridMaker.Scripts.Editor
 {

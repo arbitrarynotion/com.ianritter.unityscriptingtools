@@ -44,13 +44,13 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System
         public const string SerializedPropertyExplorerMenuItemName = "Tools/Scripting Tools/Serialized Property Explorer";
 
         // UI Texts
+        public const string SerializedPropertyExplorerWindowTitle = "Serialized Property Explorer";
         public const string SerializedPropertyExplorerMenuObjectText = "Object:";
         public const string SerializedPropertyExplorerMenuSimplifyPathsText = "Simplify Paths";
         public const string SerializedPropertyExplorerMenuExpandArraysText = "Expand Arrays";
         public const string SerializedPropertyExplorerMenuExpandSearchText = "Search:";
         public const string SerializedPropertyExplorerMenuHighlightColorsText = "Highlight Colors";
         public const string SerializedPropertyExplorerMenuReadoutDividerText = "|";
-        public const string SerializedPropertyExplorerWindowTitle = "Serialized Property Explorer";
         public const string SerializedPropertyExplorerReadoutTitleText = "Title";
         public const string SerializedPropertyExplorerReadoutPathText = "Path";
         public const string SerializedPropertyExplorerReadoutTypeText = "Type";
@@ -62,11 +62,26 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System
         // Custom Color Entry
         // Menu Names
         public const string CustomColorEntryHelperMenuTitle = "Custom Color Entry Helper";
+        public const string CustomColorLibraryPath = "Packages/com.ianritter.unityscriptingtools/Scripts/Editor/EditorWindows/ColorEntryHelperWindow";
+        
 
         // Asset Names
         // Paths
         public const string CustomColorEntryHelperMenuItemName = "Tools/Scripting Tools/Custom Color Entry Helper";
 
         // UI Texts
+        
+        
+        // Noise Map SVP Editor Window
+        // Menu Names
+        public const string NoiseMapSVPMenuTitle = "Tools/Scripting Tools/Noise Map Scene View Previewer";
+
+        // Asset Names
+
+        // Paths
+
+        // UI Texts
+        public const string NoiseMapSVPWindowTitle = "Noise Map Scene View Previewer";
+
     }
 }

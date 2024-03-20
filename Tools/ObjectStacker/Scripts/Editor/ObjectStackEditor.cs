@@ -1,5 +1,5 @@
-using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMethods;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.ExtensionMethods;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger;
 using Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Runtime;
 using Packages.com.ianritter.unityscriptingtools.Tools.PrefabSpawner.Scripts.Editor;
@@ -46,26 +46,26 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
         private bool StackerSettingsFoldoutToggle
         {
-            get => EditorPrefs.GetBool( $"{name}_{nameof( StackerSettingsFoldoutToggle )}", true );
-            set => EditorPrefs.SetBool( $"{name}_{nameof( StackerSettingsFoldoutToggle )}", value );
+            get => EditorPrefs.GetBool( $"{GetInstanceID()}_{nameof( StackerSettingsFoldoutToggle )}", true );
+            set => EditorPrefs.SetBool( $"{GetInstanceID()}_{nameof( StackerSettingsFoldoutToggle )}", value );
         }
 
         private bool VisualisationsFoldoutToggle
         {
-            get => EditorPrefs.GetBool( $"{name}_{nameof( VisualisationsFoldoutToggle )}", true );
-            set => EditorPrefs.SetBool( $"{name}_{nameof( VisualisationsFoldoutToggle )}", value );
+            get => EditorPrefs.GetBool( $"{GetInstanceID()}_{nameof( VisualisationsFoldoutToggle )}", true );
+            set => EditorPrefs.SetBool( $"{GetInstanceID()}_{nameof( VisualisationsFoldoutToggle )}", value );
         }
 
         private bool ObjectStackerSettingsFoldoutToggle
         {
-            get => EditorPrefs.GetBool( $"{name}_{nameof( ObjectStackerSettingsFoldoutToggle )}", true );
-            set => EditorPrefs.SetBool( $"{name}_{nameof( ObjectStackerSettingsFoldoutToggle )}", value );
+            get => EditorPrefs.GetBool( $"{GetInstanceID()}_{nameof( ObjectStackerSettingsFoldoutToggle )}", true );
+            set => EditorPrefs.SetBool( $"{GetInstanceID()}_{nameof( ObjectStackerSettingsFoldoutToggle )}", value );
         }
 
         private bool DebugFoldoutToggle
         {
-            get => EditorPrefs.GetBool( $"{name}_{nameof( DebugFoldoutToggle )}", false );
-            set => EditorPrefs.SetBool( $"{name}_{nameof( DebugFoldoutToggle )}", value );
+            get => EditorPrefs.GetBool( $"{GetInstanceID()}_{nameof( DebugFoldoutToggle )}", false );
+            set => EditorPrefs.SetBool( $"{GetInstanceID()}_{nameof( DebugFoldoutToggle )}", value );
         }
 
 #endregion
@@ -83,7 +83,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 
 #region LifeCycle
-
+        
         protected override void OnEnableFirst()
         {
             if( _localLogger == null )
@@ -166,8 +166,16 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
             EditorGUI.indentLevel++;
             {
-                PropertyField( _totalObjectsProp );
-                PropertyField( _settingsSOProp );
+                PropertyField( _totalObjectsProp, new GUIContent(
+                        "Stack Count",
+                        "This is the number of objects in the stack."
+                    )
+                );
+                PropertyField( _settingsSOProp, new GUIContent(
+                        "Settings",
+                        "The Object Stack Settings that will be used to generate this stack."
+                    )
+                );
             }
             EditorGUI.indentLevel--;
             

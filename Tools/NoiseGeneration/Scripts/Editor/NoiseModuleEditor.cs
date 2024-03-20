@@ -1,22 +1,18 @@
-using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.ExtensionMethods;
-using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.PopupWindows.CustomColorPicker;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.ExtensionMethods;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger;
 using Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Runtime;
-using Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts.Runtime;
 using UnityEditor;
 using UnityEngine;
 using static UnityEditor.EditorGUILayout;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.EditorUIFormatting;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System.SystemConstants;
-using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.UIRectGraphics;
 
 namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Editor
 {
     [CustomEditor( typeof( NoiseModule ) )]
     public class NoiseModuleEditor : UnityEditor.Editor
     {
-
 #region DataMembers
 
         private SerializedProperty _noiseSettingsSOProp;
@@ -26,7 +22,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         private Object _noiseSettingsSOEditorTarget;
         private EmbedSOEditor _settingsEmbeddedSOEditor;
         private FormattedLogger _logger;
-        
+
 #endregion
 
 
@@ -34,14 +30,14 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
         private bool NoiseSettingsFoldoutToggle
         {
-            get => EditorPrefs.GetBool( $"{name}_{nameof( NoiseSettingsFoldoutToggle )}", true );
-            set => EditorPrefs.SetBool( $"{name}_{nameof( NoiseSettingsFoldoutToggle )}", value );
+            get => EditorPrefs.GetBool( $"{GetInstanceID()}_{nameof( NoiseSettingsFoldoutToggle )}", true );
+            set => EditorPrefs.SetBool( $"{GetInstanceID()}_{nameof( NoiseSettingsFoldoutToggle )}", value );
         }
 
         private bool DebugFoldoutToggle
         {
-            get => EditorPrefs.GetBool( $"{name}_{nameof( DebugFoldoutToggle )}", false );
-            set => EditorPrefs.SetBool( $"{name}_{nameof( DebugFoldoutToggle )}", value );
+            get => EditorPrefs.GetBool( $"{GetInstanceID()}_{nameof( DebugFoldoutToggle )}", false );
+            set => EditorPrefs.SetBool( $"{GetInstanceID()}_{nameof( DebugFoldoutToggle )}", value );
         }
 
 #endregion
@@ -55,8 +51,6 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
                 _logger = FormattedLoggerLoader.GetLogger( NoiseModuleELoggerName, DefaultLoggerPath );
 
             _logger.LogStart();
-
-            // _noiseModule = target as NoiseModule;
 
             LoadProperties();
 
@@ -73,7 +67,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
             serializedObject.DrawScriptField();
             DrawNoiseSettingsSOSection();
-            // DrawNoisePreviewSettingsSection();
+
             DrawDebugSections();
 
             if( !serializedObject.ApplyModifiedProperties() ) return;
@@ -114,7 +108,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         {
             DebugFoldoutToggle = DrawFoldoutSection( "Debug", FoldoutFrameType, DebugFoldoutToggle );
             if( !DebugFoldoutToggle ) return;
-            
+
             EditorGUI.indentLevel++;
             {
                 PropertyField( _targetLoggerProp );
@@ -123,6 +117,5 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         }
 
 #endregion
-        
     }
 }

@@ -1,4 +1,4 @@
-﻿using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.ExtensionMethods;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Tools.CustomColorPicker.ColorPickerPopupWindow;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger;
@@ -10,16 +10,10 @@ using static Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services.
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System.SystemConstants;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.UIRectGraphics;
 
-namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Editor
+namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scripts.Editor.NoiseMapSVP
 {
-    /* Note about why this is a object component instead of an editor window:
-        I initially thought this would make a good optional editor window to open
-        and view any noise map for a selected object that has a NoiseModule component.
-        However, as drawing to the scene view requires access to the OnSceneGUI event
-        call is exclusive to the editor class, and editor window was not an option.
-     */
-    [CustomEditor( typeof( NoiseMapSceneViewPreviewer ) )]
-    public class NoiseMapSVPEditor : UnityEditor.Editor
+    [CustomEditor( typeof( NoiseMapSVPData ) )]
+    public class NoiseMapSVPDataEditor : UnityEditor.Editor
     {
 #region Constants
 
@@ -36,7 +30,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
 
 
 #region DataMembers
-        
+
         // Noise map visualization
         private SerializedProperty _showNoiseMeterProp;
         private SerializedProperty _mapScaleModeProp;
@@ -60,8 +54,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         private NoiseMapSceneViewPreviewer _noiseMapSceneViewPreviewer;
 
 #endregion
-        
-        
+
+
 #region FoldoutToggles
 
         private bool NoisePreviewSettingsFoldoutToggle
@@ -153,7 +147,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         private void LoadProperties()
         {
             _targetLoggerProp = serializedObject.FindProperty( "logger" );
-            
+
             _showNoiseMeterProp = serializedObject.FindProperty( "showNoiseMeter" );
             _mapScaleModeProp = serializedObject.FindProperty( "mapScaleMode" );
             _highColorProp = serializedObject.FindProperty( "highColor" );

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.ExtensionMethods;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services;
+using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.ExtensionMethods;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.FormattedDebugLogger.Enums;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System;
@@ -261,7 +261,8 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
             // logger.LogStart();
 
-            float currentOffset = 0f;
+            // float currentOffset = 0f;
+            float currentOffset = objectStackerSettingsSO.modelHeight / 2f;
 
             float firstObjectYRot = 0;
             float firstObjectXShift = 0;
@@ -336,9 +337,11 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.ObjectStacker.Scripts
 
 #region Noise
 
-        private float GetNoisePositionShiftValue
-            ( int i, AnimationCurve noiseCurve, float posShift, float firstObjectShiftValue ) =>
-            ( GetNoiseDrivePositionValue( i, noiseCurve, posShift ) / NoisePosShiftIncreaseFactor ) - firstObjectShiftValue;
+        private float GetNoisePositionShiftValue( int i, AnimationCurve noiseCurve, float posShift, float firstObjectShiftValue )
+        {
+            // Todo: make new x and z size fields as well as max offset fields in object settings and use those to limit the max offset returned.
+            return ( GetNoiseDrivePositionValue( i, noiseCurve, posShift ) / NoisePosShiftIncreaseFactor ) - firstObjectShiftValue;
+        }
 
         private float GetNoiseDrivePositionValue( int i, AnimationCurve curve, float axisNoise ) => GetCurveDampenedNoiseValueAtIndex( i, curve ) * axisNoise;
 
