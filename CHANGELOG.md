@@ -1,3 +1,20 @@
+## [1.8.1](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.8.0...v1.8.1) (2024-06-11)
+
+
+### Bug Fixes
+
+* Added using statement to SceneGUIMeshes ([9504ec5](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/9504ec525057c9055f921a1f7a621f22f0eee585))
+* Adjusted Noise Module responsibilities ([39e8695](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/39e86952ae716e3ea72972b6dd36efb90fd833f3))
+* Cleaned up Noise Generator class ([015ba1f](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/015ba1f72ee23ca92f6b2222114c38015997084a))
+* Completed Object Stacker Overhaul ([25a4755](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/25a47556e3e88e24a04667105c0717e5b2ba946c))
+* Completed Tools Restructuring ([fbc8fb5](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/fbc8fb585be01a6eb8277f092584429227741227))
+* Further formatting cleanup ([c93d8de](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/c93d8de17c6d73bcd1076d6786ecfd826b6e8339))
+* Isolated noise map scene view preview ([3652622](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/365262238d0d1f72a303b1f91d5787324611c17d))
+* Refactored how foldout bools were handled ([450199a](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/450199ad63b1a93922260a8044a390d7f41f2fa0))
+* Refactored noise into its own class. ([fbb63a6](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/fbb63a6275be991795ee3211f6046e46d3e524eb))
+* Restructured file system ([a77b906](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/a77b906b6e4d5c4d0807dad15b7c46c4c9246005))
+* Split Noise Settings and Object Settings ([c44e6a0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/commit/c44e6a087ec0ee72800d604e88e79667d946e0fe))
+
 # [1.8.0](https://github.com/arbitrarynotion/com.ianritter.unityscriptingtools/compare/v1.7.1...v1.8.0) (2024-03-03)
 
 
