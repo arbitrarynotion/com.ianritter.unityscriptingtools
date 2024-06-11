@@ -1,0 +1,25 @@
+{
+    "name": "ianritter.objectstacker.editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:c24d380d7b16607488b4f3f6b6a4fe97",
+        "GUID:8c64a276186c0884daeeeee55360faa8",
+        "GUID:c06660795a3106e4d89b47bc8065e935",
+        "GUID:2e333b527f98fd74ca10a396be06ba48",
+        "GUID:87f655bfc367e8d42a24e6b26e6ed0b3",
+        "GUID:8fa41f8cbbac0e645a9e7dab5a53a641",
+        "GUID:3e992fd102827a848a2e5757da35854e",
+        "GUID:ba57d67174a7dc94885b516abf77e7cb"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

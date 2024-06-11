@@ -1,0 +1,18 @@
+{
+    "name": "ianritter.objectstacker",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8c64a276186c0884daeeeee55360faa8",
+        "GUID:c24d380d7b16607488b4f3f6b6a4fe97",
+        "GUID:87f655bfc367e8d42a24e6b26e6ed0b3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

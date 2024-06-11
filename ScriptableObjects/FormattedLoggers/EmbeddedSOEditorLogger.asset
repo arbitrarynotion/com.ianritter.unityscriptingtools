@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 875e9ed44325b8642b2e6bb4646bbb9c, type: 3}
+  m_Name: EmbeddedSOEditorLogger
+  m_EditorClassIdentifier: 
+  showLogs: 0
+  padBlocks: 0
+  useClassPrefix: 1
+  boldBlockMethods: 1
+  boldMethods: 1
+  nicifiedNames: 1
+  blockMethodColor: {r: 1, g: 1, b: 0, a: 1}
+  methodColor: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
+  unityEventsColor: {r: 0, g: 0, b: 0, a: 0}
+  focusColor: {r: 0, g: 0, b: 0, a: 0}
+  logPrefix:
+    customColor:
+      color: {r: 0.5, g: 1, b: 0.83, a: 1}
+      name: ESO
+    toggle: 1
+  blockDivider:
+    customColor:
+      color: {r: 0, g: 0, b: 0, a: 1}
+      name: "\u2015\u2015\u2015\u2015\u2015"
+    toggle: 1
+  indentMarker:
+    customColor:
+      color: {r: 0, g: 0, b: 0, a: 1}
+      name: '|'
+    toggle: 1
+  methodDividers:
+    customColor:
+      color: {r: 0, g: 0, b: 0, a: 1}
+      name: .
+    toggle: 1
+  logBlockStart:
+    customColor:
+      color: {r: 0.29803923, g: 0.8, b: 0.29803923, a: 1}
+      name: "\u25BA"
+    toggle: 1
+  logBlockEnd:
+    customColor:
+      color: {r: 0.29803923, g: 0.6, b: 0.9019608, a: 1}
+      name: "\u25C0"
+    toggle: 1
+  logEventPrefix:
+    customColor:
+      color: {r: 0.9019608, g: 0.5019608, b: 0.2, a: 1}
+      name: '***'
+    toggle: 1
+  focusAccent:
+    customColor:
+      color: {r: 1, g: 0.27, b: 0, a: 1}
+      name: "\u2022\u2022\u2022\u2022"
+    toggle: 1
+  targetClass: 
+  targetMethod: 
+  fullPathName: 0
+  includeStackTrace: 0

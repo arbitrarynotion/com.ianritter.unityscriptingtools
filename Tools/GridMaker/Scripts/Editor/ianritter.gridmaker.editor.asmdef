@@ -1,0 +1,20 @@
+{
+    "name": "ianritter.gridmaker.editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:66a439dfc3986604d83fb313cb5776ca",
+        "GUID:8c64a276186c0884daeeeee55360faa8",
+        "GUID:c06660795a3106e4d89b47bc8065e935"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
