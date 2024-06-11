@@ -62,7 +62,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System
         // Custom Color Entry
         // Menu Names
         public const string CustomColorEntryHelperMenuTitle = "Custom Color Entry Helper";
-        public const string CustomColorLibraryPath = "Packages/com.ianritter.unityscriptingtools/Scripts/Editor/EditorWindows/ColorEntryHelperWindow";
+        public const string CustomColorLibraryPath = "Packages/com.ianritter.unityscriptingtools/Scripts/Tools/ColorEntryHelperWindow";
         
 
         // Asset Names
@@ -79,6 +79,7 @@ namespace Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System
         // Asset Names
 
         // Paths
+        public const string NoiseMapSVPDataPath = "Packages/com.ianritter.unityscriptingtools/Tools/NoiseGeneration/Scripts/Editor/NoiseMapSVP";
 
         // UI Texts
         public const string NoiseMapSVPWindowTitle = "Noise Map Scene View Previewer";

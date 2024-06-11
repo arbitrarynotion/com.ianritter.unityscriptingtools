@@ -3,6 +3,7 @@ using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Services.Format
 using Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.System;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static Packages.com.ianritter.unityscriptingtools.Scripts.Runtime.Graphics.UI.TextFormatting;

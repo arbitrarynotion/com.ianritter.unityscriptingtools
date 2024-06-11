@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Packages.com.ianritter.unityscriptingtools.Scripts.Editor.Services;
 using UnityEditor;
 using UnityEngine;
@@ -33,34 +34,62 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         }
 
 #region DataMembers
+        
+        /* Creat asset example:
+         
+        [UnityEditor.MenuItem("Assets/Create/UI Toolkit/Text Settings", false)]
+        public static void CreateUITKTextSettingsAsset()
+        {
+          string path;
+          if (Selection.assetGUIDs.Length == 0)
+          {
+            path = "Assets";
+          }
+          else
+          {
+            path = AssetDatabase.GUIDToAssetPath(Selection.assetGUIDs[0]);
+            if (Path.GetExtension(path) != "")
+              path = Path.GetDirectoryName(path);
+          }
+          string uniqueAssetPath = AssetDatabase.GenerateUniqueAssetPath(path + "/UITK Text Settings.asset");
+          PanelTextSettings instance = ScriptableObject.CreateInstance<PanelTextSettings>();
+          AssetDatabase.CreateAsset((Object) instance, uniqueAssetPath);
+          EditorUtility.SetDirty((Object) instance);
+          AssetDatabase.SaveAssets();
+          EditorUtility.FocusProjectWindow();
+          EditorGUIUtility.PingObject((Object) instance);
+        }
+         
+         */
 
         private NoiseMapSVPData NoiseMapSvpDataSO
         {
             get
             {
+                // Only one data SO should exist. Return it if it's already been instantiated, otherwise create it.
                 if( _noiseMapSvpDataSO == null )
                 {
                     // Instantiate the scriptable object.
-                    NoiseMapSVPData instance = CreateInstance<NoiseMapSVPData>();
+                    // NoiseMapSVPData instance = CreateInstance<NoiseMapSVPData>();
                     
                     // Todo: the instance doesn't persist unless it is manually saved into an asset on disk. Below is ChatGPT's rough instructions on how to do that.
-                    // YourScriptableObject instance = ScriptableObject.CreateInstance<YourScriptableObject>();
-                    //
-                    // // Choose a path and filename for the asset
-                    // string path = "Assets/NewScriptableObject.asset";
-                    //
-                    // // Make sure the path is unique so it doesn't overwrite any existing asset
-                    // int uniqueID = 0;
-                    // while (File.Exists(path))
-                    // {
-                    //     uniqueID++;
-                    //     path = "Assets/NewScriptableObject" + uniqueID + ".asset";
-                    // }
-                    //
-                    // // Save the ScriptableObject asset to the specified path
-                    // AssetDatabase.CreateAsset(instance, path);
-                    // AssetDatabase.SaveAssets();
-                    // AssetDatabase.Refresh();
+                    var instance = CreateInstance<NoiseMapSVPData>();
+                    
+                    // Choose a path and filename for the asset
+                    string path = NoiseMapSVPDataPath;
+                    
+                    // Make sure the path is unique so it doesn't overwrite any existing asset
+                    int uniqueID = 0;
+                    while (File.Exists(path))
+                    {
+                        uniqueID++;
+                        path = NoiseMapSVPDataPath + uniqueID + ".asset";
+                    }
+                    
+                    // Save the ScriptableObject asset to the specified path
+                    AssetDatabase.CreateAsset(instance, path);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
                 }
 
                 return _noiseMapSvpDataSO;
@@ -117,6 +146,15 @@ namespace Packages.com.ianritter.unityscriptingtools.Tools.NoiseGeneration.Scrip
         
         
 #region Initialization
+
+        private void LoadDataSO()
+        {
+            if( _noiseMapSVPDataSOProp == null ) return;
+
+            if( _noiseMapSVPDataSOProp.objectReferenceValue != null ) return;
+            
+            // Get data so, save it into data prop's object reference, apply properties.
+        }
 
         private void InitializeEmbeddedEditors()
         {
